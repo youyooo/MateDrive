@@ -1,0 +1,8 @@
+.matedrive-integration.env
+.matedroid-integration.env
+*.xcresult
+DerivedData/
+build/
+__pycache__/
+*.py[cod]
+**/xcuserdata/

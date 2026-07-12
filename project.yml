@@ -1,0 +1,102 @@
+name: MateDroidIOS
+options:
+  bundleIdPrefix: com.matedrive
+  deploymentTarget:
+    iOS: "18.0"
+settings:
+  base:
+    SWIFT_VERSION: "6.3"
+    IPHONEOS_DEPLOYMENT_TARGET: "18.0"
+packages: {}
+targets:
+  MateDroidIOS:
+    type: application
+    productName: MateDrive
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - MateDroidIOS
+      - path: MateDroidWidget/WidgetDisplayData.swift
+    settings:
+      base:
+        PRODUCT_NAME: MateDrive
+        PRODUCT_MODULE_NAME: MateDroidIOS
+        PRODUCT_BUNDLE_IDENTIFIER: com.matedrive.ios
+        INFOPLIST_KEY_CFBundleDisplayName: MateDrive
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        COMPRESS_PNG_FILES: NO
+        ENABLE_ON_DEMAND_RESOURCES: NO
+        CODE_SIGN_ENTITLEMENTS: MateDroidIOS/MateDroidIOS.entitlements
+        TARGETED_DEVICE_FAMILY: "1"
+    info:
+      path: MateDroidIOS/Info.plist
+      properties:
+        CFBundleDisplayName: MateDrive
+        ITSAppUsesNonExemptEncryption: false
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+          UIImageName: LaunchWordmark
+          UIImageRespectsSafeAreaInsets: true
+        UIBackgroundModes:
+          - fetch
+        BGTaskSchedulerPermittedIdentifiers:
+          - com.matedrive.ios.sync
+    dependencies:
+      - target: MateDroidWidget
+      - sdk: libsqlite3.tbd
+  MateDroidWidget:
+    type: app-extension
+    productName: MateDriveWidget
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - MateDroidWidget
+      - path: MateDroidIOS/Resources/Localizable.xcstrings
+      - path: MateDroidIOS/PrivacyInfo.xcprivacy
+    settings:
+      base:
+        PRODUCT_NAME: MateDriveWidget
+        PRODUCT_MODULE_NAME: MateDroidWidget
+        PRODUCT_BUNDLE_IDENTIFIER: com.matedrive.ios.widget
+        INFOPLIST_KEY_CFBundleDisplayName: MateDrive Widget
+        CODE_SIGN_ENTITLEMENTS: MateDroidWidget/MateDroidWidget.entitlements
+        TARGETED_DEVICE_FAMILY: "1"
+    info:
+      path: MateDroidWidget/Info.plist
+      properties:
+        CFBundleDisplayName: MateDrive Widget
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+  MateDroidIOSTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - MateDroidIOSTests
+    info:
+      path: MateDroidIOSTests/Info.plist
+      properties: {}
+    settings:
+      base:
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MateDrive.app/MateDrive"
+    dependencies:
+      - target: MateDroidIOS
+schemes:
+  MateDrive:
+    build:
+      targets:
+        MateDroidIOS: all
+        MateDroidWidget: all
+    test:
+      targets:
+        - MateDroidIOSTests
+      environmentVariables:
+        MATEDRIVE_INTEGRATION_BASE_URL: "$(MATEDRIVE_INTEGRATION_BASE_URL)"
+        MATEDRIVE_INTEGRATION_API_TOKEN: "$(MATEDRIVE_INTEGRATION_API_TOKEN)"
+        MATEDRIVE_INTEGRATION_BASIC_USERNAME: "$(MATEDRIVE_INTEGRATION_BASIC_USERNAME)"
+        MATEDRIVE_INTEGRATION_BASIC_PASSWORD: "$(MATEDRIVE_INTEGRATION_BASIC_PASSWORD)"
+        MATEDRIVE_INTEGRATION_AKSK_BASE_URL: "$(MATEDRIVE_INTEGRATION_AKSK_BASE_URL)"
+        MATEDRIVE_INTEGRATION_ACCESS_KEY: "$(MATEDRIVE_INTEGRATION_ACCESS_KEY)"
+        MATEDRIVE_INTEGRATION_SECRET_KEY: "$(MATEDRIVE_INTEGRATION_SECRET_KEY)"

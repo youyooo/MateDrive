@@ -1,0 +1,30 @@
+name: Feature request
+description: Propose a focused improvement to MateDrive
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem
+      description: Describe the workflow or data problem, not only the desired control.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: TeslaMate API data involved
+      description: List endpoints or fields using redacted examples only.
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: This request preserves MateDrive's read-only vehicle-control boundary.
+          required: true

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MateDrive Support</title>
+  <meta name="description" content="MateDrive iOS 用户支持与连接排查。">
+  <style>
+    body { margin: 0; font: 17px/1.55 -apple-system, BlinkMacSystemFont, sans-serif; color: #17191c; background: #f5f6f8; }
+    main { max-width: 760px; margin: 0 auto; padding: 48px 22px 72px; }
+    h1 { font-size: 38px; margin: 0 0 8px; } h2 { margin-top: 34px; font-size: 23px; }
+    .subtle { color: #626871; } a { color: #0667d8; } code { overflow-wrap: anywhere; }
+    section { border-top: 1px solid #d9dce1; margin-top: 28px; padding-top: 8px; }
+  </style>
+</head>
+<body><main>
+  <h1>MateDrive 用户支持</h1>
+  <p class="subtle">面向 iPhone 的原生只读 TeslaMate 数据客户端。</p>
+  <section><h2>连接 TeslaMate</h2>
+    <p>打开 MateDrive 设置，输入 TeslaMate API 的 HTTPS 地址，选择服务器配置的认证方式，然后运行“测试连接”。</p>
+    <p>MateDrive 只连接用户配置的服务器，不接受 Tesla 账号凭据，也不会向车辆发送控制命令。</p>
+  </section>
+  <section><h2>连接排查</h2>
+    <ul><li>确认 iPhone 能直接访问 API 地址。</li><li>在诊断报告中确认 API 版本和认证方式。</li><li>互联网服务应使用可信 HTTPS 证书。</li><li>确认 API 能读取车辆、状态、行程、充电和全局设置。</li></ul>
+  </section>
+  <section><h2>数据准确性</h2>
+    <p>MateDrive 展示 TeslaMate 已记录的数据，并明确标记缺失样本，不用零值代替缺失值。电池健康估算取决于历史数据质量和车辆容量校准。</p>
+  </section>
+  <section><h2>隐私</h2><p>请阅读 <a href="privacy.html">MateDrive 隐私政策</a>。</p></section>
+  <section><h2>联系与反馈</h2><p>普通问题请提交到 <a href="https://github.com/youyooo/MateDrive/issues">GitHub Issues</a>。安全漏洞请通过 <a href="https://github.com/youyooo/MateDrive/security/advisories/new">私密安全报告</a>提交，不要公开凭据、VIN、地址或轨迹。</p></section>
+</main></body></html>
