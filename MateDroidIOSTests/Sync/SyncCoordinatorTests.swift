@@ -19,6 +19,8 @@ final class SyncCoordinatorTests: XCTestCase {
     }
 
     func testSyncFetchesSummariesBeforeDetailsAndEnqueuesGeocode() async throws {
+        let driveStart = SyntheticCoordinates.point()
+        let driveEnd = SyntheticCoordinates.point(latitudeOffset: 0.01, longitudeOffset: 0.01)
         let api = FakeSyncAPI(
             drives: [.fixture(id: 10, distance: 12)],
             charges: [.fixture(id: 20, energyAdded: 4)],
@@ -26,16 +28,16 @@ final class SyncCoordinatorTests: XCTestCase {
                 10: SyncDriveDetail(
                     driveId: 10,
                     positions: [
-                        SyncDrivePosition(latitude: 48.8566, longitude: 2.3522, elevation: 10, insideTemp: 21, outsideTemp: 12, power: 20, isClimateOn: true),
-                        SyncDrivePosition(latitude: 48.8666, longitude: 2.3622, elevation: 15, insideTemp: 22, outsideTemp: 14, power: -30)
+                        SyncDrivePosition(latitude: driveStart.latitude, longitude: driveStart.longitude, elevation: 10, insideTemp: 21, outsideTemp: 12, power: 20, isClimateOn: true),
+                        SyncDrivePosition(latitude: driveEnd.latitude, longitude: driveEnd.longitude, elevation: 15, insideTemp: 22, outsideTemp: 14, power: -30)
                     ]
                 )
             ],
             chargeDetails: [
                 20: SyncChargeDetail(
                     chargeId: 20,
-                    latitude: 48.8666,
-                    longitude: 2.3622,
+                    latitude: driveEnd.latitude,
+                    longitude: driveEnd.longitude,
                     chargePoints: [
                         SyncChargePoint(date: "2026-01-01T09:00:00Z", chargeEnergyAdded: 0, chargerPower: 80, chargerVoltage: 400, chargerCurrent: 200, outsideTemp: 10, chargerDetails: SyncChargerDetails(fastChargerBrand: "Tesla", fastChargerType: "CCS", chargerPhases: nil)),
                         SyncChargePoint(date: "2026-01-01T09:30:00Z", chargeEnergyAdded: 4, chargerPower: 120, chargerVoltage: 400, chargerCurrent: 300, outsideTemp: 10, chargerDetails: SyncChargerDetails(fastChargerBrand: "Tesla", fastChargerType: "CCS", chargerPhases: nil))
@@ -92,6 +94,7 @@ final class SyncCoordinatorTests: XCTestCase {
     }
 
     func testDriveDetailFailureLeavesRecordUnprocessedForRetry() async throws {
+        let location = SyntheticCoordinates.point()
         let api = FakeSyncAPI(
             drives: [
                 .fixture(id: 10, distance: 12),
@@ -100,7 +103,7 @@ final class SyncCoordinatorTests: XCTestCase {
             charges: [],
             driveDetails: [
                 10: SyncDriveDetail(driveId: 10, positions: [
-                    SyncDrivePosition(latitude: 48.8566, longitude: 2.3522)
+                    SyncDrivePosition(latitude: location.latitude, longitude: location.longitude)
                 ])
             ]
         )
@@ -123,6 +126,7 @@ final class SyncCoordinatorTests: XCTestCase {
     }
 
     func testChargeDetailFailureLeavesRecordUnprocessedForRetry() async throws {
+        let location = SyntheticCoordinates.point()
         let api = FakeSyncAPI(
             drives: [],
             charges: [
@@ -132,8 +136,8 @@ final class SyncCoordinatorTests: XCTestCase {
             chargeDetails: [
                 20: SyncChargeDetail(
                     chargeId: 20,
-                    latitude: 48.8666,
-                    longitude: 2.3622,
+                    latitude: location.latitude,
+                    longitude: location.longitude,
                     chargePoints: [
                         SyncChargePoint(date: "2026-01-01T09:00:00Z", chargeEnergyAdded: 0),
                         SyncChargePoint(date: "2026-01-01T09:30:00Z", chargeEnergyAdded: 4)

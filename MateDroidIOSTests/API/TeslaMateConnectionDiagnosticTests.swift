@@ -68,12 +68,20 @@ final class TeslaMateConnectionDiagnosticTests: XCTestCase {
     }
 
     func testDiagnosticExportRedactsCredentialsHostsAndCoordinates() {
+        var endpoint = URLComponents()
+        endpoint.scheme = "https"
+        endpoint.user = "example-user"
+        endpoint.password = "example-password"
+        endpoint.host = "192.0.2.10"
+        endpoint.port = 3030
+        endpoint.path = "/api"
+        let credentialedEndpoint = endpoint.url!.absoluteString
         let report = TeslaMateDiagnosticReport(checks: [
             TeslaMateDiagnosticCheck(
                 checkID: .configuration,
                 status: .failed,
                 title: "Server teslamate.example",
-                message: "GET https://example-user:example-password@192.0.2.10:3030/api?token=example-token failed; Authorization: Bearer example-bearer; password=example-password; location 12.345678, 98.765432"
+                message: "GET \(credentialedEndpoint)?token=example-token failed; Authorization: Bearer example-bearer; password=example-password; location 12.345678, 98.765432"
             )
         ])
 

@@ -45,13 +45,12 @@ struct CarStatusWidgetView: View {
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            if let imageName = entry.data.carImageName {
-                Image(imageName)
-                    .resizable()
-                    .scaledToFit()
-                    .opacity(0.18)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-            }
+            WidgetVehicleImage(
+                assetPath: entry.data.carImagePath,
+                scaleFactor: entry.data.carImageScaleFactor
+            )
+            .opacity(0.18)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
 
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
@@ -103,5 +102,40 @@ struct CarStatusWidgetView: View {
             }
         }
         .containerBackground(.background, for: .widget)
+    }
+}
+
+private struct WidgetVehicleImage: View {
+    let assetPath: String?
+    let scaleFactor: Double
+
+    var body: some View {
+        Group {
+            if let image = Self.decodeImage(at: assetPath) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .scaleEffect(scaleFactor)
+            } else {
+                Image(systemName: "car.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(.secondary)
+                    .padding(18)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .aspectRatio(2.2, contentMode: .fit)
+        .clipped()
+    }
+
+    private static func decodeImage(at assetPath: String?) -> UIImage? {
+        guard let assetPath, !assetPath.hasPrefix("system://") else { return nil }
+        let fileURL = URL(fileURLWithPath: assetPath)
+        let name = fileURL.deletingPathExtension().lastPathComponent
+        let ext = fileURL.pathExtension.isEmpty ? "png" : fileURL.pathExtension
+        return (Bundle.main.url(forResource: name, withExtension: ext, subdirectory: "CarImages")
+            ?? Bundle.main.url(forResource: name, withExtension: ext))
+            .flatMap { UIImage(contentsOfFile: $0.path) }
     }
 }

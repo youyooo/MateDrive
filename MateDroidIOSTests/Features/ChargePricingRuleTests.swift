@@ -3,8 +3,8 @@ import XCTest
 
 final class ChargePricingRuleTests: XCTestCase {
     func testRuleValidatorRejectsIncompleteAndInvalidLocation() {
-        let incomplete = ChargePricingRule(name: "Incomplete", latitude: 28.1, pricePerKWh: 1)
-        let invalid = ChargePricingRule(name: "Invalid", latitude: 91, longitude: 112.9, radiusMeters: -1, pricePerKWh: 1)
+        let incomplete = ChargePricingRule(name: "Incomplete", latitude: SyntheticCoordinates.point().latitude, pricePerKWh: 1)
+        let invalid = ChargePricingRule(name: "Invalid", latitude: SyntheticCoordinates.invalidLatitude, longitude: SyntheticCoordinates.point().longitude, radiusMeters: -1, pricePerKWh: 1)
 
         XCTAssertTrue(ChargePricingRuleValidator.issues(for: incomplete).contains(.incompleteLocation))
         XCTAssertTrue(ChargePricingRuleValidator.issues(for: invalid).contains(.invalidLocation))
@@ -38,10 +38,11 @@ final class ChargePricingRuleTests: XCTestCase {
     }
 
     func testRuleValidatorAcceptsAdjacentCompleteSegments() {
+        let location = SyntheticCoordinates.point()
         let rule = ChargePricingRule(
             name: "Valid",
-            latitude: 28.1,
-            longitude: 112.9,
+            latitude: location.latitude,
+            longitude: location.longitude,
             radiusMeters: 300,
             startMinuteOfDay: 0,
             endMinuteOfDay: 1_439,
@@ -56,10 +57,11 @@ final class ChargePricingRuleTests: XCTestCase {
     }
 
     func testEngineIgnoresInvalidPersistedRuleInsteadOfApplyingItGlobally() {
+        let location = SyntheticCoordinates.point()
         let invalidLegacyRule = ChargePricingRule(
             id: "legacy",
             name: "Legacy Location",
-            latitude: 28.1,
+            latitude: location.latitude,
             pricePerKWh: 0.1,
             priority: 100
         )
@@ -69,8 +71,8 @@ final class ChargePricingRuleTests: XCTestCase {
             for: ChargePricingInput(
                 startDate: "2026-07-01T10:00:00+08:00",
                 address: "Unrelated Station",
-                latitude: 30,
-                longitude: 120,
+                latitude: location.latitude,
+                longitude: location.longitude,
                 energyAddedKWh: 10,
                 isDc: false
             ),
@@ -166,12 +168,14 @@ final class ChargePricingRuleTests: XCTestCase {
     }
 
     func testRuleMatchesOvernightWindowAndLocationRadius() {
+        let ruleLocation = SyntheticCoordinates.point()
+        let nearbyInput = SyntheticCoordinates.point(latitudeOffset: 0.0005, longitudeOffset: 0.0005)
         let rule = ChargePricingRule(
             id: "home-valley",
             name: "Home Valley",
             chargeType: .ac,
-            latitude: 28.1900,
-            longitude: 112.9300,
+            latitude: ruleLocation.latitude,
+            longitude: ruleLocation.longitude,
             radiusMeters: 300,
             startMinuteOfDay: 22 * 60,
             endMinuteOfDay: 7 * 60,
@@ -182,8 +186,8 @@ final class ChargePricingRuleTests: XCTestCase {
             for: ChargePricingInput(
                 startDate: "2026-07-01T15:30:00Z",
                 address: nil,
-                latitude: 28.1905,
-                longitude: 112.9305,
+                latitude: nearbyInput.latitude,
+                longitude: nearbyInput.longitude,
                 energyAddedKWh: 40,
                 isDc: false
             ),

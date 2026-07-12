@@ -3,7 +3,7 @@ PROJECT := MateDroidIOS.xcodeproj
 SCHEME := MateDrive
 DESTINATION := platform=iOS Simulator,name=iPhone 17,OS=26.5
 
-.PHONY: bootstrap generate generate-app-icon build build-code install-device archive-release archive-audit release-technical-gate test test-build test-scripts localization-audit app-store-technical-audit app-store-audit preflight verify integration-test
+.PHONY: bootstrap generate generate-app-icon build build-code install-device archive-release archive-audit vehicle-privacy-audit vehicle-image-audit release-technical-gate test test-build test-scripts localization-audit app-store-technical-audit app-store-audit preflight verify integration-test
 
 bootstrap:
 	@if [ -z "$(XCODEGEN)" ]; then echo "xcodegen is required. Install with: brew install xcodegen"; exit 1; fi
@@ -30,6 +30,12 @@ archive-release: generate
 archive-audit:
 	python3 scripts/audit_release_archive.py
 
+vehicle-privacy-audit:
+	python3 scripts/audit_vehicle_fixture_privacy.py
+
+vehicle-image-audit:
+	python3 scripts/validate_vehicle_images.py
+
 release-technical-gate: app-store-technical-audit archive-release archive-audit
 
 test: generate
@@ -41,6 +47,8 @@ test-build: generate
 test-scripts:
 	./scripts/test_probe_teslamate_integration.sh
 	python3 scripts/test_audit_release_archive.py
+	python3 scripts/test_audit_vehicle_fixture_privacy.py
+	python3 scripts/test_validate_vehicle_images.py
 
 localization-audit:
 	python3 scripts/audit_localization.py
@@ -48,12 +56,12 @@ localization-audit:
 app-store-audit:
 	python3 scripts/audit_app_store_submission.py
 
-app-store-technical-audit:
+app-store-technical-audit: vehicle-image-audit
 	python3 scripts/audit_app_store_submission.py --technical-only
 
-preflight: test-scripts localization-audit build-code test-build
+preflight: vehicle-privacy-audit vehicle-image-audit test-scripts localization-audit build-code test-build
 
-verify: test-scripts test
+verify: vehicle-privacy-audit vehicle-image-audit test-scripts test
 
 integration-test: generate
 	@env_file="$${MATEDRIVE_INTEGRATION_ENV_FILE:-.matedrive-integration.env}"; \

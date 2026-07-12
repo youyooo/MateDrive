@@ -6,9 +6,11 @@ final class TripRouteCacheTests: XCTestCase {
         let database = try SQLiteDatabase.inMemory()
         try await Migrations.applyAll(to: database)
         let cache = DatabaseBackedTripRouteCache(databaseProvider: TripRouteStaticDatabaseProvider(database: database))
+        let firstPoint = SyntheticCoordinates.point()
+        let secondPoint = SyntheticCoordinates.point(latitudeOffset: 0.01, longitudeOffset: 0.01)
         let points = [
-            GeocodeLocation(latitude: 28.20, longitude: 112.85),
-            GeocodeLocation(latitude: 28.21, longitude: 112.86)
+            GeocodeLocation(latitude: firstPoint.latitude, longitude: firstPoint.longitude),
+            GeocodeLocation(latitude: secondPoint.latitude, longitude: secondPoint.longitude)
         ]
 
         try await cache.save(points: points, carId: 1, driveId: 10)

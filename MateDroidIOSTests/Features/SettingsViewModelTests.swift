@@ -3,6 +3,58 @@ import XCTest
 
 @MainActor
 final class SettingsViewModelTests: XCTestCase {
+    func testOldSettingsDecodeWithEmptyVehicleImageOverrides() throws {
+        let data = """
+        {
+          "serverURL": "https://teslamate.example",
+          "currencyCode": "CNY"
+        }
+        """.data(using: .utf8)!
+
+        let settings = try JSONDecoder().decode(AppSettings.self, from: data)
+
+        XCTAssertEqual(settings.serverURL, "https://teslamate.example")
+        XCTAssertEqual(settings.currencyCode, "CNY")
+        XCTAssertNil(settings.vehicleImageOverride(for: URL(string: "https://teslamate.example")!, carID: 1))
+    }
+
+    nonisolated func testConcurrentSaveSurvivesLegacyOverrideMigrationLoad() async throws {
+        let suiteName = "SettingsStoreMigration.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { UserDefaults(suiteName: suiteName)?.removePersistentDomain(forName: suiteName) }
+
+        let key = "settings"
+        defaults.set(
+            try JSONSerialization.data(withJSONObject: [
+                "serverURL": "https://teslamate.example",
+                "carImageVariants": ["7": "m3"],
+                "carImageWheelCodes": ["7": "W32D"]
+            ]),
+            forKey: key
+        )
+        let gate = CatalogLoadGate()
+        let catalog = try await MainActor.run {
+            try BundledVehicleImageCatalogProvider(bundle: .main).catalog()
+        }
+        let store = UserDefaultsSettingsStore(defaults: defaults, key: key, vehicleImageCatalog: {
+            await gate.waitForRelease()
+            return catalog
+        })
+
+        let loadTask = Task { await store.load() }
+        await gate.waitUntilLoadStarted()
+        await store.save(AppSettings(serverURL: "https://teslamate.example", currencyCode: "HKD"))
+        await gate.release()
+        _ = await loadTask.value
+
+        let persistedDefaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        let savedData = try XCTUnwrap(persistedDefaults.data(forKey: key))
+        let saved = try JSONDecoder().decode(AppSettings.self, from: savedData)
+        XCTAssertEqual(saved.currencyCode, "HKD")
+        XCTAssertNil(saved.vehicleImageOverride(for: URL(string: "https://teslamate.example")!, carID: 7))
+    }
+
     func testBatteryCalibrationIsStoredPerVehicleAndLegacyValueMigrates() throws {
         var settings = AppSettings(
             lastSelectedCarId: 1,
@@ -590,6 +642,29 @@ private final class InMemorySettingsStore: SettingsStoring, @unchecked Sendable 
 
     func save(_ settings: AppSettings) async {
         saved = settings
+    }
+}
+
+private actor CatalogLoadGate {
+    private var hasStarted = false
+    private var startContinuation: CheckedContinuation<Void, Never>?
+    private var releaseContinuation: CheckedContinuation<Void, Never>?
+
+    func waitForRelease() async {
+        hasStarted = true
+        startContinuation?.resume()
+        startContinuation = nil
+        await withCheckedContinuation { releaseContinuation = $0 }
+    }
+
+    func waitUntilLoadStarted() async {
+        guard !hasStarted else { return }
+        await withCheckedContinuation { startContinuation = $0 }
+    }
+
+    func release() {
+        releaseContinuation?.resume()
+        releaseContinuation = nil
     }
 }
 

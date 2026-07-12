@@ -10,10 +10,20 @@ public actor UserDefaultsSettingsStore: SettingsStoring {
     private let key: String
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
+    private let vehicleImageCatalog: @Sendable () async -> VehicleImageCatalog?
 
-    public init(defaults: UserDefaults = .standard, key: String = "appSettings") {
+    public init(
+        defaults: UserDefaults = .standard,
+        key: String = "appSettings",
+        vehicleImageCatalog: @escaping @Sendable () async -> VehicleImageCatalog? = {
+            await MainActor.run {
+                try? BundledVehicleImageCatalogProvider().catalog()
+            }
+        }
+    ) {
         self.defaults = defaults
         self.key = key
+        self.vehicleImageCatalog = vehicleImageCatalog
     }
 
     public func load() async -> AppSettings {
@@ -25,8 +35,17 @@ public actor UserDefaultsSettingsStore: SettingsStoring {
         }
         let previousVersion = settings.formatPreferencesVersion
         settings.migrateFormattingPreferences()
-        if settings.formatPreferencesVersion != previousVersion,
+        let migratedVehicleImageOverrides: Bool
+        if settings.hasLegacyVehicleImageOverrideValues, let catalog = await vehicleImageCatalog() {
+            migratedVehicleImageOverrides = settings.migrateLegacyVehicleImageOverrides(catalog: catalog)
+        } else {
+            migratedVehicleImageOverrides = false
+        }
+        if settings.formatPreferencesVersion != previousVersion || migratedVehicleImageOverrides,
            let migratedData = try? encoder.encode(settings) {
+            guard defaults.data(forKey: key) == data else {
+                return currentSettings()
+            }
             defaults.set(migratedData, forKey: key)
         }
         return settings
@@ -37,5 +56,12 @@ public actor UserDefaultsSettingsStore: SettingsStoring {
             return
         }
         defaults.set(data, forKey: key)
+    }
+
+    private func currentSettings() -> AppSettings {
+        guard let data = defaults.data(forKey: key),
+              let settings = try? decoder.decode(AppSettings.self, from: data)
+        else { return AppSettings() }
+        return settings
     }
 }

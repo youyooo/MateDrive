@@ -1,6 +1,9 @@
 import SwiftUI
 
 public struct CarImageView: View {
+    public static let fallbackSystemImageName = "car.fill"
+    public static let stableAspectRatio = 2.2
+
     @Environment(\.appLanguage) private var appLanguage
 
     private let assetPath: String?
@@ -12,7 +15,7 @@ public struct CarImageView: View {
         assetPath: String?,
         scaleFactor: CGFloat = 1.0,
         displayScale: CGFloat = 1.0,
-        fallbackSystemImage: String = "car.side.fill"
+        fallbackSystemImage: String = Self.fallbackSystemImageName
     ) {
         self.assetPath = assetPath
         self.scaleFactor = scaleFactor
@@ -37,8 +40,12 @@ public struct CarImageView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .aspectRatio(2.2, contentMode: .fit)
+        .aspectRatio(Self.stableAspectRatio, contentMode: .fit)
         .clipped()
+    }
+
+    static func canDecodeAsset(at assetPath: String?) -> Bool {
+        UIImage.carImage(namedByPath: assetPath) != nil
     }
 
     private func t(_ english: String, _ chinese: String) -> String {

@@ -33,6 +33,17 @@ public struct DetectedCarImageDefault: Equatable, Sendable {
 }
 
 public enum CarImageResolver {
+    public static func resolve(
+        _ descriptor: VehicleImageDescriptor,
+        catalog: VehicleImageCatalog,
+        manualOverride: VehicleImageManualOverride? = nil
+    ) -> VehicleImageResolution {
+        VehicleImageResolver(catalog: catalog).resolve(
+            descriptor,
+            manualOverride: manualOverride
+        )
+    }
+
     private static let colorCodes = [
         "black": "PBSB",
         "solidblack": "PBSB",

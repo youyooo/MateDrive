@@ -3,6 +3,106 @@ import XCTest
 
 @MainActor
 final class DashboardViewModelTests: XCTestCase {
+    func testSynthetic2022Model3PerformanceSharesResolutionAcrossLiveSnapshotAndWidget() async throws {
+        let suiteName = "DashboardVehicleImage.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        let snapshots = DashboardSnapshotStore(defaults: defaults)
+        let widgets = WidgetSnapshotStore(defaults: defaults)
+        let car = CarData(
+            carId: 7,
+            name: "",
+            carDetails: CarDetails(model: "3", trimBadging: "P74D", vin: "TSTMODEL3N0000000"),
+            carExterior: CarExterior(exteriorColor: "MidnightSilver", wheelType: "Pinwheel18CapKit")
+        )
+        let settings = InMemoryDashboardSettingsStore(
+            settings: AppSettings(serverURL: "https://teslamate.example", lastSelectedCarId: 7)
+        )
+        let live = DashboardViewModel(
+            api: FakeDashboardAPI(cars: [car], statuses: [7: .idleFixture]),
+            settingsStore: settings,
+            widgetSnapshotStore: widgets,
+            dashboardSnapshotStore: snapshots
+        )
+
+        await live.load()
+
+        let expectedPath = "CarImages/m3_PPSW_W32D.png"
+        let expectedAssetID = "legacy-model-3-refresh-performance"
+        XCTAssertEqual(live.state.vehicleImageResolution?.generationID, "model-3-refresh-performance")
+        XCTAssertEqual(live.state.vehicleImageResolution?.assetID, expectedAssetID)
+        XCTAssertEqual(live.state.vehicleImageResolution?.assetPath, expectedPath)
+        XCTAssertEqual(live.state.vehicleImageResolution?.presentationScale, 1)
+
+        let restored = DashboardViewModel(
+            api: FakeDashboardAPI(carsResult: .failure(.network("offline"))),
+            settingsStore: settings,
+            widgetSnapshotStore: widgets,
+            dashboardSnapshotStore: snapshots
+        )
+        await restored.load()
+
+        XCTAssertEqual(restored.state.vehicleImageResolution?.generationID, live.state.vehicleImageResolution?.generationID)
+        XCTAssertEqual(restored.state.vehicleImageResolution?.assetID, expectedAssetID)
+        XCTAssertEqual(restored.state.carImagePath, expectedPath)
+        XCTAssertEqual(restored.state.carImageScaleFactor, 1)
+        XCTAssertEqual(widgets.load()?.carImagePath, expectedPath)
+        XCTAssertEqual(widgets.load()?.carImageScaleFactor, 1)
+        XCTAssertEqual(widgets.load()?.vehicleImageAssetID, expectedAssetID)
+
+        let encodedSnapshot = try JSONEncoder().encode(try XCTUnwrap(DashboardSnapshot(state: live.state)))
+        XCTAssertFalse(String(decoding: encodedSnapshot, as: UTF8.self).contains("TSTMODEL3N0000000"))
+    }
+
+    func testUnknownModelUsesGenericVehiclePlaceholder() async {
+        let car = CarData(
+            carId: 8,
+            carDetails: CarDetails(model: "hovercraft", vin: "TSTMODEL3N0000000")
+        )
+        let viewModel = DashboardViewModel(
+            api: FakeDashboardAPI(cars: [car], statuses: [8: .idleFixture]),
+            settingsStore: InMemoryDashboardSettingsStore(settings: AppSettings(serverURL: "https://teslamate.example"))
+        )
+
+        await viewModel.load()
+
+        XCTAssertEqual(viewModel.state.carImagePath, VehicleImageResolver.genericPlaceholderPath)
+        XCTAssertNil(viewModel.state.vehicleImageResolution?.assetID)
+        XCTAssertEqual(viewModel.state.vehicleImageResolution?.conflicts, [.unknownModel])
+    }
+
+    func testUnavailableVehicleImageCatalogUsesGenericPlaceholder() async {
+        let viewModel = DashboardViewModel(
+            api: FakeDashboardAPI(cars: [.modelYWhite], statuses: [1: .idleFixture]),
+            settingsStore: InMemoryDashboardSettingsStore(settings: AppSettings(serverURL: "https://teslamate.example")),
+            vehicleImageCatalogProvider: UnavailableVehicleImageCatalogProvider()
+        )
+
+        await viewModel.load()
+
+        XCTAssertEqual(viewModel.state.carImagePath, VehicleImageResolver.genericPlaceholderPath)
+        XCTAssertNil(viewModel.state.vehicleImageResolution?.assetID)
+        XCTAssertEqual(viewModel.state.carImageScaleFactor, 1)
+    }
+
+    func testOldDashboardSnapshotDecodesWithCompatibleImageDefaults() throws {
+        let json = #"{"savedAt":0,"cars":[{"id":7,"name":"Model 3"}],"selectedCarId":7,"carName":"Model 3","isCharging":false,"sentryModeActive":false,"carImagePath":"CarImages/legacy.png"}"#
+
+        let snapshot = try JSONDecoder().decode(DashboardSnapshot.self, from: Data(json.utf8))
+        let state = snapshot.state(errorMessage: "offline")
+
+        XCTAssertEqual(state.carImagePath, "CarImages/legacy.png")
+        XCTAssertEqual(state.carImageScaleFactor, 1)
+        XCTAssertNil(state.vehicleImageResolution?.generationID)
+        XCTAssertNil(state.vehicleImageResolution?.assetID)
+    }
+
+    func testCarImageViewUsesCarFillForMissingAssetsInStableFrame() {
+        XCTAssertFalse(CarImageView.canDecodeAsset(at: "CarImages/does-not-exist.png"))
+        XCTAssertEqual(CarImageView.fallbackSystemImageName, "car.fill")
+        XCTAssertEqual(CarImageView.stableAspectRatio, 2.2)
+    }
+
     func testDashboardTextFormatterUsesChineseForHomeStatusValues() {
         XCTAssertEqual(DashboardTextFormatter.title("Charging", language: .chinese), "充电状态")
         XCTAssertEqual(DashboardTextFormatter.title("Lock", language: .chinese), "门锁")
@@ -207,7 +307,7 @@ final class DashboardViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.state.tpmsDetails?.pressureFl, 3.0)
         XCTAssertEqual(viewModel.state.tpmsDetails?.pressureFr, 3.075)
         XCTAssertFalse(viewModel.state.tpmsDetails?.hasWarning ?? true)
-        XCTAssertEqual(viewModel.state.carImagePath, "car_images/my_PPSW_WY19B.png")
+        XCTAssertEqual(viewModel.state.carImagePath, "CarImages/my_PPSW_WY19B.png")
         XCTAssertEqual(viewModel.state.totalCharges, 24)
         XCTAssertEqual(viewModel.state.totalDrives, 120)
         XCTAssertEqual(viewModel.state.totalUpdates, 8)
@@ -581,6 +681,12 @@ private final class InMemoryDashboardSettingsStore: SettingsStoring, @unchecked 
     }
 }
 
+private final class UnavailableVehicleImageCatalogProvider: VehicleImageCatalogProviding, @unchecked Sendable {
+    func catalog() throws -> VehicleImageCatalog {
+        throw BundledVehicleImageCatalogProviderError.resourceNotFound
+    }
+}
+
 private extension CarData {
     static let legacyModel3 = CarData(
         carId: 2,
@@ -604,7 +710,7 @@ private extension CarStatusPayload {
             displayName: "Model Y",
             odometer: 118_651,
             carStatus: CarStatusDetails(locked: true, sentryMode: true),
-            carGeodata: CarGeodata(geofence: "Home", latitude: 28.2, longitude: 112.8),
+            carGeodata: CarGeodata(geofence: "Home", latitude: SyntheticCoordinates.point().latitude, longitude: SyntheticCoordinates.point().longitude),
             carVersions: CarVersions(version: "2026.20.1"),
             climateDetails: ClimateDetails(insideTemp: 21.5, outsideTemp: 8.0),
             batteryDetails: BatteryDetails(batteryLevel: 68, ratedBatteryRange: 320),
@@ -638,7 +744,7 @@ private extension CarStatusPayload {
         status: CarStatus(
             displayName: "Model Y",
             carStatus: CarStatusDetails(locked: true, sentryMode: true, centerDisplayState: "7"),
-            carGeodata: CarGeodata(geofence: "Garage", latitude: 28.2, longitude: 112.8),
+            carGeodata: CarGeodata(geofence: "Garage", latitude: SyntheticCoordinates.point().latitude, longitude: SyntheticCoordinates.point().longitude),
             batteryDetails: BatteryDetails(batteryLevel: 66)
         ),
         units: Units(unitOfLength: "km", unitOfTemperature: "C", unitOfPressure: "bar")
@@ -648,7 +754,7 @@ private extension CarStatusPayload {
         status: CarStatus(
             displayName: "Model Y",
             carStatus: CarStatusDetails(locked: true, sentryMode: false),
-            carGeodata: CarGeodata(geofence: "", latitude: 28.207471, longitude: 112.857727),
+            carGeodata: CarGeodata(geofence: "", latitude: SyntheticCoordinates.point(latitudeOffset: 0.207471, longitudeOffset: 0.857727).latitude, longitude: SyntheticCoordinates.point(latitudeOffset: 0.207471, longitudeOffset: 0.857727).longitude),
             batteryDetails: BatteryDetails(batteryLevel: 82)
         ),
         units: Units(unitOfLength: "km", unitOfTemperature: "C", unitOfPressure: "bar")

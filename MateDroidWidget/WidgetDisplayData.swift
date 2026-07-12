@@ -54,7 +54,10 @@ public struct WidgetDisplayData: Codable, Equatable, Sendable {
     public let insideTemperature: Double?
     public let outsideTemperature: Double?
     public let locationText: String?
-    public let carImageName: String?
+    public let vehicleImageAssetID: String?
+    public let carImagePath: String?
+    public let carImageScaleFactor: Double
+    public var carImageName: String? { carImagePath }
     public let isReadOnly: Bool
     public let displayLanguage: WidgetDisplayLanguage
     public let displayUnitSystem: WidgetDisplayUnitSystem?
@@ -69,7 +72,10 @@ public struct WidgetDisplayData: Codable, Equatable, Sendable {
         insideTemperature: Double? = nil,
         outsideTemperature: Double? = nil,
         locationText: String? = nil,
+        vehicleImageAssetID: String? = nil,
         carImageName: String? = nil,
+        carImagePath: String? = nil,
+        carImageScaleFactor: Double = 1,
         isReadOnly: Bool = true,
         displayLanguage: WidgetDisplayLanguage = .system,
         displayUnitSystem: WidgetDisplayUnitSystem? = nil
@@ -83,7 +89,9 @@ public struct WidgetDisplayData: Codable, Equatable, Sendable {
         self.insideTemperature = insideTemperature
         self.outsideTemperature = outsideTemperature
         self.locationText = locationText
-        self.carImageName = carImageName
+        self.vehicleImageAssetID = vehicleImageAssetID
+        self.carImagePath = carImagePath ?? carImageName
+        self.carImageScaleFactor = carImageScaleFactor
         self.isReadOnly = isReadOnly
         self.displayLanguage = displayLanguage
         self.displayUnitSystem = displayUnitSystem
@@ -99,7 +107,10 @@ public struct WidgetDisplayData: Codable, Equatable, Sendable {
         insideTemperature: Double? = 21,
         outsideTemperature: Double? = 18,
         locationText: String? = "Location",
+        vehicleImageAssetID: String? = nil,
         carImageName: String? = nil,
+        carImagePath: String? = nil,
+        carImageScaleFactor: Double = 1,
         displayLanguage: WidgetDisplayLanguage = .system,
         displayUnitSystem: WidgetDisplayUnitSystem? = nil
     ) -> WidgetDisplayData {
@@ -113,11 +124,59 @@ public struct WidgetDisplayData: Codable, Equatable, Sendable {
             insideTemperature: insideTemperature,
             outsideTemperature: outsideTemperature,
             locationText: locationText,
+            vehicleImageAssetID: vehicleImageAssetID,
             carImageName: carImageName,
+            carImagePath: carImagePath,
+            carImageScaleFactor: carImageScaleFactor,
             isReadOnly: true,
             displayLanguage: displayLanguage,
             displayUnitSystem: displayUnitSystem
         )
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case carName, batteryLevel, ratedRange, isCharging, isLocked, sentryModeActive
+        case insideTemperature, outsideTemperature, locationText, vehicleImageAssetID, carImageName, carImagePath
+        case carImageScaleFactor, isReadOnly, displayLanguage, displayUnitSystem
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        carName = try container.decodeIfPresent(String.self, forKey: .carName) ?? "MateDrive"
+        batteryLevel = try container.decodeIfPresent(Int.self, forKey: .batteryLevel)
+        ratedRange = try container.decodeIfPresent(Double.self, forKey: .ratedRange)
+        isCharging = try container.decodeIfPresent(Bool.self, forKey: .isCharging) ?? false
+        isLocked = try container.decodeIfPresent(Bool.self, forKey: .isLocked)
+        sentryModeActive = try container.decodeIfPresent(Bool.self, forKey: .sentryModeActive) ?? false
+        insideTemperature = try container.decodeIfPresent(Double.self, forKey: .insideTemperature)
+        outsideTemperature = try container.decodeIfPresent(Double.self, forKey: .outsideTemperature)
+        locationText = try container.decodeIfPresent(String.self, forKey: .locationText)
+        vehicleImageAssetID = try container.decodeIfPresent(String.self, forKey: .vehicleImageAssetID)
+        carImagePath = try container.decodeIfPresent(String.self, forKey: .carImagePath)
+            ?? container.decodeIfPresent(String.self, forKey: .carImageName)
+        carImageScaleFactor = try container.decodeIfPresent(Double.self, forKey: .carImageScaleFactor) ?? 1
+        isReadOnly = try container.decodeIfPresent(Bool.self, forKey: .isReadOnly) ?? true
+        displayLanguage = try container.decodeIfPresent(WidgetDisplayLanguage.self, forKey: .displayLanguage) ?? .system
+        displayUnitSystem = try container.decodeIfPresent(WidgetDisplayUnitSystem.self, forKey: .displayUnitSystem)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(carName, forKey: .carName)
+        try container.encodeIfPresent(batteryLevel, forKey: .batteryLevel)
+        try container.encodeIfPresent(ratedRange, forKey: .ratedRange)
+        try container.encode(isCharging, forKey: .isCharging)
+        try container.encodeIfPresent(isLocked, forKey: .isLocked)
+        try container.encode(sentryModeActive, forKey: .sentryModeActive)
+        try container.encodeIfPresent(insideTemperature, forKey: .insideTemperature)
+        try container.encodeIfPresent(outsideTemperature, forKey: .outsideTemperature)
+        try container.encodeIfPresent(locationText, forKey: .locationText)
+        try container.encodeIfPresent(vehicleImageAssetID, forKey: .vehicleImageAssetID)
+        try container.encodeIfPresent(carImagePath, forKey: .carImagePath)
+        try container.encode(carImageScaleFactor, forKey: .carImageScaleFactor)
+        try container.encode(isReadOnly, forKey: .isReadOnly)
+        try container.encode(displayLanguage, forKey: .displayLanguage)
+        try container.encodeIfPresent(displayUnitSystem, forKey: .displayUnitSystem)
     }
 
     public var batteryText: String {

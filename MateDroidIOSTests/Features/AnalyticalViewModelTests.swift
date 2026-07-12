@@ -496,6 +496,8 @@ final class AnalyticalViewModelTests: XCTestCase {
 
     func testWhereWasISelectsActiveDrivePositionNearestTarget() async throws {
         let drive = DriveData.fixture(id: 7, startDate: "2026-07-01T08:00:00Z", endDate: "2026-07-01T09:00:00Z", distance: 20, durationMin: 60)
+        let earlyPoint = SyntheticCoordinates.point()
+        let activePoint = SyntheticCoordinates.point(latitudeOffset: 1, longitudeOffset: 1)
         let detail = DriveDetail(
             driveId: 7,
             startDate: drive.startDate,
@@ -503,8 +505,8 @@ final class AnalyticalViewModelTests: XCTestCase {
             odometerDetails: DriveOdometerDetails(distance: 20),
             durationMin: 60,
             positions: [
-                DrivePosition(date: "2026-07-01T08:05:00Z", latitude: 1, longitude: 1, speed: 10),
-                DrivePosition(date: "2026-07-01T08:40:00Z", latitude: 2, longitude: 2, speed: 70)
+                DrivePosition(date: "2026-07-01T08:05:00Z", latitude: earlyPoint.latitude, longitude: earlyPoint.longitude, speed: 10),
+                DrivePosition(date: "2026-07-01T08:40:00Z", latitude: activePoint.latitude, longitude: activePoint.longitude, speed: 70)
             ]
         )
         let api = FakeAnalyticsAPI(drives: [drive], driveDetails: [7: detail])
@@ -515,7 +517,7 @@ final class AnalyticalViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.state.carState, .driving)
         XCTAssertEqual(viewModel.state.driveId, 7)
         XCTAssertEqual(viewModel.state.speed, 70)
-        XCTAssertEqual(viewModel.state.latitude, 2)
+        XCTAssertEqual(viewModel.state.latitude, activePoint.latitude)
     }
 
     func testBatteryStatsUseHealthAPIAndCurrentStatus() {

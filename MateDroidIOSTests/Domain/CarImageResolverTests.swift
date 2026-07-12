@@ -2,6 +2,27 @@ import XCTest
 @testable import MateDroidIOS
 
 final class CarImageResolverTests: XCTestCase {
+    @MainActor
+    func testCompatibilityFacadeForwardsToCatalogResolver() throws {
+        let catalog = try BundledVehicleImageCatalogProvider(bundle: .main).catalog()
+
+        let resolution = CarImageResolver.resolve(
+            VehicleImageDescriptor(
+                model: "3",
+                modelYear: 2022,
+                trimBadging: "P74D",
+                wheelType: "Pinwheel18CapKit",
+                exteriorColor: "MidnightSilver",
+                spoilerType: nil
+            ),
+            catalog: catalog
+        )
+
+        XCTAssertEqual(resolution.generationID, "model-3-refresh-performance")
+        XCTAssertEqual(resolution.wheelID, "uberturbine-20")
+        XCTAssertEqual(resolution.conflicts, [.reportedWheelContradictsFactoryTrim])
+    }
+
     func testLegacyModelYUsesAndroidColorAndWheelMappings() {
         XCTAssertEqual(
             CarImageResolver.assetPath(model: "Y", exteriorColor: "DeepBlueMetallic", wheelType: "Gemini19", trimBadging: "74D"),

@@ -12,32 +12,47 @@
 		01ABC863C96005FCC0440B5F /* RecentDrivingMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524928F57028393F6C06F20 /* RecentDrivingMapView.swift */; };
 		020DDF5C6D95D8F76FC166CB /* TripsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D09DE5F38C3816CC75A57A92 /* TripsViewModelTests.swift */; };
 		022473DA4E6A59F0A676A11F /* ChargePricingAuditStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 890069412B409CB59A8C9EA1 /* ChargePricingAuditStoreTests.swift */; };
+		03231305E2CE96F4EB667D94 /* myj_PB01_WY20A.png in Resources */ = {isa = PBXBuildFile; fileRef = D5CE287A4B41DD1D92B18AE5 /* myj_PB01_WY20A.png */; };
 		03246602688B3CD6E053D4F3 /* CurrentChargeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F1171337416549D3771395C /* CurrentChargeViewModel.swift */; };
 		0343A68BE1901FE3DE8B0CC5 /* TripPersistenceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263ACCD002386F7CD719C1D5 /* TripPersistenceModels.swift */; };
 		03747BEC32AF1F98CEA0E4AD /* RecentDrivingMapViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C7260B66BF10560FA0568B /* RecentDrivingMapViewModelTests.swift */; };
+		03C267F810F5BC17DB80AF38 /* m3hp_PPSB_W30P.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C2156D591D8016329E17F63 /* m3hp_PPSB_W30P.png */; };
 		047DFC57660CAA9A937B42C3 /* m3hp_PBSB_W30P.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C7A048B34A8931ACB2AA5E1 /* m3hp_PBSB_W30P.png */; };
 		04CC631CD330EC50DCD1C88B /* myj_PR01_WY20A.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F75ABC310641A50A1D524DB /* myj_PR01_WY20A.png */; };
 		04D597ABF657805E7EC0B6B5 /* TeslaMateServerProfileStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0563F9DBE1EE19B8F6C8DFF1 /* TeslaMateServerProfileStoreTests.swift */; };
 		053583AC931BC1B4D62C78F8 /* myjp_PN00_WY21A.png in Resources */ = {isa = PBXBuildFile; fileRef = 1974C87E2C98D5D7EC05EB59 /* myjp_PN00_WY21A.png */; };
+		056961E41402B339AF4214FB /* m3_PPSW_W32D.png in Resources */ = {isa = PBXBuildFile; fileRef = FA1E6AB1E3ECAE2DB222DD44 /* m3_PPSW_W32D.png */; };
+		06584FFAD99FB6E3FA5AFEFE /* VehicleImageOverrideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817651C9DECD958E995C1188 /* VehicleImageOverrideTests.swift */; };
 		0690F61AAA7D1F4003240A2E /* CreateTripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E8AE0DACF90AE34AFF4031F /* CreateTripView.swift */; };
 		06CFB65CA832E7353A55A32A /* SentryHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAE7531B5044EC14C6050E3 /* SentryHistoryView.swift */; };
 		06E8285C5BA76487CC023BCE /* WidgetDisplayDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9570EDFA1E7C17338CD01AA8 /* WidgetDisplayDataTests.swift */; };
 		0748F144307EBE59B8CC9FDA /* CurrentChargeViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AD873D136EC95F552DC6826 /* CurrentChargeViewModelTests.swift */; };
 		0773B6E82D638D6A78CE3E64 /* AggregateStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2795FDD7E1BBE81540D679DB /* AggregateStoreTests.swift */; };
 		07F2A074FCF50F3F458B5567 /* CarColorPaletteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAAD0BFD46A8D6B7A0F96 /* CarColorPaletteTests.swift */; };
+		08842B8AD6C562450122F4A3 /* myjp_PPSW_WY21A.png in Resources */ = {isa = PBXBuildFile; fileRef = AC47F6E51A8B71210DB43ACD /* myjp_PPSW_WY21A.png */; };
 		08865DC0E47767EB4371BAC1 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = FB959D80126A953BAAFB683E /* Localizable.xcstrings */; };
 		088728DC6857341F60D9A85C /* CreateTripViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A922C4CA9815FF2373044686 /* CreateTripViewModel.swift */; };
+		0970D4DCAFB375F86268763F /* my_PBSB_WY18B.png in Resources */ = {isa = PBXBuildFile; fileRef = D0C93CD970FEAB1B9A88D95C /* my_PBSB_WY18B.png */; };
+		09996B2197A0B90B12EFAD10 /* m3hp_PX02_W30P.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A87DEB770E4F535B644F4A4 /* m3hp_PX02_W30P.png */; };
+		0D1D4EF71EAC4BB8509D3849 /* m3_PMNG_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = 01E39D9E04FAB25E5D175DBF /* m3_PMNG_W39B.png */; };
 		0D2417BEF37A61A11C7CD258 /* my_PPMR_WY20P.png in Resources */ = {isa = PBXBuildFile; fileRef = 1441824E79BFBD28F9F6E57E /* my_PPMR_WY20P.png */; };
 		0D4A970FF0BB9ED8F990C9DF /* CompareChargesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 979C356E1F70388BDCC4F192 /* CompareChargesViewModelTests.swift */; };
 		0DEAC396C258F283996D6E67 /* Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38E178E935B9CA1D6A7D0F2 /* Migration.swift */; };
 		0E917FEF901592725B3ADDF3 /* ChargesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF331F72AC6C03F8AD7E687 /* ChargesView.swift */; };
+		10BF02CEE7492676CEC95A47 /* m3_PMSS_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = 0D08AB7AECCB82F7712121B0 /* m3_PMSS_W39B.png */; };
 		10E2A82BABCDB9B79358DF32 /* m3_PPSW_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FC6010613AE0A94BAEDF202 /* m3_PPSW_W39B.png */; };
+		1154B1FEAB2E047AC9D37745 /* VehicleImageCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95FC38DDF39F1A7F6D4CB8A3 /* VehicleImageCatalogTests.swift */; };
 		117BC58985369ACF26602327 /* DriveDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3880EA8D934C5A891970D57 /* DriveDetailViewModel.swift */; };
 		11B9B5E9DE2E5683C085CF6A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BF5FE552443D3733F4F326D8 /* PrivacyInfo.xcprivacy */; };
 		1328F48B09DA4BBDCF311E2C /* m3hp_PX02_W30P.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A87DEB770E4F535B644F4A4 /* m3hp_PX02_W30P.png */; };
+		14781ED01EE64726AFAB727C /* my_PPMR_WY18B.png in Resources */ = {isa = PBXBuildFile; fileRef = 94C92643D214438F2A96B91F /* my_PPMR_WY18B.png */; };
+		14838389B97472A88A9B8D17 /* myj_PPSW_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = FDB07C0E89531219ABF90F74 /* myj_PPSW_WY19P.png */; };
 		150E195F03DB8A49502C90CB /* myjs_PN01_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = 4F42BF3687798DEF33DA6636 /* myjs_PN01_WY19P.png */; };
+		15240185DB89F4095FDBCC36 /* m3_PBSB_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F18850DC5B2D23D3A03C644 /* m3_PBSB_W39B.png */; };
 		154F122B796153EA479E80F5 /* my_PPMR_WY19B.png in Resources */ = {isa = PBXBuildFile; fileRef = 89C2D8DD00D9F642BB19C955 /* my_PPMR_WY19B.png */; };
+		162A5B59556C6A4D8956F2AA /* mx_PPSB_WT20.png in Resources */ = {isa = PBXBuildFile; fileRef = 943092A17A0304A6D9D9C3A1 /* mx_PPSB_WT20.png */; };
 		16947438B3DE33A028705B28 /* ChargeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C383C4184C8DA9740AB7E9D6 /* ChargeDetailView.swift */; };
+		17E91581995775EC7689AD27 /* myjp_PN00_WY21A.png in Resources */ = {isa = PBXBuildFile; fileRef = 1974C87E2C98D5D7EC05EB59 /* myjp_PN00_WY21A.png */; };
 		17FB6DC1EAE305A3DF54755F /* CommuteRouteModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 992668201035AD3675EE1417 /* CommuteRouteModels.swift */; };
 		182FA0466782013BB94F2757 /* ParkingFeeRulesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F500280660E06411C54306 /* ParkingFeeRulesView.swift */; };
 		184C2ADE547F55758DA13217 /* ChargeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2226F209C8AB43CD2489F60A /* ChargeModels.swift */; };
@@ -46,14 +61,21 @@
 		19456B2AD4994170347D6A57 /* m3h_PN01_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = 9E4029E0622AE3680608E9BA /* m3h_PN01_W38A.png */; };
 		19DD9049F51BCEF11B880E4B /* ChargesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFCCD5E7F7C55D364BE56D93 /* ChargesViewModelTests.swift */; };
 		1A975ACBF6F8972B37DDE6FD /* AppText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E313EB0B8726A37D81BBF6 /* AppText.swift */; };
+		1B5358FB8AE30BB632C9E106 /* mx_PBSB_WT22.png in Resources */ = {isa = PBXBuildFile; fileRef = 31C43838E0AD69C571A926F5 /* mx_PBSB_WT22.png */; };
 		1C43CB2B6C78CA35D4C0F19D /* CarImageResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CDDB545B47E2D20A879209 /* CarImageResolver.swift */; };
+		1DB5202E902EA23DE28C4454 /* vehicle_model-3-early_base_pearl-white_aero-18.png in Resources */ = {isa = PBXBuildFile; fileRef = BF74D4F1ADB5A8ECB51DBA05 /* vehicle_model-3-early_base_pearl-white_aero-18.png */; };
 		1E2011B02C0A05684AB397F4 /* my_PPSB_WY19B.png in Resources */ = {isa = PBXBuildFile; fileRef = 13DD4D0D56049536058D020B /* my_PPSB_WY19B.png */; };
 		1F1A07DADD336FCBA3B75513 /* TripTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA82BB4B0156D6122D16CF84 /* TripTimelineView.swift */; };
+		1F62477954E1390F68C02A01 /* vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png in Resources */ = {isa = PBXBuildFile; fileRef = 519257D1302B242E9C10263B /* vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png */; };
 		20A2EA87BD355441CD02A35B /* CarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A6E81CC9C44B3E7238242A /* CarImageView.swift */; };
 		2178ECA620A94E2A2C25951B /* ms_PPSB_WT19.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F5E67A595C9FCFC9BBAAEAD /* ms_PPSB_WT19.png */; };
+		22215BC959B297315C6365AD /* myj_PN00_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = 3779D0B64EF7DCE891E336AE /* myj_PN00_WY19P.png */; };
+		2243FD4D4D08DC1D5D78EA9B /* ms_PPSW_WT19.png in Resources */ = {isa = PBXBuildFile; fileRef = FDE50F3D8CF910BDC0911993 /* ms_PPSW_WT19.png */; };
 		227E9FBAE22F9D24C82FA97A /* m3h_PX02_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = D2EA6D8696C5CDC9437ABE06 /* m3h_PX02_W38A.png */; };
 		2282E72EB93A59231F6F2332 /* Migrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF3F6D13FFDE244A396469A /* Migrations.swift */; };
 		237BACD2D9C4884248468832 /* m3_PPSB_W38B.png in Resources */ = {isa = PBXBuildFile; fileRef = D7CE0109A19A66448EC95BB0 /* m3_PPSB_W38B.png */; };
+		23AB5D7BE71443705EAB3579 /* mx_PPSW_WT22.png in Resources */ = {isa = PBXBuildFile; fileRef = B7223DB9F8B416B27AACF0DB /* mx_PPSW_WT22.png */; };
+		2580148BA031993BAF113376 /* m3hp_PN01_W30P.png in Resources */ = {isa = PBXBuildFile; fileRef = C91ACFE0BCC2AC11FD63DBA9 /* m3hp_PN01_W30P.png */; };
 		25F93942EEF94E3213353A67 /* ServerPlaceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEB9AB60079559C865EDB70 /* ServerPlaceModels.swift */; };
 		26E47A8B930FED6F9EF06122 /* MileageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A5A3917ACD1B8F148BAFFA /* MileageViewModel.swift */; };
 		27194A2319E8A67F2C614E0B /* m3h_PBSB_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E30EF6C3B954576AB2DE17D /* m3h_PBSB_W38A.png */; };
@@ -63,15 +85,25 @@
 		29205BE598F4C672491DA975 /* DashboardTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73947C31F5467F15660F9708 /* DashboardTextFormatter.swift */; };
 		293BB9735F3B47AEFC071E4F /* AnalyticalViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4347EA7C872BBE88A7DCD /* AnalyticalViewModelTests.swift */; };
 		29B5BBD6B7408C380404AE88 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90831E60861EF413FEF9CC83 /* SettingsView.swift */; };
+		2B0B31FD97EA009EF0C9F5B8 /* myj_PX02_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = A5278CCD9BF32784EAFD9D17 /* myj_PX02_WY19P.png */; };
+		2B93F9AA1E953A5C833FF042 /* m3_PMSS_W32P.png in Resources */ = {isa = PBXBuildFile; fileRef = B77AB6204C7F65C6EECA284A /* m3_PMSS_W32P.png */; };
 		2C8293FE62A07E2C30678122 /* TripDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC80D35F345A055C44B5986A /* TripDetailView.swift */; };
 		2D4DB017EF21AFFDFD33AAD1 /* DashboardSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69AF9A588681B0B4F07EEB5F /* DashboardSnapshotStore.swift */; };
 		2E08B29B667C206C170B27CD /* m3h_PN00_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = B474230F9DDEB7FD307A8CF8 /* m3h_PN00_W38A.png */; };
+		2E8FE17815E1E14933CB3F97 /* m3h_PX02_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = D2EA6D8696C5CDC9437ABE06 /* m3h_PX02_W38A.png */; };
+		30F24793F87C9DBD6EEA1AE1 /* my_PPMR_WY20P.png in Resources */ = {isa = PBXBuildFile; fileRef = 1441824E79BFBD28F9F6E57E /* my_PPMR_WY20P.png */; };
 		3120AA4255CF51D8C23A8C64 /* ShortEntryFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB20FAA97BBBCBCB5E40D7E /* ShortEntryFilterTests.swift */; };
+		3194F8304EFE413EE636DFF4 /* m3_PMNG_W38B.png in Resources */ = {isa = PBXBuildFile; fileRef = 467EF602D6C9BBBAF5E38FA2 /* m3_PMNG_W38B.png */; };
 		324FE72802A8BE25D82DF693 /* SettingsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D652772ED6FF4E0BD820BDB2 /* SettingsViewModelTests.swift */; };
+		332CF8511A5597023C8D6046 /* myj_PN01_WY20A.png in Resources */ = {isa = PBXBuildFile; fileRef = 62C4A3C4E51DC546EAC634CD /* myj_PN01_WY20A.png */; };
+		33F787BFE4F9F6F1B5644816 /* myjs_PPSW_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = 20FF5F73D3F7184B1416D07A /* myjs_PPSW_WY19P.png */; };
+		3634EEFAEEADF6FD2D51C06B /* myjp_PR01_WY21A.png in Resources */ = {isa = PBXBuildFile; fileRef = 9E94228109101C7B5C95988C /* myjp_PR01_WY21A.png */; };
 		367370B607B6BB4267D57CE0 /* TeslaMateConnectionDiagnosticTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6098F5BA33EC58620EA4024 /* TeslaMateConnectionDiagnosticTests.swift */; };
 		370790B0F7EBEF15DB4993C8 /* APIDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F86CE351C6B03DAB741AB2 /* APIDecodingTests.swift */; };
 		386A351CE0634DDA2B9CA94F /* ActivityModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B933E25A3EAFFCD5C1EC414B /* ActivityModels.swift */; };
+		38E48E5EEFB490C227269D7F /* m3_PBSB_W38B.png in Resources */ = {isa = PBXBuildFile; fileRef = 935CBA060EA732140054A827 /* m3_PBSB_W38B.png */; };
 		3A40359F1E5E5F71D24F81B7 /* AnalyticsAPIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E40D1D20AA7C58F8968ACA2 /* AnalyticsAPIProvider.swift */; };
+		3B750AFA822E5D57BC0DF061 /* m3_PPSW_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FC6010613AE0A94BAEDF202 /* m3_PPSW_W39B.png */; };
 		3B87FBF7139C5C86EFFF5401 /* DriveStatsCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A60B51798830FBF68245976 /* DriveStatsCalculator.swift */; };
 		3BE4601E1449E56249B8A32D /* m3hp_PR01_W30P.png in Resources */ = {isa = PBXBuildFile; fileRef = 5D99609698048529A4C9418F /* m3hp_PR01_W30P.png */; };
 		3CA7640D620CCB707675E089 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35B2392398B679776E8A0F8 /* AppSettings.swift */; };
@@ -79,13 +111,17 @@
 		3EBF7B2A8DC89709516799C7 /* m3_PPMR_W38B.png in Resources */ = {isa = PBXBuildFile; fileRef = C4329DF04EE4B23B0C87B257 /* m3_PPMR_W38B.png */; };
 		3F0645A789955A645F531C37 /* PrivacyDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FAC4E8CC585DBD7864A443 /* PrivacyDataView.swift */; };
 		40A0B02D5C75AA8A5E0FD63D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BF5FE552443D3733F4F326D8 /* PrivacyInfo.xcprivacy */; };
+		421E28748F014F583F6B7330 /* myj_PR01_WY20A.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F75ABC310641A50A1D524DB /* myj_PR01_WY20A.png */; };
 		441D8E749F5FD723E7081E86 /* myjp_PPSW_WY21A.png in Resources */ = {isa = PBXBuildFile; fileRef = AC47F6E51A8B71210DB43ACD /* myjp_PPSW_WY21A.png */; };
+		44A3A8A0AD5E653995CEA7D5 /* my_PPMR_WY19B.png in Resources */ = {isa = PBXBuildFile; fileRef = 89C2D8DD00D9F642BB19C955 /* my_PPMR_WY19B.png */; };
 		4503698C28F3857FAEC0167B /* ParkingFeeRuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B435DB386DD8FC5EAD76F7 /* ParkingFeeRuleTests.swift */; };
 		45333CD53CF498D33776CE4D /* UnitFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE6CB02FFA705CEAACCCD0F /* UnitFormatter.swift */; };
+		463EC8E3DC959A2BDE25B60C /* myjs_PX02_WY18P.png in Resources */ = {isa = PBXBuildFile; fileRef = C2F2A824491C8705D87ABDEE /* myjs_PX02_WY18P.png */; };
 		466F54211D438C8DA9F94783 /* ms_PPMR_WT19.png in Resources */ = {isa = PBXBuildFile; fileRef = 1081DC048F7906C0DFFBE047 /* ms_PPMR_WT19.png */; };
 		46AA2156FB4F14966CE0CE03 /* ms_PMNG_WT19.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F80F00CFEE36A446D906A68 /* ms_PMNG_WT19.png */; };
 		4717B842AADCF641342B3E60 /* myj_PX02_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = A5278CCD9BF32784EAFD9D17 /* myj_PX02_WY19P.png */; };
 		476D86E56F5B534393E84AD4 /* ActivitiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D882EDE00B92188C2D89B899 /* ActivitiesView.swift */; };
+		4A55E748C75BF0D12D8DF2E4 /* m3_PMBL_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = 5C6FC0F0445E89A8021EFF79 /* m3_PMBL_W39B.png */; };
 		4A7A9CD0F6A238998768E342 /* TyrePressureNotificationContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A44D7D40C8371F6612991FB /* TyrePressureNotificationContent.swift */; };
 		4A82FEF2097F40E29D2BE6C4 /* OpenMeteoAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AE0C2C5B733F1674CD13D4 /* OpenMeteoAPI.swift */; };
 		4B526B22F80C757615C2BCFE /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 679C20888443A9438B86E485 /* SettingsViewModel.swift */; };
@@ -101,7 +137,9 @@
 		4F7FFC1DEBD07157DF61F1F0 /* m3_PMNG_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = 01E39D9E04FAB25E5D175DBF /* m3_PMNG_W39B.png */; };
 		5051828F2E9650B2FF723936 /* m3_PMNG_W32P.png in Resources */ = {isa = PBXBuildFile; fileRef = C0C924BC8F186CDDDE4A749D /* m3_PMNG_W32P.png */; };
 		51815F5FE2E10D845635BB89 /* myjs_PX02_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = 25C903C6F69A1DFCD8A634C5 /* myjs_PX02_WY19P.png */; };
+		5203F2C9C395051AE3617EFB /* m3_PPMR_W32P.png in Resources */ = {isa = PBXBuildFile; fileRef = 0738BDA3CF134EFD91AEA254 /* m3_PPMR_W32P.png */; };
 		5227AEB1FF8F6E8BF2BC6F56 /* ChargingNotificationContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F230968CBED0D3E8AA2A8E7 /* ChargingNotificationContent.swift */; };
+		530C2FE61E35C7497E2F1419 /* m3hp_PPSW_W30P.png in Resources */ = {isa = PBXBuildFile; fileRef = 8F7248D97AF6F0F22C3883C3 /* m3hp_PPSW_W30P.png */; };
 		53481C94894C804166143222 /* TripDetailViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71544D76DE17223D394C20D8 /* TripDetailViewModelTests.swift */; };
 		53FD3619D8620FFC900A230B /* myjs_PX02_WY18P.png in Resources */ = {isa = PBXBuildFile; fileRef = C2F2A824491C8705D87ABDEE /* myjs_PX02_WY18P.png */; };
 		540B6B6912E4C9C2C6415B55 /* CurrentChargeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58529BF1D6D81F635985E6D2 /* CurrentChargeView.swift */; };
@@ -109,14 +147,19 @@
 		544C35CBBF8F73C5DAE67A82 /* mx_PPMR_WT20.png in Resources */ = {isa = PBXBuildFile; fileRef = A96DC4E9511CF7BF0BFD0630 /* mx_PPMR_WT20.png */; };
 		5457C72901BB92835E69A1E0 /* SyncCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AAFD36C34E542C2FA3F1F9 /* SyncCoordinatorTests.swift */; };
 		546F41E982657CCBBADDDB20 /* TripsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F745E6D3F0627B4D8D745178 /* TripsView.swift */; };
+		548F1681D319789C94339BB5 /* myj_PB01_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = 18F72F0903CA7CC2F6144E67 /* myj_PB01_WY19P.png */; };
 		55AD9B1459D1EAD49D67F6AC /* WidgetDisplayData.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5820AF1EDC343D26370976 /* WidgetDisplayData.swift */; };
 		56CDE0011369EC48FFA9309A /* DrivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 691D6E1A5C0EF21B386B9E2C /* DrivesView.swift */; };
+		57EFB76EA78CA02CB5BEF210 /* my_PMNG_WY20P.png in Resources */ = {isa = PBXBuildFile; fileRef = D518E58AB536026E9A199676 /* my_PMNG_WY20P.png */; };
 		58A6C54F72AFE26F12610A07 /* m3_PBSB_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F18850DC5B2D23D3A03C644 /* m3_PBSB_W39B.png */; };
 		59AFAAA03766AAB74E5AEEEC /* SyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D2DF4EA88BC4894124091E0 /* SyncCoordinator.swift */; };
 		59E1842D7AEE973AA27F7234 /* DrivingRecordsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE06790454A61CDF296CBDD /* DrivingRecordsViewModelTests.swift */; };
+		5A27BD889EB4BC8A5D5EE0D6 /* VehicleImageCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 209BF098570015495DDED942 /* VehicleImageCatalog.swift */; };
+		5A2D2F014517FFD6F9D8710C /* my_PMNG_WY19B.png in Resources */ = {isa = PBXBuildFile; fileRef = 55421AA10888C2EB6915D8A1 /* my_PMNG_WY19B.png */; };
 		5A8075989E621D2D89CA8CC8 /* SentryRecords.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E09C0DE63F6D83B4E88830 /* SentryRecords.swift */; };
 		5AEA0E118D9761EAEA6B61B5 /* DriveMetricDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C93FD07DA6E83C080768BEE /* DriveMetricDetailView.swift */; };
 		5B3C4468809A41538FCB9424 /* TeslaMateCapabilityPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD4769002A71BA26A4CD5ED0 /* TeslaMateCapabilityPresentationTests.swift */; };
+		5B9CAD3F28D912975575BEC2 /* my_PBSB_WY20P.png in Resources */ = {isa = PBXBuildFile; fileRef = 29CB76DB3CCB91EAF096C7E3 /* my_PBSB_WY20P.png */; };
 		5C0EAF6EC1AC07BB4B42E180 /* ShortEntryFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D680E625173307F71495928 /* ShortEntryFilter.swift */; };
 		5D503E17EAF3C37F53471575 /* GeocodeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB162016C47A3D53A804661 /* GeocodeStore.swift */; };
 		5D8AC5BB4F2233B33480186D /* mx_PPMR_WT22.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DF873CC046FD860473E2AE4 /* mx_PPMR_WT22.png */; };
@@ -125,12 +168,17 @@
 		6099ADD47171ADE1122D97AA /* m3_PPSW_W32P.png in Resources */ = {isa = PBXBuildFile; fileRef = 84FB1FE09B31AB9044FD23C2 /* m3_PPSW_W32P.png */; };
 		60B96846FB560C4643EBF444 /* UnitFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86152CC2025068FAEFF67444 /* UnitFormatterTests.swift */; };
 		60C6536BE2950390308526D3 /* SentryNotificationContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57E7270357785532ED93BC7 /* SentryNotificationContent.swift */; };
+		60E0BCEE44C9AB3728CD0ABD /* myjs_PN01_WY18P.png in Resources */ = {isa = PBXBuildFile; fileRef = 44CECB76296DFC515B8E2E0B /* myjs_PN01_WY18P.png */; };
 		6131CF7CB93E1D81CD331689 /* m3hp_PN00_W30P.png in Resources */ = {isa = PBXBuildFile; fileRef = 888827727CA42A7E0EF0B78C /* m3hp_PN00_W30P.png */; };
+		61903D5166CBEF9F36FF1D50 /* m3hp_PN00_W30P.png in Resources */ = {isa = PBXBuildFile; fileRef = 888827727CA42A7E0EF0B78C /* m3hp_PN00_W30P.png */; };
 		619F79A37D0FB0E73CDC8F3B /* TripMembershipServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287A7F2262FEF6A1C4B2922A /* TripMembershipServiceTests.swift */; };
 		61B82EBF7AD58CCA289FE9FC /* StatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80DB5D3D79792EA245C899DD /* StatsViewModel.swift */; };
+		62A0DA2C28BDFD7DC07965AA /* my_PPSB_WY20P.png in Resources */ = {isa = PBXBuildFile; fileRef = 656FECAB6AF8F1B9E118C410 /* my_PPSB_WY20P.png */; };
 		63BC5C2C59BA8BA41A7251CE /* DrivingCoordinateModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179B4EDB85242AEE1AB63203 /* DrivingCoordinateModels.swift */; };
+		63C1FA73B5C9AEA517D6B618 /* vehicle_model-3-early_base_pearl-white_aero-18.png in Resources */ = {isa = PBXBuildFile; fileRef = BF74D4F1ADB5A8ECB51DBA05 /* vehicle_model-3-early_base_pearl-white_aero-18.png */; };
 		65CFDB11FF597D94B7C366A8 /* TripRuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 953C6E90117CC7C48682537F /* TripRuleTests.swift */; };
 		6604F245AA4C4CCD586EE0C9 /* DriveDetailViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7212AA93C44B91DE1D20A3F7 /* DriveDetailViewModelTests.swift */; };
+		6638DCF3572A792B126CA9DD /* my_PPSW_WY18B.png in Resources */ = {isa = PBXBuildFile; fileRef = CADA023A77732E2C888C3C2B /* my_PPSW_WY18B.png */; };
 		670E2482158B4B2761F82AAC /* GeographyStatsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC917A30BED5257A9FF3639 /* GeographyStatsTests.swift */; };
 		671552A42C16089492A09F48 /* myj_PN00_WY20A.png in Resources */ = {isa = PBXBuildFile; fileRef = 0751B8C70EEAA996FAE39D8C /* myj_PN00_WY20A.png */; };
 		676FB9E3D947EEFE929CA946 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CE810264D89FDBA93D5AA9 /* DashboardView.swift */; };
@@ -138,16 +186,22 @@
 		67DE9A227E6809D0F2A48D37 /* CompareChargesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EEC24C2202D13ABCC45628F /* CompareChargesView.swift */; };
 		68126D859E48257EA7F53167 /* SyncPhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B2ABC10052AFFC827CFAC96 /* SyncPhase.swift */; };
 		684E1D3EE32AC9D52F144D7B /* m3_PMSS_W32D.png in Resources */ = {isa = PBXBuildFile; fileRef = 863ACD739A8BBD8B6E393B7C /* m3_PMSS_W32D.png */; };
+		691BEBBD1D2B0D787CFDB743 /* ms_PBSB_WT19.png in Resources */ = {isa = PBXBuildFile; fileRef = 625FD75C5A64BBF29D6CCB09 /* ms_PBSB_WT19.png */; };
 		6962561FD83D91AE5D1D9E23 /* ChargePricingRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D0C6E4F55E370BE63F44F6 /* ChargePricingRule.swift */; };
 		6987CE1AD20D12DA5197B751 /* DriveInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176359A035C2815611CF533A /* DriveInsightsView.swift */; };
 		6A137B8452DBF2B840484BD5 /* BatteryModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8158E0D03E7F26E667BB2F38 /* BatteryModels.swift */; };
+		6A6F09A16D07CF77B1E344CF /* CarImagePickerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6BF4550A0C735D0F8A133B1 /* CarImagePickerViewModelTests.swift */; };
 		6A91E2FF0C762E725969489E /* my_PPSW_WY20P.png in Resources */ = {isa = PBXBuildFile; fileRef = B3CD5CF28742B72F9BF487A5 /* my_PPSW_WY20P.png */; };
+		6B321C6B57D83FDFD68556A2 /* m3h_PR01_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = CC7426B28E2F20BC1E49DE93 /* m3h_PR01_W38A.png */; };
+		6BF5737D9F22779E02FA9DF0 /* my_PPSB_WY18B.png in Resources */ = {isa = PBXBuildFile; fileRef = 87D586105D55AE8C6EC2A48A /* my_PPSB_WY18B.png */; };
 		6C22055DD36274B600554C05 /* myj_PN01_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA0FFC16733047A5128B192 /* myj_PN01_WY19P.png */; };
 		6C3B26D0D33AC4DB011868EE /* myj_PN00_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = 3779D0B64EF7DCE891E336AE /* myj_PN00_WY19P.png */; };
 		6D887335E1799350FDA68F1A /* ChargeCostOverrideStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E723091F52F2FE24D01708B /* ChargeCostOverrideStoreTests.swift */; };
 		6E15E1F9D75887F6E62FF985 /* AppDatabaseProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE5F7DA19F88064C291D2B99 /* AppDatabaseProviderTests.swift */; };
 		6EAC8D5ECABFE4A02B105AED /* m3_PPSW_W38B.png in Resources */ = {isa = PBXBuildFile; fileRef = 6522A60521C83D92AF687069 /* m3_PPSW_W38B.png */; };
 		6ECC302D6EC3A39CD4C0A16B /* m3_PPMR_W32D.png in Resources */ = {isa = PBXBuildFile; fileRef = B60FB9385437B194DE543C35 /* m3_PPMR_W32D.png */; };
+		6F51ADEDB426D747D7A26CCB /* m3_PMNG_W32P.png in Resources */ = {isa = PBXBuildFile; fileRef = C0C924BC8F186CDDDE4A749D /* m3_PMNG_W32P.png */; };
+		6FB84334BA6DD0FDB316CF20 /* m3_PMSS_W38B.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A53E5AD477CE081D073E31F /* m3_PMSS_W38B.png */; };
 		700280EB8511A26B9BA890BA /* m3_PMBL_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = 5C6FC0F0445E89A8021EFF79 /* m3_PMBL_W39B.png */; };
 		7080282C79CDDF2FA17B7DB9 /* my_PPMR_WY18B.png in Resources */ = {isa = PBXBuildFile; fileRef = 94C92643D214438F2A96B91F /* my_PPMR_WY18B.png */; };
 		71426C5312889EC563E3B367 /* CompareChargesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70DC71A6FD474AC69733C87 /* CompareChargesViewModel.swift */; };
@@ -160,58 +214,83 @@
 		748989B38CC18FF73556E41C /* my_PMNG_WY19B.png in Resources */ = {isa = PBXBuildFile; fileRef = 55421AA10888C2EB6915D8A1 /* my_PMNG_WY19B.png */; };
 		74ABD85A863384537172D333 /* CompareDrivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77F335DA6C42DC62959FF8B /* CompareDrivesView.swift */; };
 		74C4EB0CD9BAF70D4C675184 /* m3_PPMR_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = B5BDCCA9FECB434D2DEA359F /* m3_PPMR_W39B.png */; };
+		7537562C8CACDFC2F9DC0B0B /* m3_PMNG_W32D.png in Resources */ = {isa = PBXBuildFile; fileRef = 7EC018ACCBCB2E39FBDA4EAC /* m3_PMNG_W32D.png */; };
 		75B8FC577903A3BE7BF54BA9 /* DomainDateParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD52DB0B2D671506C0FA58B /* DomainDateParser.swift */; };
 		762B1004446EBB0287EA10D9 /* m3_PPSB_W32D.png in Resources */ = {isa = PBXBuildFile; fileRef = 8F36DA8F5A1F44FE02EB4B81 /* m3_PPSB_W32D.png */; };
+		765DE2926CF71D418E79E53B /* m3_PBSB_W32D.png in Resources */ = {isa = PBXBuildFile; fileRef = CDBAB9E620FCB20898EF6948 /* m3_PBSB_W32D.png */; };
 		76DA597F9156F8F42D19FADF /* StandbyDrainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D781AAD83CB102188F9F10E1 /* StandbyDrainViewModel.swift */; };
+		772A0052506F78BDFE0F7A03 /* m3_PPSB_W38B.png in Resources */ = {isa = PBXBuildFile; fileRef = D7CE0109A19A66448EC95BB0 /* m3_PPSB_W38B.png */; };
+		777F82B45BE9BC58F567BF5D /* m3_PMSS_W32D.png in Resources */ = {isa = PBXBuildFile; fileRef = 863ACD739A8BBD8B6E393B7C /* m3_PMSS_W32D.png */; };
+		77D3A4E84053CB4EE63803A8 /* myjp_PX02_WY21A.png in Resources */ = {isa = PBXBuildFile; fileRef = D523712A75CA6BC0982F2418 /* myjp_PX02_WY21A.png */; };
 		783BEDB64000B9189A0C6628 /* SentryHistoryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC7956DD0C114E56D02D9BA /* SentryHistoryViewModelTests.swift */; };
 		78734CCD325CC4B13BE9657F /* WeatherSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A50FFBE5AF55DB6DE0C0D124 /* WeatherSelectionTests.swift */; };
 		788F0F4FE24C1A112C4282A2 /* ChargePricingBatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EDB202E42E175EA2947DBAC /* ChargePricingBatch.swift */; };
 		78CF2ECE831565D367568B87 /* myj_PN01_WY20A.png in Resources */ = {isa = PBXBuildFile; fileRef = 62C4A3C4E51DC546EAC634CD /* myj_PN01_WY20A.png */; };
+		797616139FF6F9029CB2B038 /* m3_PBSB_W32P.png in Resources */ = {isa = PBXBuildFile; fileRef = B7D8763038A501F4AD89319D /* m3_PBSB_W32P.png */; };
 		7A4F9368EE82B81532498DDA /* ms_PPSW_WT19.png in Resources */ = {isa = PBXBuildFile; fileRef = FDE50F3D8CF910BDC0911993 /* ms_PPSW_WT19.png */; };
+		7ACC258B4E9A6190ACA6C2A3 /* mx_PMNG_WT22.png in Resources */ = {isa = PBXBuildFile; fileRef = 266A9E6CCCD58C7588B06E9B /* mx_PMNG_WT22.png */; };
 		7AD164D64542ADBC81E6EC3D /* RequestAuthenticatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF46C4CA5A6999672C66F957 /* RequestAuthenticatorTests.swift */; };
 		7BD919E5E8578C8E756CDF21 /* SQLiteError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6DC5184F5F8C8337B5D7FF /* SQLiteError.swift */; };
 		7C11CBE61E7E7C36B71E7FDF /* WeatherAlongTheWayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5BAA2539E47909226430F61 /* WeatherAlongTheWayView.swift */; };
 		7C9A475A89797D65DEDD30EF /* m3_PPSW_W32D.png in Resources */ = {isa = PBXBuildFile; fileRef = FA1E6AB1E3ECAE2DB222DD44 /* m3_PPSW_W32D.png */; };
+		7D1150D495E8509E55888755 /* ms_PMNG_WT19.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F80F00CFEE36A446D906A68 /* ms_PMNG_WT19.png */; };
+		7D5940A05B4F20EC0FECDAD8 /* m3h_PPSB_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = 712B4152142D032949339E6C /* m3h_PPSB_W38A.png */; };
+		7DC66818DD060B3DBFA625C7 /* VehicleImageResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271B79211949CDDE735BDEEA /* VehicleImageResolver.swift */; };
 		7DC8F9ACDDD734CA7837CBC6 /* my_PMNG_WY20P.png in Resources */ = {isa = PBXBuildFile; fileRef = D518E58AB536026E9A199676 /* my_PMNG_WY20P.png */; };
 		7E9E59C8DE3B3A5256281FB7 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83643ED288ED06BEA7A67EF3 /* Endpoint.swift */; };
 		7EA39E3595E16D50DC21126B /* ChargeSummaryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD0BC558502ECCAEA6B9C7F7 /* ChargeSummaryStore.swift */; };
 		7EF8C30B34A4F7473984058A /* m3_PMNG_W38B.png in Resources */ = {isa = PBXBuildFile; fileRef = 467EF602D6C9BBBAF5E38FA2 /* m3_PMNG_W38B.png */; };
 		7F13CEA579BA891734DEB226 /* TeslamateAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCEF484656D0C9DB3B33A8F /* TeslamateAPI.swift */; };
 		7F5769BEB879A9CC8BD5D4DF /* AppStoreReadinessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6CE18C3230949F6DD6E847E /* AppStoreReadinessTests.swift */; };
+		80338A2066CA3AB62704B8D7 /* m3_PMBL_W32P.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7CAA2A21A9F6E1F62E9BB3 /* m3_PMBL_W32P.png */; };
 		803634E960660D8A303BAEC3 /* PersistenceMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54B02345C108A1F524C8957F /* PersistenceMigrationTests.swift */; };
+		81008E1245A4F0E891631762 /* myjs_PX02_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = 25C903C6F69A1DFCD8A634C5 /* myjs_PX02_WY19P.png */; };
 		813EFFB5BA0684A497BBF8BA /* myj_PB01_WY20A.png in Resources */ = {isa = PBXBuildFile; fileRef = D5CE287A4B41DD1D92B18AE5 /* myj_PB01_WY20A.png */; };
 		81E34332490C954432087542 /* DriveAPIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54AFA3EC18F255664BC87D9C /* DriveAPIProvider.swift */; };
 		81FB6C7506B181B37D9380B6 /* mx_PBSB_WT20.png in Resources */ = {isa = PBXBuildFile; fileRef = BF54C6131048C2541AE40602 /* mx_PBSB_WT20.png */; };
+		826E3B079CB80C6FFCDC0324 /* my_PPSB_WY19B.png in Resources */ = {isa = PBXBuildFile; fileRef = 13DD4D0D56049536058D020B /* my_PPSB_WY19B.png */; };
 		82DEF787019668DE7BEA395A /* mx_PMNG_WT20.png in Resources */ = {isa = PBXBuildFile; fileRef = 8DA297F8A8EA34F3D9A332BF /* mx_PMNG_WT20.png */; };
 		831053A685249945BDD454C3 /* DriveInsightsAPIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7AAF423E1B8F2CFDD1AC65 /* DriveInsightsAPIProvider.swift */; };
 		83570E47E0360B52BB5B87FB /* my_PMNG_WY18B.png in Resources */ = {isa = PBXBuildFile; fileRef = 3888AAECBF5A356315826823 /* my_PMNG_WY18B.png */; };
 		84512A9270C6845E3F7F3D33 /* TeslaMateCapabilityServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCC44ADEB7665C2C1E4C9E6 /* TeslaMateCapabilityServiceTests.swift */; };
 		8498474BFCD43E4BB703BDCA /* ChargePricingBatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B85207FD3020CF25376C94A /* ChargePricingBatchView.swift */; };
+		8554B8447915F3EE2176BADC /* myjs_PPSW_WY18P.png in Resources */ = {isa = PBXBuildFile; fileRef = 818CFD73E6BCF9C76CAD2FAB /* myjs_PPSW_WY18P.png */; };
 		86850D571558E727C36AE6C6 /* m3_PPSB_W32P.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B9FC90C7D009D121E2ED20A /* m3_PPSB_W32P.png */; };
 		87EBC1734ADC08C555F2D101 /* WhereWasIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED3B7B424178E190F5037BD /* WhereWasIView.swift */; };
 		88AFDE72440B786EE00EB575 /* m3h_PPSB_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = 712B4152142D032949339E6C /* m3h_PPSB_W38A.png */; };
+		8956B9E47B6AE2A882796A10 /* myjp_PB02_WY21A.png in Resources */ = {isa = PBXBuildFile; fileRef = EC43B201AEBE9116CF885509 /* myjp_PB02_WY21A.png */; };
 		89D639AD9169540552DA481D /* AppRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C7732207065673F1B1A3936 /* AppRoute.swift */; };
 		8A712AC49B8EEF2AA66857AC /* my_PBSB_WY19B.png in Resources */ = {isa = PBXBuildFile; fileRef = 4EA0D53AA862E54453FA0277 /* my_PBSB_WY19B.png */; };
 		8A81B1637EE34102E20C4681 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A57AAA18AA102E4422EB597 /* KeychainStore.swift */; };
 		8A8C301D314BEC42C23E8E02 /* NotificationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FBE4CD8A5513C4BFDF3278C /* NotificationCoordinator.swift */; };
+		8B2AFDFE35E6D7D1A85270B6 /* m3_PPSW_W32P.png in Resources */ = {isa = PBXBuildFile; fileRef = 84FB1FE09B31AB9044FD23C2 /* m3_PPSW_W32P.png */; };
 		8B48105CDF7160D35E2E1CE7 /* WeatherSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E36B41F8A49690D5F3A63611 /* WeatherSelection.swift */; };
 		8CA1F7A24136EAABC25299A8 /* AggregateRecords.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A08A2AF835318246F8D3D84 /* AggregateRecords.swift */; };
+		8D1AFA5EF514B0BC93A99F80 /* myjp_PN01_WY21A.png in Resources */ = {isa = PBXBuildFile; fileRef = C52884D3B283905151911670 /* myjp_PN01_WY21A.png */; };
 		8D7E106C21855E3ED85902E8 /* m3_PMNG_W32D.png in Resources */ = {isa = PBXBuildFile; fileRef = 7EC018ACCBCB2E39FBDA4EAC /* m3_PMNG_W32D.png */; };
 		8D86E75FF7341DB7C85155F9 /* m3h_PR01_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = CC7426B28E2F20BC1E49DE93 /* m3h_PR01_W38A.png */; };
+		8DEC3DEA81D1375AFF81E85C /* myj_PX02_WY20A.png in Resources */ = {isa = PBXBuildFile; fileRef = 8FF5A75644C2F0C5210CAFF5 /* myj_PX02_WY20A.png */; };
 		8E0F62ECB8BAA5ABA831D27A /* m3_PMSS_W32P.png in Resources */ = {isa = PBXBuildFile; fileRef = B77AB6204C7F65C6EECA284A /* m3_PMSS_W32P.png */; };
 		8E1211845315524DCBD402BE /* DriveInsightsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728A6953A76EA0B3392D1AF2 /* DriveInsightsViewModelTests.swift */; };
+		8E287E1DF7F3F1335637D063 /* m3h_PBSB_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E30EF6C3B954576AB2DE17D /* m3h_PBSB_W38A.png */; };
 		8E6306F6C1B03AFCA8A9ED9F /* TripAggregator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB23374EBBDD553701743A3 /* TripAggregator.swift */; };
 		8E7F5B5DFA0F16332532780B /* my_PPSW_WY18B.png in Resources */ = {isa = PBXBuildFile; fileRef = CADA023A77732E2C888C3C2B /* my_PPSW_WY18B.png */; };
+		8FCC58CB9DE96F61FFD38484 /* m3h_PN01_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = 9E4029E0622AE3680608E9BA /* m3h_PN01_W38A.png */; };
 		902A31CAE32B2B395E9964B3 /* RegionsVisitedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7AB35C99816632ED18166F /* RegionsVisitedViewModel.swift */; };
+		90BF28CF0A47062BCA95525E /* mx_PPMR_WT22.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DF873CC046FD860473E2AE4 /* mx_PPMR_WT22.png */; };
 		90DCF6BBEE6A4ECDF41DFA14 /* SQLiteDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EF361DEB0744B28D87064D /* SQLiteDatabase.swift */; };
 		90FB90188EDC7BD0D607301F /* my_PPSB_WY18B.png in Resources */ = {isa = PBXBuildFile; fileRef = 87D586105D55AE8C6EC2A48A /* my_PPSB_WY18B.png */; };
+		916B3E49695B1C1132F48089 /* m3_PPMR_W38B.png in Resources */ = {isa = PBXBuildFile; fileRef = C4329DF04EE4B23B0C87B257 /* m3_PPMR_W38B.png */; };
 		9201C98590F0C3B2A7DABAB9 /* ChargeStatsCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11DC0A5EE81007C56EBF0B2 /* ChargeStatsCalculator.swift */; };
 		9225DDA3D2391479D9CB66A9 /* mx_PPSW_WT22.png in Resources */ = {isa = PBXBuildFile; fileRef = B7223DB9F8B416B27AACF0DB /* mx_PPSW_WT22.png */; };
+		925B8E833EC3AB5B82E9CC9D /* myj_PPSW_WY20A.png in Resources */ = {isa = PBXBuildFile; fileRef = 59A42232B14B1FDB5C44231E /* myj_PPSW_WY20A.png */; };
 		9274390396C9BDFFBE9CED94 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3640B46BD5D5C4F04213135 /* WeatherService.swift */; };
 		9293B172B25DCAF7C90CABF2 /* PalettePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFB8EA8D47CCBB4B0212E7A /* PalettePreviewView.swift */; };
 		92A5D6C32D00F8CD4D985F6B /* mx_PMNG_WT22.png in Resources */ = {isa = PBXBuildFile; fileRef = 266A9E6CCCD58C7588B06E9B /* mx_PMNG_WT22.png */; };
 		935971439A76E78EBC5F975E /* CommuteRoutesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA5E2A7C6366983A1DBEE1 /* CommuteRoutesViewModel.swift */; };
+		938316FEB880AF17F0EF056F /* m3hp_PBSB_W30P.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C7A048B34A8931ACB2AA5E1 /* m3hp_PBSB_W30P.png */; };
 		9390AB32D1A786F6D078EC7D /* ChargeCostOverrideStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C12BA6B36413325E83EC1A /* ChargeCostOverrideStore.swift */; };
+		93F8560D9C339C857569907D /* myj_PR01_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = A23A0FAA120FD88A947FABE4 /* myj_PR01_WY19P.png */; };
 		94C74A98CBA2E2F33A232F9E /* TeslaMateVersionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 190C92E73E25E09F07317F1C /* TeslaMateVersionModels.swift */; };
 		951B1381312BF7E29D09219E /* TripRouteCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31EBA95C136B39A265072518 /* TripRouteCacheTests.swift */; };
 		964C126740682B8A4447A23A /* TeslaMateCapabilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32DC03E19373AF00D848C09 /* TeslaMateCapabilityService.swift */; };
@@ -224,36 +303,48 @@
 		97F952F63D7236DBF0C1B65F /* m3_PMBL_W32D.png in Resources */ = {isa = PBXBuildFile; fileRef = E79417B065800DC3EFB5EC8B /* m3_PMBL_W32D.png */; };
 		98132DE2515B0EAEA20055DE /* DebugLocalTeslamateSeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7EA891C282826AF374EDF8F /* DebugLocalTeslamateSeeder.swift */; };
 		9924C70CE099C09171076C6D /* PlaceInsightsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C6AF070F62DDB45FA7ECBC9 /* PlaceInsightsViewModelTests.swift */; };
+		99552CD72EAFB2093DF33F13 /* my_PBSB_WY19B.png in Resources */ = {isa = PBXBuildFile; fileRef = 4EA0D53AA862E54453FA0277 /* my_PBSB_WY19B.png */; };
 		9ABFAB2302C46C50EF55A39D /* SyncProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDE6D29CBC2A172CBC13260 /* SyncProgress.swift */; };
 		9B0078F8C2AF114ADC5E14C6 /* DriveSummaryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608672828845DD9CB0230901 /* DriveSummaryStore.swift */; };
 		9B98C7E08AA8AAD082FE982B /* RouteCoverageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADC805FF6BA578FCE9822E7 /* RouteCoverageTests.swift */; };
+		9C302DCD24D728B86BBE5FDA /* myj_PN01_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA0FFC16733047A5128B192 /* myj_PN01_WY19P.png */; };
 		9CBC524BAF29C77F86B54270 /* DetailLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F2170022EB35DA52E7A822 /* DetailLayoutTests.swift */; };
 		9DA05D54984B066AD5411DF3 /* mx_PPSB_WT22.png in Resources */ = {isa = PBXBuildFile; fileRef = 4F2FC02E39631C8658D3B293 /* mx_PPSB_WT22.png */; };
 		9DC219BB908E25057CC0F095 /* m3_PMBL_W38B.png in Resources */ = {isa = PBXBuildFile; fileRef = DB9677D68D8A255540FCE1B3 /* m3_PMBL_W38B.png */; };
 		A04409897FFDBE7C13CCBC69 /* DriveInsightModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5329DCB23CDA0BCF5E1070C /* DriveInsightModels.swift */; };
 		A0626F821FCC132F91A2D1D6 /* AchievementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2390317777006CFA7734D485 /* AchievementsView.swift */; };
+		A070F59A6C020319C2D42C30 /* my_PPSW_WY20P.png in Resources */ = {isa = PBXBuildFile; fileRef = B3CD5CF28742B72F9BF487A5 /* my_PPSW_WY20P.png */; };
 		A0C6B62867972B7839691EE8 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = FB959D80126A953BAAFB683E /* Localizable.xcstrings */; };
 		A14AD50A56E66732AEC0BAFB /* EnvironmentHistoryAPIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7C29533AA5608463D6C69D /* EnvironmentHistoryAPIProvider.swift */; };
+		A20D303868541414DC7C739A /* vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png in Resources */ = {isa = PBXBuildFile; fileRef = 519257D1302B242E9C10263B /* vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png */; };
 		A3728FE7B153F056BF04569F /* CostReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5895473A2FDC0F43D1C50CA /* CostReviewViewModel.swift */; };
 		A3EA7F6EC36ABC3BE143A517 /* MateDroidApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F2A80AC9C3E9C5B1E5CC2A /* MateDroidApp.swift */; };
 		A466510265FA5879929D49CE /* APIResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF5524B327EAC3A5CB27CB7E /* APIResult.swift */; };
 		A4EE48D1B5FCCA04619F2E0B /* ChargePricingAuditStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633920743339692D7B380583 /* ChargePricingAuditStore.swift */; };
 		A67A2F83489421C4ACE182AA /* WhereWasIViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0EFFBAA5050C9DF5A967324 /* WhereWasIViewModel.swift */; };
+		A78EB6D350D01CE7F2C9BA9B /* myj_PN00_WY20A.png in Resources */ = {isa = PBXBuildFile; fileRef = 0751B8C70EEAA996FAE39D8C /* myj_PN00_WY20A.png */; };
 		A816A1BE30B5B36A44D80A02 /* AchievementsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35599BEE2270B1E80A3F0B8C /* AchievementsViewModelTests.swift */; };
 		A822ADABDF7CCE9684822DA4 /* SentryAlertLogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7179472AF96900E829D122C2 /* SentryAlertLogStore.swift */; };
+		A8AAEFFC13638C9A91714CBD /* m3hp_PR01_W30P.png in Resources */ = {isa = PBXBuildFile; fileRef = 5D99609698048529A4C9418F /* m3hp_PR01_W30P.png */; };
 		A982898D24C5D52D81534EF6 /* m3hp_PPSB_W30P.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C2156D591D8016329E17F63 /* m3hp_PPSB_W30P.png */; };
 		A9F6002965D26E26D4B56139 /* MetricCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF73DCF6F54C3B09320B16D9 /* MetricCard.swift */; };
 		AA8A7F06FB9A6BF55A181398 /* m3_PBSB_W38B.png in Resources */ = {isa = PBXBuildFile; fileRef = 935CBA060EA732140054A827 /* m3_PBSB_W38B.png */; };
 		AB6B00CC03E54CCDDD52BE59 /* RouteCoverage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FA3540E75084C6148BABB3A /* RouteCoverage.swift */; };
+		AC56D05110FA7B33C05E9DB2 /* mx_PBSB_WT20.png in Resources */ = {isa = PBXBuildFile; fileRef = BF54C6131048C2541AE40602 /* mx_PBSB_WT20.png */; };
 		AC7A73340F4ACC771A0509F1 /* my_PPSW_WY19B.png in Resources */ = {isa = PBXBuildFile; fileRef = FDBF612DE81213747A9AE6FC /* my_PPSW_WY19B.png */; };
 		AC90E9331827FEAFB011BDEE /* GeocodingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07617EFD0B09C40AFA9023B8 /* GeocodingService.swift */; };
 		ADA9E5E36DC50988DF003F52 /* myj_PX02_WY20A.png in Resources */ = {isa = PBXBuildFile; fileRef = 8FF5A75644C2F0C5210CAFF5 /* myj_PX02_WY20A.png */; };
 		AE348BE99B112C3E3DC8D1CB /* myj_PPSW_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = FDB07C0E89531219ABF90F74 /* myj_PPSW_WY19P.png */; };
+		AE4115BB66C36C867271A0ED /* mx_PMNG_WT20.png in Resources */ = {isa = PBXBuildFile; fileRef = 8DA297F8A8EA34F3D9A332BF /* mx_PMNG_WT20.png */; };
 		AE8DF46264E6BB2E0E7A5426 /* PlaceInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5842F67EA6758F7B69C2A89 /* PlaceInsightsView.swift */; };
 		AF860A5DA5F61440508F9C6D /* CommuteRoutesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C0F86AB77873837F035EF7 /* CommuteRoutesView.swift */; };
+		AFBE8FDCF53D5714355EA02E /* VehicleImageResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB148D7AD5F6131F683FA590 /* VehicleImageResolverTests.swift */; };
+		B07FC3B015D185A268CEC5B9 /* myjs_PN01_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = 4F42BF3687798DEF33DA6636 /* myjs_PN01_WY19P.png */; };
 		B0BBB692A48931B396A5705D /* TripRecords.swift in Sources */ = {isa = PBXBuildFile; fileRef = 595BF1BED1BCA93F405EAE83 /* TripRecords.swift */; };
+		B0CDBA5C591B4817CF91BCD8 /* ms_PPSB_WT19.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F5E67A595C9FCFC9BBAAEAD /* ms_PPSB_WT19.png */; };
 		B0D670B10934C4925EEF389C /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A62F7A4751E04D8DE60998 /* BatteryView.swift */; };
 		B22DAA043F0043A77947ED7B /* ms_PBSB_WT19.png in Resources */ = {isa = PBXBuildFile; fileRef = 625FD75C5A64BBF29D6CCB09 /* ms_PBSB_WT19.png */; };
+		B23E43C26214E4C4DA782ADB /* m3_PPSB_W32P.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B9FC90C7D009D121E2ED20A /* m3_PPSB_W32P.png */; };
 		B3508D6AC4BFBAD36889C0FD /* CostReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB99079CB166CB1EDE58526 /* CostReviewView.swift */; };
 		B3620D18B82EB4716B257C1D /* mx_PPSW_WT20.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D5C0A6204F02F921E441BD5 /* mx_PPSW_WT20.png */; };
 		B4A838687E3AC7B3E4699427 /* DrivingRecordsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA3D5EF21EF3CA13EE20900D /* DrivingRecordsView.swift */; };
@@ -268,6 +359,8 @@
 		BDCBFCCD6085DBE08CF3C24D /* MileageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031AFAA77EFD8806E329CD68 /* MileageView.swift */; };
 		BE7B0D4234A3A67FB0056FD5 /* myj_PPSW_WY20A.png in Resources */ = {isa = PBXBuildFile; fileRef = 59A42232B14B1FDB5C44231E /* myj_PPSW_WY20A.png */; };
 		BE821441C4BE878D2D3F7D94 /* EnvironmentHistoryModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13FAB0CA700A253480F9C8CA /* EnvironmentHistoryModels.swift */; };
+		BF700E07138046978AD222F0 /* m3_PPMR_W32D.png in Resources */ = {isa = PBXBuildFile; fileRef = B60FB9385437B194DE543C35 /* m3_PPMR_W32D.png */; };
+		BFACDF43CC38F553AB1F288A /* m3h_PN00_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = B474230F9DDEB7FD307A8CF8 /* m3h_PN00_W38A.png */; };
 		C039B0A5BDAE4335493C9920 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41A86CB5BA0F8FEEC8DC5544 /* DashboardViewModel.swift */; };
 		C0DF1E0F1BE9E0D28EA7AC87 /* ActivitiesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2738AC7A628E528EC30C3131 /* ActivitiesViewModelTests.swift */; };
 		C0FEC0A999578E07D354D9EC /* m3_PMSS_W38B.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A53E5AD477CE081D073E31F /* m3_PMSS_W38B.png */; };
@@ -277,9 +370,12 @@
 		C408F943381D2414B2734746 /* CostReviewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0A4B122EF2A1A7680ABB68 /* CostReviewModels.swift */; };
 		C495BC717DC50525EB3566DE /* AppLanguageEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4020EDD32FB9748DF5B15BAE /* AppLanguageEnvironment.swift */; };
 		C4DEF453A1134C92D9CDDCB8 /* CountriesVisitedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDBE7FF83C910E1CCA142DA /* CountriesVisitedView.swift */; };
+		C5744377D8436178629AAE20 /* m3_PPSB_W32D.png in Resources */ = {isa = PBXBuildFile; fileRef = 8F36DA8F5A1F44FE02EB4B81 /* m3_PPSB_W32D.png */; };
 		C587AA5C66C73C7B3C279367 /* AppFormattingEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC93BB7AE7E80C9D2B791FC /* AppFormattingEnvironment.swift */; };
 		C5ADC0CE21C05B81837AFB53 /* ChargeDetailViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50DC939747434D841252A30 /* ChargeDetailViewModelTests.swift */; };
+		C6BA1121565D2FC40A55CA06 /* SyntheticCoordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC60FB7E63492182DAE93311 /* SyntheticCoordinates.swift */; };
 		C6BED4AA9041CDF104DA1A53 /* ChargesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFE7CDCC2484066765B4C26 /* ChargesViewModel.swift */; };
+		C6DA2C1F820DEA94FABDA2C8 /* m3_PPSW_W38B.png in Resources */ = {isa = PBXBuildFile; fileRef = 6522A60521C83D92AF687069 /* m3_PPSW_W38B.png */; };
 		C6F014E84CDA229BF5D6680C /* m3_PMBL_W32P.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7CAA2A21A9F6E1F62E9BB3 /* m3_PMBL_W32P.png */; };
 		C798BA302CD0BADB2C4A95EE /* ServerStatsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B77B356BEC99DDAAA3831861 /* ServerStatsModels.swift */; };
 		C7A596170221492142D78914 /* CostReviewViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B4FB5936A048496B89A65A /* CostReviewViewModelTests.swift */; };
@@ -298,6 +394,8 @@
 		CC6612E8710816719C3D6FD5 /* SoftwareUpdatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951CF42E02BEEB5660E6580C /* SoftwareUpdatesView.swift */; };
 		CC6ABE2DBBB6834A5A92FD93 /* myjp_PB01_WY21A.png in Resources */ = {isa = PBXBuildFile; fileRef = EEBF37D31F0EEAF6F0F17AF2 /* myjp_PB01_WY21A.png */; };
 		CD1278815373260984F6DD1E /* NominatimAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A612223F7025174149CB1508 /* NominatimAPI.swift */; };
+		CE76C4BFBC2960803720172B /* my_PPSW_WY19B.png in Resources */ = {isa = PBXBuildFile; fileRef = FDBF612DE81213747A9AE6FC /* my_PPSW_WY19B.png */; };
+		CEB127E4B544CB423793457B /* mx_PPSW_WT20.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D5C0A6204F02F921E441BD5 /* mx_PPSW_WT20.png */; };
 		CF0BD3C4DEE67880925C5758 /* MateDroidCurrencyFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5106B25F6E79893EF6560704 /* MateDroidCurrencyFormatter.swift */; };
 		D0210426FC95FAD5309000A1 /* CarStatusWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 147B4B56392C712CDED9943E /* CarStatusWidget.swift */; };
 		D0E7527DBE831FD5F3269966 /* LocalizationCoverageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48B8231D67EBFE91885FE6F5 /* LocalizationCoverageTests.swift */; };
@@ -305,17 +403,23 @@
 		D1975D8B69063379B08BA572 /* TripStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF5300742A994A2436DE024F /* TripStore.swift */; };
 		D1DEE16BFB245B542F529381 /* EnvironmentHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13297B016C9A6085CC5F301E /* EnvironmentHistoryView.swift */; };
 		D27EBA87D403713BFC43B9A7 /* TripDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3786B98B74FD96D3746ADE /* TripDataProvider.swift */; };
+		D383A9AD65244D334D45887A /* m3_PPMR_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = B5BDCCA9FECB434D2DEA359F /* m3_PPMR_W39B.png */; };
 		D39C8737506657582FACC77D /* DrivingRecordsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C5B9376E1AC123245D2BB6B /* DrivingRecordsViewModel.swift */; };
+		D3BF3F01C3C37D45E05883AB /* myjp_PB01_WY21A.png in Resources */ = {isa = PBXBuildFile; fileRef = EEBF37D31F0EEAF6F0F17AF2 /* myjp_PB01_WY21A.png */; };
 		D3FC543DC77F7CB7FCECA447 /* SettingsBackedNotificationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 383C7B97E314EF476F1FAB14 /* SettingsBackedNotificationServiceTests.swift */; };
+		D57BEB03E2C1CA9DEA6834F0 /* VehicleImageCatalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 6135F6F500CEF5C4F00F31C9 /* VehicleImageCatalog.json */; };
 		D5BB4BF8D22F1915AA516560 /* LocalTeslamateIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0DEEC5815D9219442F059 /* LocalTeslamateIntegrationTests.swift */; };
 		D77206D0B6D22B291FBA6F57 /* m3hp_PN01_W30P.png in Resources */ = {isa = PBXBuildFile; fileRef = C91ACFE0BCC2AC11FD63DBA9 /* m3hp_PN01_W30P.png */; };
 		D8B3D2770CE1E1DEA1D6797D /* AchievementsAPIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4ED98AB64846602B4AE2119 /* AchievementsAPIProvider.swift */; };
 		D8C64AD71711ADF86B7922E6 /* myjp_PR01_WY21A.png in Resources */ = {isa = PBXBuildFile; fileRef = 9E94228109101C7B5C95988C /* myjp_PR01_WY21A.png */; };
 		D8C7E3FB17AD260CDC235845 /* DriveInsightsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D27018F6E4AABD62AFCCCE /* DriveInsightsViewModel.swift */; };
 		D95F9F4BB4DC817FDD34CA4D /* TripDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1920E2470948D1A22BDF9F01 /* TripDetector.swift */; };
+		DA011DE77C2DE34B8490B191 /* mx_PPMR_WT20.png in Resources */ = {isa = PBXBuildFile; fileRef = A96DC4E9511CF7BF0BFD0630 /* mx_PPMR_WT20.png */; };
 		DA21043A44464E19839F5B64 /* CostReviewAPIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F9FC040E9900E83545C421 /* CostReviewAPIProvider.swift */; };
 		DA3DB38DF67D6587E6E54CC7 /* CarColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDEFEEF5A9483C8F8D497ABC /* CarColorPalette.swift */; };
+		DC0D3BC32EA94F21F041BD74 /* my_PMNG_WY18B.png in Resources */ = {isa = PBXBuildFile; fileRef = 3888AAECBF5A356315826823 /* my_PMNG_WY18B.png */; };
 		DCC9A929D6B2B1C2A2072648 /* myj_PR01_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = A23A0FAA120FD88A947FABE4 /* myj_PR01_WY19P.png */; };
+		DCF19BC220D63409433DE699 /* mx_PPSB_WT22.png in Resources */ = {isa = PBXBuildFile; fileRef = 4F2FC02E39631C8658D3B293 /* mx_PPSB_WT22.png */; };
 		DD2DBCCD603E88C9EF57CB3F /* SentryHistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4CABBE8B2F4BD69E7311F9 /* SentryHistoryViewModel.swift */; };
 		DDB2F077AA72494EA8376521 /* UserFacingErrorLocalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181BDF554C561CE42217598B /* UserFacingErrorLocalizer.swift */; };
 		DDE6BD061B1522D53A2C50B6 /* MateDriveWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7B42AF5CE245B85DEB21C8A4 /* MateDriveWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -329,10 +433,12 @@
 		E1B2A4461E2DD099F36EE8A6 /* myj_PB01_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = 18F72F0903CA7CC2F6144E67 /* myj_PB01_WY19P.png */; };
 		E2A6CD04F3BD48C414EA8332 /* SyncStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A84620075D017E95485B868 /* SyncStateStore.swift */; };
 		E351B85BCE968CA5517E5C40 /* m3h_PPSW_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = 659A9CB6EEE100B9111692AC /* m3h_PPSW_W38A.png */; };
+		E517F39A591F923F24A3266F /* m3_PMBL_W38B.png in Resources */ = {isa = PBXBuildFile; fileRef = DB9677D68D8A255540FCE1B3 /* m3_PMBL_W38B.png */; };
 		E7308649EDD039076CE84557 /* CompareDrivesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DDC1F70D1D836214D91576 /* CompareDrivesViewModel.swift */; };
 		E73EBDFF6B1C2D68F12B0FB1 /* RegionsVisitedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B936C66DCA0BE15176483E2 /* RegionsVisitedView.swift */; };
 		E7538F2F62BC326A4687E4DA /* TeslaMateDiagnosticExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 011FCD2C379AA4C393BB02B2 /* TeslaMateDiagnosticExport.swift */; };
 		E89393A7708F116BC14B8905 /* AppRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBF690F984B8BED08A841FBC /* AppRouteTests.swift */; };
+		E8E307583AEFF2E087510E6D /* ms_PPMR_WT19.png in Resources */ = {isa = PBXBuildFile; fileRef = 1081DC048F7906C0DFFBE047 /* ms_PPMR_WT19.png */; };
 		E91FA332FEBA030B3B13BF0E /* RequestAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B91D64B8B250C8DAABBB46 /* RequestAuthenticator.swift */; };
 		E9C14A0D7ACF11DB34EBDCAB /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459B3049AEB1B3D702730E62 /* StatsView.swift */; };
 		EB72F19A0F76A744F96A9469 /* TeslaMateCapability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9847C5EDA844BEA9162A9E44 /* TeslaMateCapability.swift */; };
@@ -345,10 +451,13 @@
 		F119611C79594DDD3F5D7270 /* myjp_PB02_WY21A.png in Resources */ = {isa = PBXBuildFile; fileRef = EC43B201AEBE9116CF885509 /* myjp_PB02_WY21A.png */; };
 		F1C9B446D1F9865A4C6C3427 /* StandbyDrainModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C6D75EEBC3579923B045AF6 /* StandbyDrainModels.swift */; };
 		F1E1FAD44A9B7868291E8585 /* BackgroundRefreshWorkRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFFF061FE97136309E1C214F /* BackgroundRefreshWorkRunner.swift */; };
+		F4115450FE062315BA49A6BD /* m3_PPSB_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = B4B9D7623BD1118CF7C9D7B0 /* m3_PPSB_W39B.png */; };
 		F436977D7CEF57C05438C13E /* AchievementsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5D9BAB8906D4B0B5C8365E /* AchievementsViewModel.swift */; };
+		F43D40F844A4A8F3AEE56B47 /* m3_PMBL_W32D.png in Resources */ = {isa = PBXBuildFile; fileRef = E79417B065800DC3EFB5EC8B /* m3_PMBL_W32D.png */; };
 		F48AF6B6DD6DD7ACF29FFD0F /* SoftwareUpdatesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33738C7560DFF9D83C999988 /* SoftwareUpdatesViewModel.swift */; };
 		F561421B6172071E1F5EC8A9 /* PlaceInsightsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AD2F96B06826DD3757A3C73 /* PlaceInsightsViewModel.swift */; };
 		F74C3B49C21A2D457CCC8769 /* StatsExtremeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7026429E74CA1E9539014A7D /* StatsExtremeModels.swift */; };
+		F795C44A7FD1B3FA37B9759B /* m3h_PPSW_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = 659A9CB6EEE100B9111692AC /* m3h_PPSW_W38A.png */; };
 		F8A05869CCDA48AA8A389126 /* m3_PPSB_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = B4B9D7623BD1118CF7C9D7B0 /* m3_PPSB_W39B.png */; };
 		F94D7388EC4B3A41BBF71F56 /* KeychainStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544AEF09163586EB3EB8A164 /* KeychainStoreTests.swift */; };
 		FB554B9644977E522D2DDAB8 /* TeslaMateServerProfileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29FD409374B824BE0D8B34B /* TeslaMateServerProfileStore.swift */; };
@@ -438,6 +547,7 @@
 		1DC68CCB4923F59187A31B80 /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		1E30EF6C3B954576AB2DE17D /* m3h_PBSB_W38A.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3h_PBSB_W38A.png; sourceTree = "<group>"; };
 		1F6229C7F1C85C2701EF34BE /* ChargeCostOverrideRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeCostOverrideRecord.swift; sourceTree = "<group>"; };
+		209BF098570015495DDED942 /* VehicleImageCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleImageCatalog.swift; sourceTree = "<group>"; };
 		20A5A3917ACD1B8F148BAFFA /* MileageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MileageViewModel.swift; sourceTree = "<group>"; };
 		20DFDA501283097508B81B6F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		20FF5F73D3F7184B1416D07A /* myjs_PPSW_WY19P.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myjs_PPSW_WY19P.png; sourceTree = "<group>"; };
@@ -449,6 +559,7 @@
 		2646DCFFFF97A99B634423E8 /* WeatherServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherServiceTests.swift; sourceTree = "<group>"; };
 		266A9E6CCCD58C7588B06E9B /* mx_PMNG_WT22.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mx_PMNG_WT22.png; sourceTree = "<group>"; };
 		26EF361DEB0744B28D87064D /* SQLiteDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLiteDatabase.swift; sourceTree = "<group>"; };
+		271B79211949CDDE735BDEEA /* VehicleImageResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleImageResolver.swift; sourceTree = "<group>"; };
 		2738AC7A628E528EC30C3131 /* ActivitiesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitiesViewModelTests.swift; sourceTree = "<group>"; };
 		2795FDD7E1BBE81540D679DB /* AggregateStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AggregateStoreTests.swift; sourceTree = "<group>"; };
 		287A7F2262FEF6A1C4B2922A /* TripMembershipServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripMembershipServiceTests.swift; sourceTree = "<group>"; };
@@ -497,6 +608,7 @@
 		4F2FC02E39631C8658D3B293 /* mx_PPSB_WT22.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mx_PPSB_WT22.png; sourceTree = "<group>"; };
 		4F42BF3687798DEF33DA6636 /* myjs_PN01_WY19P.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myjs_PN01_WY19P.png; sourceTree = "<group>"; };
 		5106B25F6E79893EF6560704 /* MateDroidCurrencyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MateDroidCurrencyFormatter.swift; sourceTree = "<group>"; };
+		519257D1302B242E9C10263B /* vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png"; sourceTree = "<group>"; };
 		544AEF09163586EB3EB8A164 /* KeychainStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStoreTests.swift; sourceTree = "<group>"; };
 		54AFA3EC18F255664BC87D9C /* DriveAPIProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveAPIProvider.swift; sourceTree = "<group>"; };
 		54B02345C108A1F524C8957F /* PersistenceMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceMigrationTests.swift; sourceTree = "<group>"; };
@@ -521,6 +633,7 @@
 		5F5E67A595C9FCFC9BBAAEAD /* ms_PPSB_WT19.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ms_PPSB_WT19.png; sourceTree = "<group>"; };
 		5FBE4CD8A5513C4BFDF3278C /* NotificationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCoordinator.swift; sourceTree = "<group>"; };
 		608672828845DD9CB0230901 /* DriveSummaryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveSummaryStore.swift; sourceTree = "<group>"; };
+		6135F6F500CEF5C4F00F31C9 /* VehicleImageCatalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = VehicleImageCatalog.json; sourceTree = "<group>"; };
 		61A3035BBD261D6512A563E3 /* ChargeDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeDetailViewModel.swift; sourceTree = "<group>"; };
 		625FD75C5A64BBF29D6CCB09 /* ms_PBSB_WT19.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ms_PBSB_WT19.png; sourceTree = "<group>"; };
 		62C4A3C4E51DC546EAC634CD /* myj_PN01_WY20A.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myj_PN01_WY20A.png; sourceTree = "<group>"; };
@@ -563,6 +676,7 @@
 		80086CD371FD7B960DFC00A9 /* MateDroidIOSTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MateDroidIOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		80DB5D3D79792EA245C899DD /* StatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsViewModel.swift; sourceTree = "<group>"; };
 		8158E0D03E7F26E667BB2F38 /* BatteryModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryModels.swift; sourceTree = "<group>"; };
+		817651C9DECD958E995C1188 /* VehicleImageOverrideTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleImageOverrideTests.swift; sourceTree = "<group>"; };
 		818CFD73E6BCF9C76CAD2FAB /* myjs_PPSW_WY18P.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myjs_PPSW_WY18P.png; sourceTree = "<group>"; };
 		81E0DEEC5815D9219442F059 /* LocalTeslamateIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalTeslamateIntegrationTests.swift; sourceTree = "<group>"; };
 		81EA5E2A7C6366983A1DBEE1 /* CommuteRoutesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommuteRoutesViewModel.swift; sourceTree = "<group>"; };
@@ -597,6 +711,7 @@
 		951CF42E02BEEB5660E6580C /* SoftwareUpdatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftwareUpdatesView.swift; sourceTree = "<group>"; };
 		953C6E90117CC7C48682537F /* TripRuleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripRuleTests.swift; sourceTree = "<group>"; };
 		9570EDFA1E7C17338CD01AA8 /* WidgetDisplayDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDisplayDataTests.swift; sourceTree = "<group>"; };
+		95FC38DDF39F1A7F6D4CB8A3 /* VehicleImageCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleImageCatalogTests.swift; sourceTree = "<group>"; };
 		96490AFD08A4C22A750E4C4E /* CommuteRoutesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommuteRoutesViewModelTests.swift; sourceTree = "<group>"; };
 		979C356E1F70388BDCC4F192 /* CompareChargesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompareChargesViewModelTests.swift; sourceTree = "<group>"; };
 		9847C5EDA844BEA9162A9E44 /* TeslaMateCapability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeslaMateCapability.swift; sourceTree = "<group>"; };
@@ -657,6 +772,7 @@
 		BB5D9BAB8906D4B0B5C8365E /* AchievementsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsViewModel.swift; sourceTree = "<group>"; };
 		BF54C6131048C2541AE40602 /* mx_PBSB_WT20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mx_PBSB_WT20.png; sourceTree = "<group>"; };
 		BF5FE552443D3733F4F326D8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		BF74D4F1ADB5A8ECB51DBA05 /* vehicle_model-3-early_base_pearl-white_aero-18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vehicle_model-3-early_base_pearl-white_aero-18.png"; sourceTree = "<group>"; };
 		BFDBE7FF83C910E1CCA142DA /* CountriesVisitedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountriesVisitedView.swift; sourceTree = "<group>"; };
 		C0C924BC8F186CDDDE4A749D /* m3_PMNG_W32P.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3_PMNG_W32P.png; sourceTree = "<group>"; };
 		C0E313EB0B8726A37D81BBF6 /* AppText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppText.swift; sourceTree = "<group>"; };
@@ -698,6 +814,7 @@
 		D5CE287A4B41DD1D92B18AE5 /* myj_PB01_WY20A.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myj_PB01_WY20A.png; sourceTree = "<group>"; };
 		D6098F5BA33EC58620EA4024 /* TeslaMateConnectionDiagnosticTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeslaMateConnectionDiagnosticTests.swift; sourceTree = "<group>"; };
 		D652772ED6FF4E0BD820BDB2 /* SettingsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModelTests.swift; sourceTree = "<group>"; };
+		D6BF4550A0C735D0F8A133B1 /* CarImagePickerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarImagePickerViewModelTests.swift; sourceTree = "<group>"; };
 		D781AAD83CB102188F9F10E1 /* StandbyDrainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandbyDrainViewModel.swift; sourceTree = "<group>"; };
 		D7CE0109A19A66448EC95BB0 /* m3_PPSB_W38B.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3_PPSB_W38B.png; sourceTree = "<group>"; };
 		D882EDE00B92188C2D89B899 /* ActivitiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitiesView.swift; sourceTree = "<group>"; };
@@ -705,6 +822,7 @@
 		DB9677D68D8A255540FCE1B3 /* m3_PMBL_W38B.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3_PMBL_W38B.png; sourceTree = "<group>"; };
 		DBABDC5012CEF36E78C24570 /* PaletteEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteEnvironment.swift; sourceTree = "<group>"; };
 		DC5820AF1EDC343D26370976 /* WidgetDisplayData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDisplayData.swift; sourceTree = "<group>"; };
+		DC60FB7E63492182DAE93311 /* SyntheticCoordinates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntheticCoordinates.swift; sourceTree = "<group>"; };
 		DD2C4C9A7B8103760CA5F590 /* ActivityAPIProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityAPIProvider.swift; sourceTree = "<group>"; };
 		DEE6CB02FFA705CEAACCCD0F /* UnitFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitFormatter.swift; sourceTree = "<group>"; };
 		E11DC0A5EE81007C56EBF0B2 /* ChargeStatsCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeStatsCalculator.swift; sourceTree = "<group>"; };
@@ -737,6 +855,7 @@
 		F8A094324798A545D20CC211 /* MateDroidWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MateDroidWidget.entitlements; sourceTree = "<group>"; };
 		FA1E6AB1E3ECAE2DB222DD44 /* m3_PPSW_W32D.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3_PPSW_W32D.png; sourceTree = "<group>"; };
 		FADC805FF6BA578FCE9822E7 /* RouteCoverageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteCoverageTests.swift; sourceTree = "<group>"; };
+		FB148D7AD5F6131F683FA590 /* VehicleImageResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleImageResolverTests.swift; sourceTree = "<group>"; };
 		FB959D80126A953BAAFB683E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		FBF690F984B8BED08A841FBC /* AppRouteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouteTests.swift; sourceTree = "<group>"; };
 		FC80D35F345A055C44B5986A /* TripDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDetailView.swift; sourceTree = "<group>"; };
@@ -1086,6 +1205,7 @@
 			isa = PBXGroup;
 			children = (
 				20DFDA501283097508B81B6F /* Info.plist */,
+				DC60FB7E63492182DAE93311 /* SyntheticCoordinates.swift */,
 				A27302A721879B54224BEB94 /* API */,
 				565969EA3493FD317B0E7A24 /* App */,
 				8E1E3DC171E72265359D9508 /* Domain */,
@@ -1213,6 +1333,8 @@
 				20FF5F73D3F7184B1416D07A /* myjs_PPSW_WY19P.png */,
 				C2F2A824491C8705D87ABDEE /* myjs_PX02_WY18P.png */,
 				25C903C6F69A1DFCD8A634C5 /* myjs_PX02_WY19P.png */,
+				BF74D4F1ADB5A8ECB51DBA05 /* vehicle_model-3-early_base_pearl-white_aero-18.png */,
+				519257D1302B242E9C10263B /* vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png */,
 			);
 			path = CarImages;
 			sourceTree = "<group>";
@@ -1230,6 +1352,8 @@
 				1920E2470948D1A22BDF9F01 /* TripDetector.swift */,
 				263ACCD002386F7CD719C1D5 /* TripPersistenceModels.swift */,
 				DEE6CB02FFA705CEAACCCD0F /* UnitFormatter.swift */,
+				209BF098570015495DDED942 /* VehicleImageCatalog.swift */,
+				271B79211949CDDE735BDEEA /* VehicleImageResolver.swift */,
 				E36B41F8A49690D5F3A63611 /* WeatherSelection.swift */,
 			);
 			path = Domain;
@@ -1286,6 +1410,9 @@
 				ACB20FAA97BBBCBCB5E40D7E /* ShortEntryFilterTests.swift */,
 				953C6E90117CC7C48682537F /* TripRuleTests.swift */,
 				86152CC2025068FAEFF67444 /* UnitFormatterTests.swift */,
+				95FC38DDF39F1A7F6D4CB8A3 /* VehicleImageCatalogTests.swift */,
+				817651C9DECD958E995C1188 /* VehicleImageOverrideTests.swift */,
+				FB148D7AD5F6131F683FA590 /* VehicleImageResolverTests.swift */,
 				A50FFBE5AF55DB6DE0C0D124 /* WeatherSelectionTests.swift */,
 			);
 			path = Domain;
@@ -1385,6 +1512,7 @@
 				35599BEE2270B1E80A3F0B8C /* AchievementsViewModelTests.swift */,
 				2738AC7A628E528EC30C3131 /* ActivitiesViewModelTests.swift */,
 				9DE4347EA7C872BBE88A7DCD /* AnalyticalViewModelTests.swift */,
+				D6BF4550A0C735D0F8A133B1 /* CarImagePickerViewModelTests.swift */,
 				E50DC939747434D841252A30 /* ChargeDetailViewModelTests.swift */,
 				048E9E50B6CC16106AAC98C7 /* ChargePricingRuleTests.swift */,
 				CFCCD5E7F7C55D364BE56D93 /* ChargesViewModelTests.swift */,
@@ -1447,6 +1575,7 @@
 			children = (
 				2AB94C9FA2A96BD3F42DDE63 /* Assets.xcassets */,
 				FB959D80126A953BAAFB683E /* Localizable.xcstrings */,
+				6135F6F500CEF5C4F00F31C9 /* VehicleImageCatalog.json */,
 				6EB56058380211CB5FCE0B40 /* CarImages */,
 			);
 			path = Resources;
@@ -1617,6 +1746,105 @@
 			files = (
 				A0C6B62867972B7839691EE8 /* Localizable.xcstrings in Resources */,
 				11B9B5E9DE2E5683C085CF6A /* PrivacyInfo.xcprivacy in Resources */,
+				765DE2926CF71D418E79E53B /* m3_PBSB_W32D.png in Resources */,
+				797616139FF6F9029CB2B038 /* m3_PBSB_W32P.png in Resources */,
+				38E48E5EEFB490C227269D7F /* m3_PBSB_W38B.png in Resources */,
+				15240185DB89F4095FDBCC36 /* m3_PBSB_W39B.png in Resources */,
+				F43D40F844A4A8F3AEE56B47 /* m3_PMBL_W32D.png in Resources */,
+				80338A2066CA3AB62704B8D7 /* m3_PMBL_W32P.png in Resources */,
+				E517F39A591F923F24A3266F /* m3_PMBL_W38B.png in Resources */,
+				4A55E748C75BF0D12D8DF2E4 /* m3_PMBL_W39B.png in Resources */,
+				7537562C8CACDFC2F9DC0B0B /* m3_PMNG_W32D.png in Resources */,
+				6F51ADEDB426D747D7A26CCB /* m3_PMNG_W32P.png in Resources */,
+				3194F8304EFE413EE636DFF4 /* m3_PMNG_W38B.png in Resources */,
+				0D1D4EF71EAC4BB8509D3849 /* m3_PMNG_W39B.png in Resources */,
+				777F82B45BE9BC58F567BF5D /* m3_PMSS_W32D.png in Resources */,
+				2B93F9AA1E953A5C833FF042 /* m3_PMSS_W32P.png in Resources */,
+				6FB84334BA6DD0FDB316CF20 /* m3_PMSS_W38B.png in Resources */,
+				10BF02CEE7492676CEC95A47 /* m3_PMSS_W39B.png in Resources */,
+				BF700E07138046978AD222F0 /* m3_PPMR_W32D.png in Resources */,
+				5203F2C9C395051AE3617EFB /* m3_PPMR_W32P.png in Resources */,
+				916B3E49695B1C1132F48089 /* m3_PPMR_W38B.png in Resources */,
+				D383A9AD65244D334D45887A /* m3_PPMR_W39B.png in Resources */,
+				C5744377D8436178629AAE20 /* m3_PPSB_W32D.png in Resources */,
+				B23E43C26214E4C4DA782ADB /* m3_PPSB_W32P.png in Resources */,
+				772A0052506F78BDFE0F7A03 /* m3_PPSB_W38B.png in Resources */,
+				F4115450FE062315BA49A6BD /* m3_PPSB_W39B.png in Resources */,
+				056961E41402B339AF4214FB /* m3_PPSW_W32D.png in Resources */,
+				8B2AFDFE35E6D7D1A85270B6 /* m3_PPSW_W32P.png in Resources */,
+				C6DA2C1F820DEA94FABDA2C8 /* m3_PPSW_W38B.png in Resources */,
+				3B750AFA822E5D57BC0DF061 /* m3_PPSW_W39B.png in Resources */,
+				8E287E1DF7F3F1335637D063 /* m3h_PBSB_W38A.png in Resources */,
+				BFACDF43CC38F553AB1F288A /* m3h_PN00_W38A.png in Resources */,
+				8FCC58CB9DE96F61FFD38484 /* m3h_PN01_W38A.png in Resources */,
+				7D5940A05B4F20EC0FECDAD8 /* m3h_PPSB_W38A.png in Resources */,
+				F795C44A7FD1B3FA37B9759B /* m3h_PPSW_W38A.png in Resources */,
+				6B321C6B57D83FDFD68556A2 /* m3h_PR01_W38A.png in Resources */,
+				2E8FE17815E1E14933CB3F97 /* m3h_PX02_W38A.png in Resources */,
+				938316FEB880AF17F0EF056F /* m3hp_PBSB_W30P.png in Resources */,
+				61903D5166CBEF9F36FF1D50 /* m3hp_PN00_W30P.png in Resources */,
+				2580148BA031993BAF113376 /* m3hp_PN01_W30P.png in Resources */,
+				03C267F810F5BC17DB80AF38 /* m3hp_PPSB_W30P.png in Resources */,
+				530C2FE61E35C7497E2F1419 /* m3hp_PPSW_W30P.png in Resources */,
+				A8AAEFFC13638C9A91714CBD /* m3hp_PR01_W30P.png in Resources */,
+				09996B2197A0B90B12EFAD10 /* m3hp_PX02_W30P.png in Resources */,
+				691BEBBD1D2B0D787CFDB743 /* ms_PBSB_WT19.png in Resources */,
+				7D1150D495E8509E55888755 /* ms_PMNG_WT19.png in Resources */,
+				E8E307583AEFF2E087510E6D /* ms_PPMR_WT19.png in Resources */,
+				B0CDBA5C591B4817CF91BCD8 /* ms_PPSB_WT19.png in Resources */,
+				2243FD4D4D08DC1D5D78EA9B /* ms_PPSW_WT19.png in Resources */,
+				AC56D05110FA7B33C05E9DB2 /* mx_PBSB_WT20.png in Resources */,
+				1B5358FB8AE30BB632C9E106 /* mx_PBSB_WT22.png in Resources */,
+				AE4115BB66C36C867271A0ED /* mx_PMNG_WT20.png in Resources */,
+				7ACC258B4E9A6190ACA6C2A3 /* mx_PMNG_WT22.png in Resources */,
+				DA011DE77C2DE34B8490B191 /* mx_PPMR_WT20.png in Resources */,
+				90BF28CF0A47062BCA95525E /* mx_PPMR_WT22.png in Resources */,
+				162A5B59556C6A4D8956F2AA /* mx_PPSB_WT20.png in Resources */,
+				DCF19BC220D63409433DE699 /* mx_PPSB_WT22.png in Resources */,
+				CEB127E4B544CB423793457B /* mx_PPSW_WT20.png in Resources */,
+				23AB5D7BE71443705EAB3579 /* mx_PPSW_WT22.png in Resources */,
+				0970D4DCAFB375F86268763F /* my_PBSB_WY18B.png in Resources */,
+				99552CD72EAFB2093DF33F13 /* my_PBSB_WY19B.png in Resources */,
+				5B9CAD3F28D912975575BEC2 /* my_PBSB_WY20P.png in Resources */,
+				DC0D3BC32EA94F21F041BD74 /* my_PMNG_WY18B.png in Resources */,
+				5A2D2F014517FFD6F9D8710C /* my_PMNG_WY19B.png in Resources */,
+				57EFB76EA78CA02CB5BEF210 /* my_PMNG_WY20P.png in Resources */,
+				14781ED01EE64726AFAB727C /* my_PPMR_WY18B.png in Resources */,
+				44A3A8A0AD5E653995CEA7D5 /* my_PPMR_WY19B.png in Resources */,
+				30F24793F87C9DBD6EEA1AE1 /* my_PPMR_WY20P.png in Resources */,
+				6BF5737D9F22779E02FA9DF0 /* my_PPSB_WY18B.png in Resources */,
+				826E3B079CB80C6FFCDC0324 /* my_PPSB_WY19B.png in Resources */,
+				62A0DA2C28BDFD7DC07965AA /* my_PPSB_WY20P.png in Resources */,
+				6638DCF3572A792B126CA9DD /* my_PPSW_WY18B.png in Resources */,
+				CE76C4BFBC2960803720172B /* my_PPSW_WY19B.png in Resources */,
+				A070F59A6C020319C2D42C30 /* my_PPSW_WY20P.png in Resources */,
+				548F1681D319789C94339BB5 /* myj_PB01_WY19P.png in Resources */,
+				03231305E2CE96F4EB667D94 /* myj_PB01_WY20A.png in Resources */,
+				22215BC959B297315C6365AD /* myj_PN00_WY19P.png in Resources */,
+				A78EB6D350D01CE7F2C9BA9B /* myj_PN00_WY20A.png in Resources */,
+				9C302DCD24D728B86BBE5FDA /* myj_PN01_WY19P.png in Resources */,
+				332CF8511A5597023C8D6046 /* myj_PN01_WY20A.png in Resources */,
+				14838389B97472A88A9B8D17 /* myj_PPSW_WY19P.png in Resources */,
+				925B8E833EC3AB5B82E9CC9D /* myj_PPSW_WY20A.png in Resources */,
+				93F8560D9C339C857569907D /* myj_PR01_WY19P.png in Resources */,
+				421E28748F014F583F6B7330 /* myj_PR01_WY20A.png in Resources */,
+				2B0B31FD97EA009EF0C9F5B8 /* myj_PX02_WY19P.png in Resources */,
+				8DEC3DEA81D1375AFF81E85C /* myj_PX02_WY20A.png in Resources */,
+				D3BF3F01C3C37D45E05883AB /* myjp_PB01_WY21A.png in Resources */,
+				8956B9E47B6AE2A882796A10 /* myjp_PB02_WY21A.png in Resources */,
+				17E91581995775EC7689AD27 /* myjp_PN00_WY21A.png in Resources */,
+				8D1AFA5EF514B0BC93A99F80 /* myjp_PN01_WY21A.png in Resources */,
+				08842B8AD6C562450122F4A3 /* myjp_PPSW_WY21A.png in Resources */,
+				3634EEFAEEADF6FD2D51C06B /* myjp_PR01_WY21A.png in Resources */,
+				77D3A4E84053CB4EE63803A8 /* myjp_PX02_WY21A.png in Resources */,
+				60E0BCEE44C9AB3728CD0ABD /* myjs_PN01_WY18P.png in Resources */,
+				B07FC3B015D185A268CEC5B9 /* myjs_PN01_WY19P.png in Resources */,
+				8554B8447915F3EE2176BADC /* myjs_PPSW_WY18P.png in Resources */,
+				33F787BFE4F9F6F1B5644816 /* myjs_PPSW_WY19P.png in Resources */,
+				463EC8E3DC959A2BDE25B60C /* myjs_PX02_WY18P.png in Resources */,
+				81008E1245A4F0E891631762 /* myjs_PX02_WY19P.png in Resources */,
+				1DB5202E902EA23DE28C4454 /* vehicle_model-3-early_base_pearl-white_aero-18.png in Resources */,
+				1F62477954E1390F68C02A01 /* vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1627,6 +1855,7 @@
 				728ECAB52E1131786691FCC4 /* Assets.xcassets in Resources */,
 				08865DC0E47767EB4371BAC1 /* Localizable.xcstrings in Resources */,
 				40A0B02D5C75AA8A5E0FD63D /* PrivacyInfo.xcprivacy in Resources */,
+				D57BEB03E2C1CA9DEA6834F0 /* VehicleImageCatalog.json in Resources */,
 				B9C5352AB3345FF72A2D531B /* m3_PBSB_W32D.png in Resources */,
 				975FF738092162EC5C0ACBAF /* m3_PBSB_W32P.png in Resources */,
 				AA8A7F06FB9A6BF55A181398 /* m3_PBSB_W38B.png in Resources */,
@@ -1724,6 +1953,8 @@
 				009C155A081913685669FB83 /* myjs_PPSW_WY19P.png in Resources */,
 				53FD3619D8620FFC900A230B /* myjs_PX02_WY18P.png in Resources */,
 				51815F5FE2E10D845635BB89 /* myjs_PX02_WY19P.png in Resources */,
+				63C1FA73B5C9AEA517D6B618 /* vehicle_model-3-early_base_pearl-white_aero-18.png in Resources */,
+				A20D303868541414DC7C739A /* vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1913,6 +2144,8 @@
 				4A7A9CD0F6A238998768E342 /* TyrePressureNotificationContent.swift in Sources */,
 				45333CD53CF498D33776CE4D /* UnitFormatter.swift in Sources */,
 				DDB2F077AA72494EA8376521 /* UserFacingErrorLocalizer.swift in Sources */,
+				5A27BD889EB4BC8A5D5EE0D6 /* VehicleImageCatalog.swift in Sources */,
+				7DC66818DD060B3DBFA625C7 /* VehicleImageResolver.swift in Sources */,
 				7C11CBE61E7E7C36B71E7FDF /* WeatherAlongTheWayView.swift in Sources */,
 				8B48105CDF7160D35E2E1CE7 /* WeatherSelection.swift in Sources */,
 				9274390396C9BDFFBE9CED94 /* WeatherService.swift in Sources */,
@@ -1937,6 +2170,7 @@
 				7F5769BEB879A9CC8BD5D4DF /* AppStoreReadinessTests.swift in Sources */,
 				EE3880836F68CBBB0DBC4277 /* BackgroundRefreshWorkRunnerTests.swift in Sources */,
 				07F2A074FCF50F3F458B5567 /* CarColorPaletteTests.swift in Sources */,
+				6A6F09A16D07CF77B1E344CF /* CarImagePickerViewModelTests.swift in Sources */,
 				28C18ABEC95C0F2DFF27F946 /* CarImageResolverTests.swift in Sources */,
 				6D887335E1799350FDA68F1A /* ChargeCostOverrideStoreTests.swift in Sources */,
 				C5ADC0CE21C05B81837AFB53 /* ChargeDetailViewModelTests.swift in Sources */,
@@ -1972,6 +2206,7 @@
 				324FE72802A8BE25D82DF693 /* SettingsViewModelTests.swift in Sources */,
 				3120AA4255CF51D8C23A8C64 /* ShortEntryFilterTests.swift in Sources */,
 				5457C72901BB92835E69A1E0 /* SyncCoordinatorTests.swift in Sources */,
+				C6BA1121565D2FC40A55CA06 /* SyntheticCoordinates.swift in Sources */,
 				4C0C8A01EDABC44725575579 /* TeslaMateAPIVersionTests.swift in Sources */,
 				5B3C4468809A41538FCB9424 /* TeslaMateCapabilityPresentationTests.swift in Sources */,
 				84512A9270C6845E3F7F3D33 /* TeslaMateCapabilityServiceTests.swift in Sources */,
@@ -1984,6 +2219,9 @@
 				65CFDB11FF597D94B7C366A8 /* TripRuleTests.swift in Sources */,
 				020DDF5C6D95D8F76FC166CB /* TripsViewModelTests.swift in Sources */,
 				60B96846FB560C4643EBF444 /* UnitFormatterTests.swift in Sources */,
+				1154B1FEAB2E047AC9D37745 /* VehicleImageCatalogTests.swift in Sources */,
+				06584FFAD99FB6E3FA5AFEFE /* VehicleImageOverrideTests.swift in Sources */,
+				AFBE8FDCF53D5714355EA02E /* VehicleImageResolverTests.swift in Sources */,
 				78734CCD325CC4B13BE9657F /* WeatherSelectionTests.swift in Sources */,
 				E06CDF7CAA676392AD274AFB /* WeatherServiceTests.swift in Sources */,
 				06E8285C5BA76487CC023BCE /* WidgetDisplayDataTests.swift in Sources */,

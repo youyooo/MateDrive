@@ -67,10 +67,16 @@ final class TripDetailViewModelTests: XCTestCase {
             legs: [.drive(10), .charge(20), .drive(11)],
             consumedFingerprints: []
         )
+        let firstRouteStart = SyntheticCoordinates.point()
+        let firstRouteEnd = SyntheticCoordinates.point(latitudeOffset: 1, longitudeOffset: 1)
+        let secondRouteStart = SyntheticCoordinates.point(latitudeOffset: 2, longitudeOffset: 2)
+        let secondRouteEnd = SyntheticCoordinates.point(latitudeOffset: 2.01, longitudeOffset: 2.01)
+        let excludedRouteStart = SyntheticCoordinates.point(latitudeOffset: 3, longitudeOffset: 3)
+        let excludedRouteEnd = SyntheticCoordinates.point(latitudeOffset: 4, longitudeOffset: 4)
         let routes = [
-            SavedTripRouteSegment(driveId: 10, points: [GeocodeLocation(latitude: 48.85, longitude: 2.35), GeocodeLocation(latitude: 47.5, longitude: 3.0)]),
-            SavedTripRouteSegment(driveId: 11, points: [GeocodeLocation(latitude: 45.9, longitude: 4.8), GeocodeLocation(latitude: 45.76, longitude: 4.84)]),
-            SavedTripRouteSegment(driveId: 99, points: [GeocodeLocation(latitude: 1, longitude: 1), GeocodeLocation(latitude: 2, longitude: 2)])
+            SavedTripRouteSegment(driveId: 10, points: [GeocodeLocation(latitude: firstRouteStart.latitude, longitude: firstRouteStart.longitude), GeocodeLocation(latitude: firstRouteEnd.latitude, longitude: firstRouteEnd.longitude)]),
+            SavedTripRouteSegment(driveId: 11, points: [GeocodeLocation(latitude: secondRouteStart.latitude, longitude: secondRouteStart.longitude), GeocodeLocation(latitude: secondRouteEnd.latitude, longitude: secondRouteEnd.longitude)]),
+            SavedTripRouteSegment(driveId: 99, points: [GeocodeLocation(latitude: excludedRouteStart.latitude, longitude: excludedRouteStart.longitude), GeocodeLocation(latitude: excludedRouteEnd.latitude, longitude: excludedRouteEnd.longitude)])
         ]
         let viewModel = TripDetailViewModel(
             dataProvider: FakeTripDataProvider(source: .roadTrip, routes: routes),
@@ -85,24 +91,29 @@ final class TripDetailViewModelTests: XCTestCase {
     }
 
     func testTripRouteSegmentRejectsInvalidAndImplausibleCoordinates() {
+        let validStart = SyntheticCoordinates.point()
+        let implausiblePoint = SyntheticCoordinates.point(latitudeOffset: 5, longitudeOffset: 50)
+        let validEnd = SyntheticCoordinates.point(latitudeOffset: 0.01, longitudeOffset: 0.01)
         let segment = SavedTripRouteSegment(driveId: 10, positions: [
-            DrivePosition(date: "2026-01-01T08:00:00Z", latitude: 48.85, longitude: 2.35),
-            DrivePosition(date: "2026-01-01T08:01:00Z", latitude: 0, longitude: 0),
-            DrivePosition(date: "2026-01-01T08:02:00Z", latitude: 10, longitude: 100),
-            DrivePosition(date: "2026-01-01T08:10:00Z", latitude: 48.86, longitude: 2.36)
+            DrivePosition(date: "2026-01-01T08:00:00Z", latitude: validStart.latitude, longitude: validStart.longitude),
+            DrivePosition(date: "2026-01-01T08:01:00Z", latitude: SyntheticCoordinates.zero.latitude, longitude: SyntheticCoordinates.zero.longitude),
+            DrivePosition(date: "2026-01-01T08:02:00Z", latitude: implausiblePoint.latitude, longitude: implausiblePoint.longitude),
+            DrivePosition(date: "2026-01-01T08:10:00Z", latitude: validEnd.latitude, longitude: validEnd.longitude)
         ])
 
         XCTAssertEqual(segment.points, [
-            GeocodeLocation(latitude: 48.85, longitude: 2.35),
-            GeocodeLocation(latitude: 48.86, longitude: 2.36)
+            GeocodeLocation(latitude: validStart.latitude, longitude: validStart.longitude),
+            GeocodeLocation(latitude: validEnd.latitude, longitude: validEnd.longitude)
         ])
     }
 
     func testTripDataProviderUsesCachedRouteWithoutRequestingDriveDetail() async {
+        let routeStart = SyntheticCoordinates.point()
+        let routeEnd = SyntheticCoordinates.point(latitudeOffset: 0.01, longitudeOffset: 0.01)
         let cache = InMemoryTripRouteCache(values: [
             "1:10": [
-                GeocodeLocation(latitude: 28.20, longitude: 112.85),
-                GeocodeLocation(latitude: 28.21, longitude: 112.86)
+                GeocodeLocation(latitude: routeStart.latitude, longitude: routeStart.longitude),
+                GeocodeLocation(latitude: routeEnd.latitude, longitude: routeEnd.longitude)
             ]
         ])
         let api = RouteAnalyticsAPI(details: [:])
@@ -118,11 +129,13 @@ final class TripDetailViewModelTests: XCTestCase {
 
     func testTripDataProviderCachesSanitizedNetworkRoute() async {
         let cache = InMemoryTripRouteCache()
+        let routeStart = SyntheticCoordinates.point()
+        let routeEnd = SyntheticCoordinates.point(latitudeOffset: 0.01, longitudeOffset: 0.01)
         let detail = DriveDetail(
             driveId: 10,
             positions: [
-                DrivePosition(date: "2026-01-01T08:00:00Z", latitude: 28.20, longitude: 112.85),
-                DrivePosition(date: "2026-01-01T08:10:00Z", latitude: 28.21, longitude: 112.86)
+                DrivePosition(date: "2026-01-01T08:00:00Z", latitude: routeStart.latitude, longitude: routeStart.longitude),
+                DrivePosition(date: "2026-01-01T08:10:00Z", latitude: routeEnd.latitude, longitude: routeEnd.longitude)
             ]
         )
         let api = RouteAnalyticsAPI(details: [10: detail])
@@ -138,11 +151,13 @@ final class TripDetailViewModelTests: XCTestCase {
     }
 
     func testTripDataProviderFallsBackToNetworkWhenRouteCacheFails() async {
+        let routeStart = SyntheticCoordinates.point()
+        let routeEnd = SyntheticCoordinates.point(latitudeOffset: 0.01, longitudeOffset: 0.01)
         let detail = DriveDetail(
             driveId: 10,
             positions: [
-                DrivePosition(date: "2026-01-01T08:00:00Z", latitude: 28.20, longitude: 112.85),
-                DrivePosition(date: "2026-01-01T08:10:00Z", latitude: 28.21, longitude: 112.86)
+                DrivePosition(date: "2026-01-01T08:00:00Z", latitude: routeStart.latitude, longitude: routeStart.longitude),
+                DrivePosition(date: "2026-01-01T08:10:00Z", latitude: routeEnd.latitude, longitude: routeEnd.longitude)
             ]
         )
         let api = RouteAnalyticsAPI(details: [10: detail])

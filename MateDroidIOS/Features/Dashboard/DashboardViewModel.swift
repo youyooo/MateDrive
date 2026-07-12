@@ -39,6 +39,13 @@ public struct DashboardCarOption: Equatable, Identifiable, Sendable {
     }
 }
 
+public enum DashboardVehicleImageOverrideError: Error, Equatable, Sendable {
+    case currentVehicleUnavailable
+    case catalogUnavailable
+    case invalidServerURL
+    case invalidOverride
+}
+
 public struct DashboardState: Equatable, Sendable {
     public var isLoading: Bool
     public var isRefreshing: Bool
@@ -57,8 +64,9 @@ public struct DashboardState: Equatable, Sendable {
     public var locationText: String?
     public var softwareVersion: String?
     public var tpmsDetails: TpmsDetails?
-    public var carImagePath: String?
-    public var carImageScaleFactor: Double
+    public var vehicleImageResolution: VehicleImageResolution?
+    public var carImagePath: String? { vehicleImageResolution?.assetPath }
+    public var carImageScaleFactor: Double { vehicleImageResolution?.presentationScale ?? 1 }
     public var exteriorColor: String?
     public var wheelType: String?
     public var trimBadging: String?
@@ -88,6 +96,7 @@ public struct DashboardState: Equatable, Sendable {
         locationText: String? = nil,
         softwareVersion: String? = nil,
         tpmsDetails: TpmsDetails? = nil,
+        vehicleImageResolution: VehicleImageResolution? = nil,
         carImagePath: String? = nil,
         carImageScaleFactor: Double = 1.0,
         exteriorColor: String? = nil,
@@ -118,8 +127,9 @@ public struct DashboardState: Equatable, Sendable {
         self.locationText = locationText
         self.softwareVersion = softwareVersion
         self.tpmsDetails = tpmsDetails
-        self.carImagePath = carImagePath
-        self.carImageScaleFactor = carImageScaleFactor
+        self.vehicleImageResolution = vehicleImageResolution ?? carImagePath.map {
+            Self.compatibilityResolution(assetPath: $0, presentationScale: carImageScaleFactor)
+        }
         self.exteriorColor = exteriorColor
         self.wheelType = wheelType
         self.trimBadging = trimBadging
@@ -130,6 +140,22 @@ public struct DashboardState: Equatable, Sendable {
         self.errorMessage = errorMessage
         self.isUsingCachedData = isUsingCachedData
         self.cachedAt = cachedAt
+    }
+
+    private static func compatibilityResolution(assetPath: String, presentationScale: Double) -> VehicleImageResolution {
+        VehicleImageResolution(
+            assetID: nil,
+            generationID: nil,
+            trimID: nil,
+            colorID: nil,
+            wheelID: nil,
+            assetPath: assetPath,
+            presentationScale: presentationScale,
+            confidence: .fallback,
+            evidence: [.default],
+            conflicts: [],
+            usesLegacyAsset: true
+        )
     }
 }
 
@@ -144,6 +170,7 @@ public final class DashboardViewModel: ObservableObject {
     private let notificationService: any AppNotificationServicing
     private let sentryAlertStore: any SentryAlertLogStoring
     private let locationResolver: (any DashboardLocationResolving)?
+    private let vehicleImageCatalogProvider: any VehicleImageCatalogProviding
     private let now: @Sendable () -> Date
     private var loadedCars: [CarData] = []
     private var serverURL = ""
@@ -156,6 +183,7 @@ public final class DashboardViewModel: ObservableObject {
         notificationService: any AppNotificationServicing = DisabledAppNotificationService(),
         sentryAlertStore: any SentryAlertLogStoring = EmptySentryAlertLogStore(),
         locationResolver: (any DashboardLocationResolving)? = nil,
+        vehicleImageCatalogProvider: any VehicleImageCatalogProviding = BundledVehicleImageCatalogProvider(),
         now: @escaping @Sendable () -> Date = Date.init,
         initialState: DashboardState = DashboardState()
     ) {
@@ -166,6 +194,7 @@ public final class DashboardViewModel: ObservableObject {
         self.notificationService = notificationService
         self.sentryAlertStore = sentryAlertStore
         self.locationResolver = locationResolver
+        self.vehicleImageCatalogProvider = vehicleImageCatalogProvider
         self.now = now
         self.state = initialState
     }
@@ -182,7 +211,7 @@ public final class DashboardViewModel: ObservableObject {
             let selectedCar = selectInitialCar(from: cars, lastSelectedCarId: settings.lastSelectedCarId)
             let options = cars.map { DashboardCarOption(id: $0.carId, name: $0.dashboardDisplayName) }
             if let selectedCar {
-                apply(car: selectedCar, options: options, isLoading: false)
+                apply(car: selectedCar, options: options, settings: settings, isLoading: false)
                 await loadStatus(for: selectedCar)
             } else {
                 state = DashboardState(
@@ -222,9 +251,67 @@ public final class DashboardViewModel: ObservableObject {
         }
 
         let options = loadedCars.map { DashboardCarOption(id: $0.carId, name: $0.dashboardDisplayName) }
-        apply(car: car, options: options, isLoading: false)
+        let settings = await settingsStore.load()
+        apply(car: car, options: options, settings: settings, isLoading: false)
         await saveSelectedCarId(carId)
         await loadStatus(for: car)
+    }
+
+    public func makeCarImagePickerViewModel(language: AppLanguage) async -> CarImagePickerViewModel? {
+        guard let car = currentCar,
+              let catalog = try? vehicleImageCatalogProvider.catalog()
+        else { return nil }
+        let settings = await settingsStore.load()
+        let serverURL = URL(string: settings.serverURL)
+        let storedOverride = serverURL.flatMap {
+            settings.vehicleImageOverride(for: $0, carID: car.carId)
+        }
+        let automaticResolution = VehicleImageResolver(catalog: catalog).resolve(vehicleImageDescriptor(for: car))
+        return CarImagePickerViewModel(
+            catalog: catalog,
+            automaticResolution: automaticResolution,
+            storedOverride: storedOverride,
+            language: language
+        ) { override in
+            try await self.setVehicleImageOverride(override)
+        }
+    }
+
+    public func setVehicleImageOverride(_ override: VehicleImageOverride?) async throws {
+        guard let car = currentCar else {
+            throw DashboardVehicleImageOverrideError.currentVehicleUnavailable
+        }
+        let catalog: VehicleImageCatalog
+        do {
+            catalog = try vehicleImageCatalogProvider.catalog()
+        } catch {
+            throw DashboardVehicleImageOverrideError.catalogUnavailable
+        }
+        var settings = await settingsStore.load()
+        guard let serverURL = URL(string: settings.serverURL), serverURL.scheme != nil, serverURL.host != nil else {
+            throw DashboardVehicleImageOverrideError.invalidServerURL
+        }
+
+        if let override {
+            guard override.manualOverride(in: catalog) != nil else {
+                throw DashboardVehicleImageOverrideError.invalidOverride
+            }
+            settings.setVehicleImageOverride(override, for: serverURL, carID: car.carId)
+        } else {
+            settings.clearVehicleImageOverride(for: serverURL, carID: car.carId)
+        }
+        await settingsStore.save(settings)
+
+        state.vehicleImageResolution = resolveVehicleImage(for: car, settings: settings)
+        if let snapshot = DashboardSnapshot(state: state, savedAt: now()) {
+            await dashboardSnapshotStore.save(snapshot, serverURL: settings.serverURL)
+        }
+        widgetSnapshotStore.save(WidgetDisplayData(
+            dashboardState: state,
+            language: settings.appLanguage,
+            displayUnitSystem: settings.displayUnitSystem
+        ))
+        WidgetCenter.shared.reloadTimelines(ofKind: WidgetConstants.carStatusKind)
     }
 
     private var currentCar: CarData? {
@@ -241,28 +328,15 @@ public final class DashboardViewModel: ObservableObject {
         return cars.first
     }
 
-    private func apply(car: CarData, options: [DashboardCarOption], isLoading: Bool) {
-        let imagePath = CarImageResolver.assetPath(
-            model: car.carDetails?.model,
-            exteriorColor: car.carExterior?.exteriorColor,
-            wheelType: car.carExterior?.wheelType,
-            trimBadging: car.carDetails?.trimBadging
-        )
-        let imageScale = CarImageResolver.scaleFactor(
-            model: car.carDetails?.model,
-            exteriorColor: car.carExterior?.exteriorColor,
-            wheelType: car.carExterior?.wheelType,
-            trimBadging: car.carDetails?.trimBadging
-        )
-
+    private func apply(car: CarData, options: [DashboardCarOption], settings: AppSettings, isLoading: Bool) {
+        let imageResolution = resolveVehicleImage(for: car, settings: settings)
         state = DashboardState(
             isLoading: isLoading,
             cars: options,
             selectedCarId: car.carId,
             carName: car.dashboardPrimaryName,
             vehicleModelName: car.vehicleModelDescription,
-            carImagePath: imagePath,
-            carImageScaleFactor: Double(imageScale),
+            vehicleImageResolution: imageResolution,
             exteriorColor: car.carExterior?.exteriorColor,
             wheelType: car.carExterior?.wheelType,
             trimBadging: car.carDetails?.trimBadging,
@@ -271,6 +345,45 @@ public final class DashboardViewModel: ObservableObject {
             totalUpdates: car.teslamateStats?.totalUpdates
         )
     }
+
+    private func resolveVehicleImage(for car: CarData, settings: AppSettings) -> VehicleImageResolution {
+        guard let catalog = try? vehicleImageCatalogProvider.catalog() else {
+            return Self.genericVehicleImageResolution
+        }
+        let serverURL = URL(string: settings.serverURL)
+        let manualOverride = serverURL.flatMap {
+            settings.manualVehicleImageOverride(for: $0, carID: car.carId, catalog: catalog)
+        }
+        return VehicleImageResolver(catalog: catalog).resolve(
+            vehicleImageDescriptor(for: car),
+            manualOverride: manualOverride
+        )
+    }
+
+    private func vehicleImageDescriptor(for car: CarData) -> VehicleImageDescriptor {
+        VehicleImageDescriptor(
+            model: car.carDetails?.model,
+            modelYear: car.modelYear,
+            trimBadging: car.carDetails?.trimBadging,
+            wheelType: car.carExterior?.wheelType,
+            exteriorColor: car.carExterior?.exteriorColor,
+            spoilerType: car.carExterior?.spoilerType
+        )
+    }
+
+    private static let genericVehicleImageResolution = VehicleImageResolution(
+        assetID: nil,
+        generationID: nil,
+        trimID: nil,
+        colorID: nil,
+        wheelID: nil,
+        assetPath: VehicleImageResolver.genericPlaceholderPath,
+        presentationScale: 1,
+        confidence: .fallback,
+        evidence: [.default],
+        conflicts: [],
+        usesLegacyAsset: false
+    )
 
     private func loadStatus(for car: CarData) async {
         switch await api.carStatus(carId: car.carId) {
@@ -520,7 +633,9 @@ public extension WidgetDisplayData {
             insideTemperature: state.insideTemperature,
             outsideTemperature: state.outsideTemperature,
             locationText: state.locationText,
-            carImageName: state.carImagePath,
+            vehicleImageAssetID: state.vehicleImageResolution?.assetID,
+            carImagePath: state.carImagePath,
+            carImageScaleFactor: state.carImageScaleFactor,
             isReadOnly: true,
             displayLanguage: WidgetDisplayLanguage(appLanguage: language),
             displayUnitSystem: WidgetDisplayUnitSystem(units: state.units, displayUnitSystem: displayUnitSystem)

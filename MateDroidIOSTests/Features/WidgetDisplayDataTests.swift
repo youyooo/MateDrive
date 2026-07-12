@@ -2,6 +2,30 @@ import XCTest
 @testable import MateDroidIOS
 
 final class WidgetDisplayDataTests: XCTestCase {
+    func testWidgetDisplayDataCarriesResolvedImagePathAndScale() {
+        let data = WidgetDisplayData.fixture(
+            vehicleImageAssetID: "reviewed-m3-performance",
+            carImagePath: "CarImages/m3_PPSW_W32D.png",
+            carImageScaleFactor: 1.35
+        )
+
+        XCTAssertEqual(data.carImagePath, "CarImages/m3_PPSW_W32D.png")
+        XCTAssertEqual(data.vehicleImageAssetID, "reviewed-m3-performance")
+        XCTAssertEqual(data.carImageScaleFactor, 1.35)
+        XCTAssertEqual(data.carImageName, data.carImagePath)
+    }
+
+    func testOldWidgetPayloadDecodesWithImageDefaults() throws {
+        let json = #"{"carName":"Model 3","isCharging":false,"sentryModeActive":false,"isReadOnly":true,"displayLanguage":"english"}"#
+
+        let data = try JSONDecoder().decode(WidgetDisplayData.self, from: Data(json.utf8))
+
+        XCTAssertNil(data.carImagePath)
+        XCTAssertNil(data.vehicleImageAssetID)
+        XCTAssertEqual(data.carImageScaleFactor, 1)
+        XCTAssertEqual(data.displayLanguage, .english)
+    }
+
     func testWidgetDisplayDataIncludesReadOnlyBatteryAndStatusFields() {
         let data = WidgetDisplayData.fixture(
             carName: "Model Y",

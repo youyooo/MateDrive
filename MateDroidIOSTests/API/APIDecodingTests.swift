@@ -20,12 +20,14 @@ final class APIDecodingTests: XCTestCase {
     }
 
     func testCarStatusLocationUsesGeofenceThenFallsBackToValidCoordinates() {
-        let geofenced = CarStatus(carGeodata: CarGeodata(geofence: "Home", latitude: 28.2, longitude: 112.8))
-        let coordinates = CarStatus(carGeodata: CarGeodata(geofence: "", latitude: 28.207471, longitude: 112.857773))
-        let invalid = CarStatus(carGeodata: CarGeodata(geofence: "", latitude: 0, longitude: 0))
+        let geofencedPoint = SyntheticCoordinates.point()
+        let coordinateOnlyPoint = SyntheticCoordinates.point(latitudeOffset: 0.207471, longitudeOffset: 0.857773)
+        let geofenced = CarStatus(carGeodata: CarGeodata(geofence: "Home", latitude: geofencedPoint.latitude, longitude: geofencedPoint.longitude))
+        let coordinates = CarStatus(carGeodata: CarGeodata(geofence: "", latitude: coordinateOnlyPoint.latitude, longitude: coordinateOnlyPoint.longitude))
+        let invalid = CarStatus(carGeodata: CarGeodata(geofence: "", latitude: SyntheticCoordinates.zero.latitude, longitude: SyntheticCoordinates.zero.longitude))
 
         XCTAssertEqual(geofenced.locationSummary, "Home")
-        XCTAssertEqual(coordinates.locationSummary, "28.20747, 112.85777")
+        XCTAssertEqual(coordinates.locationSummary, "12.20747, 34.85777")
         XCTAssertNil(invalid.locationSummary)
     }
 

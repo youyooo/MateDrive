@@ -220,14 +220,15 @@ final class ActivitiesViewModelTests: XCTestCase {
     }
 
     func testStandbyDrainDecodesMeasuredFieldsAndViewModelPreservesSignedChange() async throws {
+        let location = SyntheticCoordinates.point()
         let response = try JSONDecoder.teslamate.decode(
             StandbyDrainResponse.self,
-            from: Data(#"{"data":{"latitude":28.2,"longitude":112.8,"radius_meters":100,"period_days":30,"total_parking_events":19,"total_parking_days":14,"avg_drain_rate_km_h":1.338,"avg_drain_rate_pct_24h":-11.97,"total_range_loss_km":252.27,"min_drain_rate_km_h":0.046,"max_drain_rate_km_h":3.285},"units":{"length":"km"}}"#.utf8)
+            from: Data(#"{"data":{"latitude":\#(location.latitude),"longitude":\#(location.longitude),"radius_meters":100,"period_days":30,"total_parking_events":19,"total_parking_days":14,"avg_drain_rate_km_h":1.338,"avg_drain_rate_pct_24h":-11.97,"total_range_loss_km":252.27,"min_drain_rate_km_h":0.046,"max_drain_rate_km_h":3.285},"units":{"length":"km"}}"#.utf8)
         )
         let api = ActivityTestAPI(activityResults: [], standbyResult: .success(response))
         let viewModel = StandbyDrainViewModel(api: api)
 
-        await viewModel.load(carId: 1, latitude: 28.2, longitude: 112.8)
+        await viewModel.load(carId: 1, latitude: location.latitude, longitude: location.longitude)
 
         XCTAssertFalse(viewModel.state.isLoading)
         XCTAssertNil(viewModel.state.errorMessage)
@@ -237,15 +238,16 @@ final class ActivitiesViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.state.units?.length, "km")
         let request = await api.standbyRequest
         XCTAssertEqual(request?.carId, 1)
-        XCTAssertEqual(request?.latitude, 28.2)
-        XCTAssertEqual(request?.longitude, 112.8)
+        XCTAssertEqual(request?.latitude, location.latitude)
+        XCTAssertEqual(request?.longitude, location.longitude)
     }
 
     func testStandbyDrainFailureDoesNotInventZeroMetrics() async {
         let api = ActivityTestAPI(activityResults: [], standbyResult: .failure(.httpStatus(404)))
         let viewModel = StandbyDrainViewModel(api: api)
+        let location = SyntheticCoordinates.point()
 
-        await viewModel.load(carId: 1, latitude: 28.2, longitude: 112.8)
+        await viewModel.load(carId: 1, latitude: location.latitude, longitude: location.longitude)
 
         XCTAssertNil(viewModel.state.data)
         XCTAssertNotNil(viewModel.state.errorMessage)

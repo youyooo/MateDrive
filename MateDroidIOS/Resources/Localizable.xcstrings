@@ -1,6 +1,743 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Manual configuration" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Manual configuration" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Manuelle Konfiguration" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Configuración manual" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Configurazione manuale" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Configuració manual" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "手动配置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "手動設定" } }
+      }
+    },
+    "Unable to update vehicle image. Please try again." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unable to update vehicle image. Please try again." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Das Fahrzeugbild konnte nicht aktualisiert werden. Versuchen Sie es erneut." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo actualizar la imagen del vehículo. Inténtalo de nuevo." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Impossibile aggiornare l’immagine del veicolo. Riprova." } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "No s’ha pogut actualitzar la imatge del vehicle. Torna-ho a provar." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "无法更新车辆图片，请重试。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "無法更新車輛圖片，請再試一次。" } }
+      }
+    },
+    "vehicle.generation.roadster-1" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Roadster (2008-2012)" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Roadster (2008-2012)" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Roadster (2008-2012)" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Roadster (2008-2012)" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Roadster (2008-2012)" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Roadster（2008-2012）" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Roadster（2008-2012）" } }
+      }
+    },
+    "vehicle.generation.model-s-nosecone" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model S (Nose Cone)" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model S (Nose Cone)" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model S (frontal clásico)" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model S (muso classico)" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model S (frontal clàssic)" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model S（经典前脸）" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model S（經典車頭）" } }
+      }
+    },
+    "vehicle.generation.model-s-facelift" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model S (Facelift)" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model S (Facelift)" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model S (rediseño)" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model S (restyling)" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model S (restyling)" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model S（改款）" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model S（改款）" } }
+      }
+    },
+    "vehicle.generation.model-s-refresh" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model S Refresh" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model S Refresh" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model S renovado" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model S aggiornato" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model S renovat" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model S 焕新版" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model S 煥新版" } }
+      }
+    },
+    "vehicle.generation.model-s-plaid" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model S Plaid" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model S Plaid" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model S Plaid" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model S Plaid" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model S Plaid" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model S Plaid" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model S Plaid" } }
+      }
+    },
+    "vehicle.generation.model-x-legacy" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model X Legacy" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model X (klassisch)" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model X clásico" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model X classico" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model X clàssic" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model X 经典版" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model X 經典版" } }
+      }
+    },
+    "vehicle.generation.model-x-refresh" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model X Refresh" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model X Refresh" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model X renovado" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model X aggiornato" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model X renovat" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model X 焕新版" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model X 煥新版" } }
+      }
+    },
+    "vehicle.generation.model-x-plaid" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model X Plaid" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model X Plaid" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model X Plaid" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model X Plaid" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model X Plaid" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model X Plaid" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model X Plaid" } }
+      }
+    },
+    "vehicle.generation.model-3-early" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 (2017-2020)" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 (2017-2020)" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 (2017-2020)" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 (2017-2020)" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 (2017-2020)" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model 3（2017-2020）" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model 3（2017-2020）" } }
+      }
+    },
+    "vehicle.generation.model-3-refresh" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Refresh" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Refresh" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 renovado" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 aggiornato" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 renovat" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 焕新版" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 煥新版" } }
+      }
+    },
+    "vehicle.generation.model-3-refresh-performance" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Refresh Performance" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Refresh Performance" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 renovado Performance" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 aggiornato Performance" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 renovat Performance" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 焕新版 Performance" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 煥新版 Performance" } }
+      }
+    },
+    "vehicle.generation.model-3-highland" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Highland" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Highland" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Highland" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Highland" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Highland" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Highland" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Highland" } }
+      }
+    },
+    "vehicle.generation.model-3-highland-performance" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Highland Performance" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Highland Performance" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Highland Performance" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Highland Performance" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Highland Performance" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Highland Performance" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model 3 Highland Performance" } }
+      }
+    },
+    "vehicle.generation.model-y-legacy" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Legacy" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model Y (klassisch)" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model Y clásico" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model Y classico" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model Y clàssic" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model Y 经典版" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model Y 經典版" } }
+      }
+    },
+    "vehicle.generation.model-y-legacy-performance" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Legacy Performance" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model Y (klassisch) Performance" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model Y clásico Performance" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model Y classico Performance" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model Y clàssic Performance" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model Y 经典版 Performance" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model Y 經典版 Performance" } }
+      }
+    },
+    "vehicle.generation.model-y-juniper-standard" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper Standard" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper Standard" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper estándar" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper Standard" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper estàndard" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper 标准版" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper 標準版" } }
+      }
+    },
+    "vehicle.generation.model-y-juniper-premium" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper Premium" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper Premium" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper Premium" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper Premium" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper Premium" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper 高级版" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper 進階版" } }
+      }
+    },
+    "vehicle.generation.model-y-juniper-performance" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper Performance" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper Performance" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper Performance" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper Performance" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper Performance" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper Performance" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Model Y Juniper Performance" } }
+      }
+    },
+    "vehicle.generation.cybertruck-awd" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cybertruck All-Wheel Drive" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Cybertruck Allrad" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cybertruck tracción total" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cybertruck trazione integrale" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Cybertruck tracció integral" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Cybertruck 全轮驱动" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Cybertruck 全輪驅動" } }
+      }
+    },
+    "vehicle.generation.cybertruck-cyberbeast" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cybertruck Cyberbeast" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Cybertruck Cyberbeast" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cybertruck Cyberbeast" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cybertruck Cyberbeast" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Cybertruck Cyberbeast" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Cybertruck Cyberbeast" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Cybertruck Cyberbeast" } }
+      }
+    },
+    "vehicle.trim.base" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Base" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Basis" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Base" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Base" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Base" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "基础版" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "基礎版" } }
+      }
+    },
+    "vehicle.trim.sport" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sport" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sport" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Sport" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Sport" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Sport" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "运动版" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "運動版" } }
+      }
+    },
+    "vehicle.trim.legacy" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Legacy" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Klassisch" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Clásico" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Classico" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Clàssic" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "经典版" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "經典版" } }
+      }
+    },
+    "vehicle.trim.standard" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Standard" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Standard" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Estándar" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Standard" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Estàndard" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "标准版" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "標準版" } }
+      }
+    },
+    "vehicle.trim.performance" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Performance" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Performance" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Performance" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Performance" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Performance" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "高性能版" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "高性能版" } }
+      }
+    },
+    "vehicle.trim.dual-motor" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dual Motor" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dual Motor" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Motor dual" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Dual Motor" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Motor dual" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "双电机" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "雙馬達" } }
+      }
+    },
+    "vehicle.trim.plaid" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Plaid" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Plaid" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Plaid" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Plaid" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Plaid" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Plaid" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Plaid" } }
+      }
+    },
+    "vehicle.trim.premium" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Premium" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Premium" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Premium" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Premium" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Premium" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "高级版" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "進階版" } }
+      }
+    },
+    "vehicle.trim.awd" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "All-Wheel Drive" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Allrad" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tracción total" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Trazione integrale" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Tracció integral" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "全轮驱动" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "全輪驅動" } }
+      }
+    },
+    "vehicle.trim.cyberbeast" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cyberbeast" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Cyberbeast" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cyberbeast" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cyberbeast" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Cyberbeast" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Cyberbeast" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Cyberbeast" } }
+      }
+    },
+    "vehicle.wheel.aero-18" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "18-inch Aero Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "18-Zoll-Aero-Felgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas Aero de 18 pulgadas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi Aero da 18 pollici" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes Aero de 18 polzades" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "18 英寸 Aero 轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "18 吋 Aero 輪圈" } }
+      }
+    },
+    "vehicle.wheel.tempest-19" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "19-inch Tempest Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "19-Zoll-Tempest-Felgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas Tempest de 19 pulgadas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi Tempest da 19 pollici" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes Tempest de 19 polzades" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "19 英寸 Tempest 轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "19 吋 Tempest 輪圈" } }
+      }
+    },
+    "vehicle.wheel.cyberstream-20" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "20-inch Cyberstream Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "20-Zoll-Cyberstream-Felgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas Cyberstream de 20 pulgadas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi Cyberstream da 20 pollici" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes Cyberstream de 20 polzades" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "20 英寸 Cyberstream 轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "20 吋 Cyberstream 輪圈" } }
+      }
+    },
+    "vehicle.wheel.turbine-22" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "22-inch Turbine Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "22-Zoll-Turbine-Felgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas Turbine de 22 pulgadas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi Turbine da 22 pollici" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes Turbine de 22 polzades" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "22 英寸 Turbine 轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "22 吋 Turbine 輪圈" } }
+      }
+    },
+    "vehicle.wheel.uberturbine-20" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "20-inch Überturbine Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "20-Zoll-Überturbine-Felgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas Überturbine de 20 pulgadas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi Überturbine da 20 pollici" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes Überturbine de 20 polzades" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "20 英寸 Überturbine 轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "20 吋 Überturbine 輪圈" } }
+      }
+    },
+    "vehicle.wheel.uberturbine-21" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "21-inch Überturbine Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "21-Zoll-Überturbine-Felgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas Überturbine de 21 pulgadas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi Überturbine da 21 pollici" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes Überturbine de 21 polzades" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "21 英寸 Überturbine 轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "21 吋 Überturbine 輪圈" } }
+      }
+    },
+    "vehicle.wheel.photon-18" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "18-inch Photon Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "18-Zoll-Photon-Felgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas Photon de 18 pulgadas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi Photon da 18 pollici" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes Photon de 18 polzades" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "18 英寸 Photon 轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "18 吋 Photon 輪圈" } }
+      }
+    },
+    "vehicle.wheel.gemini-19" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "19-inch Gemini Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "19-Zoll-Gemini-Felgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas Gemini de 19 pulgadas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi Gemini da 19 pollici" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes Gemini de 19 polzades" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "19 英寸 Gemini 轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "19 吋 Gemini 輪圈" } }
+      }
+    },
+    "vehicle.wheel.crossflow-19" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "19-inch Crossflow Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "19-Zoll-Crossflow-Felgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas Crossflow de 19 pulgadas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi Crossflow da 19 pollici" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes Crossflow de 19 polzades" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "19 英寸 Crossflow 轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "19 吋 Crossflow 輪圈" } }
+      }
+    },
+    "vehicle.wheel.performance-20" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "20-inch Performance Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "20-Zoll-Performance-Felgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas Performance de 20 pulgadas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi Performance da 20 pollici" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes Performance de 20 polzades" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "20 英寸 Performance 轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "20 吋 Performance 輪圈" } }
+      }
+    },
+    "vehicle.wheel.all-season-20" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "20-inch All-Season Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "20-Zoll-Ganzjahresfelgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas All-Season de 20 pulgadas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi All-Season da 20 pollici" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes All-Season de 20 polzades" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "20 英寸全季节轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "20 吋全季節輪圈" } }
+      }
+    },
+    "vehicle.color.pearl-white" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Pearl White" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Perlweiß" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Blanco perla" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Bianco perla" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Blanc perla" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "珍珠白" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "珍珠白" } }
+      }
+    },
+    "vehicle.color.stainless" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stainless Steel" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Edelstahl" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Acero inoxidable" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Acciaio inox" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Acer inoxidable" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "不锈钢" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "不鏽鋼" } }
+      }
+    },
+    "vehicle.color.deep-blue" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Deep Blue" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tiefblau" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Azul intenso" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Blu intenso" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Blau intens" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "深海蓝" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "深海藍" } }
+      }
+    },
+    "Detected configuration" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Detected configuration" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erkannte Konfiguration" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Configuración detectada" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Configurazione rilevata" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Configuració detectada" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "检测到的配置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "偵測到的設定" } }
+      }
+    },
+    "Generation" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Generation" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Generation" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Generación" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Generazione" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Generació" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "代际" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "世代" } }
+      }
+    },
+    "Trim" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Trim" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ausführung" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Versión" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Allestimento" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Acabat" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "版本" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "車型版本" } }
+      }
+    },
+    "Color" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Color" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Farbe" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Color" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Colore" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Color" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "颜色" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "顏色" } }
+      }
+    },
+    "Wheels" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Felgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "輪圈" } }
+      }
+    },
+    "Configure vehicle image" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Configure vehicle image" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fahrzeugbild konfigurieren" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Configurar imagen del vehículo" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Configura immagine del veicolo" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Configura la imatge del vehicle" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "配置车辆图片" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "設定車輛圖片" } }
+      }
+    },
+    "Use this configuration" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Use this configuration" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Diese Konfiguration verwenden" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Usar esta configuración" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Usa questa configurazione" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Utilitza aquesta configuració" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "使用此配置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "使用此設定" } }
+      }
+    },
+    "Use automatic match" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Use automatic match" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Automatische Zuordnung verwenden" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Usar coincidencia automática" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Usa corrispondenza automatica" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Utilitza la coincidència automàtica" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "使用自动匹配" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "使用自動配對" } }
+      }
+    },
+    "Exact match" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Exact match" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Exakte Zuordnung" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Coincidencia exacta" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Corrispondenza esatta" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Coincidència exacta" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "精确匹配" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "精確配對" } }
+      }
+    },
+    "Inferred match" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Inferred match" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Abgeleitete Zuordnung" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Coincidencia inferida" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Corrispondenza dedotta" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Coincidència inferida" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "推断匹配" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "推斷配對" } }
+      }
+    },
+    "Fallback match" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fallback match" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ersatzzuordnung" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Coincidencia alternativa" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Corrispondenza alternativa" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Coincidència alternativa" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "回退匹配" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "備用配對" } }
+      }
+    },
+    "Manual match" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Manual match" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Manuelle Zuordnung" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Coincidencia manual" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Corrispondenza manuale" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Coincidència manual" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "手动匹配" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "手動配對" } }
+      }
+    },
+    "Matched directly from the vehicle details." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Matched directly from the vehicle details." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Direkt anhand der Fahrzeugdetails zugeordnet." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Coincidencia directa a partir de los datos del vehículo." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Corrispondenza diretta dai dati del veicolo." } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Coincidència directa a partir de les dades del vehicle." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "根据车辆信息直接匹配。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "根據車輛資訊直接配對。" } }
+      }
+    },
+    "Matched from vehicle details with catalog defaults where data was unavailable." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Matched from vehicle details with catalog defaults where data was unavailable." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Anhand der Fahrzeugdetails zugeordnet; fehlende Daten wurden durch Katalogstandardwerte ergänzt." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Coincidencia a partir de los datos del vehículo, usando valores predeterminados del catálogo cuando faltaban datos." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Corrispondenza dai dati del veicolo, con valori predefiniti del catalogo per i dati mancanti." } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Coincidència a partir de les dades del vehicle, amb valors predeterminats del catàleg quan faltaven dades." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "根据车辆信息匹配，缺失数据使用目录默认值。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "根據車輛資訊配對，缺少資料時使用目錄預設值。" } }
+      }
+    },
+    "Using the closest available catalog image." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Using the closest available catalog image." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Das ähnlichste verfügbare Katalogbild wird verwendet." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Se usa la imagen más cercana disponible en el catálogo." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Viene usata l’immagine più simile disponibile nel catalogo." } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "S’utilitza la imatge més propera disponible al catàleg." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在使用目录中最接近的图片。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "正在使用目錄中最接近的圖片。" } }
+      }
+    },
+    "Using your saved vehicle image configuration." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Using your saved vehicle image configuration." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ihre gespeicherte Fahrzeugbildkonfiguration wird verwendet." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Se usa la configuración guardada de imagen del vehículo." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Viene usata la configurazione salvata dell’immagine del veicolo." } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "S’utilitza la configuració desada de la imatge del vehicle." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在使用已保存的车辆图片配置。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "正在使用已儲存的車輛圖片設定。" } }
+      }
+    },
+    "The saved configuration is no longer available. Automatic matching has been restored." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The saved configuration is no longer available. Automatic matching has been restored." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die gespeicherte Konfiguration ist nicht mehr verfügbar. Die automatische Zuordnung wurde wiederhergestellt." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "La configuración guardada ya no está disponible. Se ha restaurado la coincidencia automática." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "La configurazione salvata non è più disponibile. È stata ripristinata la corrispondenza automatica." } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "La configuració desada ja no està disponible. S’ha restaurat la coincidència automàtica." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已保存的配置不再可用，已恢复自动匹配。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已儲存的設定已無法使用，已恢復自動配對。" } }
+      }
+    },
+    "The reported wheels conflict with the detected factory trim. Choose the configuration that matches your vehicle." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The reported wheels conflict with the detected factory trim. Choose the configuration that matches your vehicle." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die gemeldeten Felgen widersprechen der erkannten Werksausführung. Wählen Sie die passende Konfiguration." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Las llantas indicadas no coinciden con la versión de fábrica detectada. Elige la configuración correcta." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "I cerchi indicati non corrispondono all’allestimento di fabbrica rilevato. Scegli la configurazione corretta." } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Les llandes indicades no coincideixen amb l’acabat de fàbrica detectat. Tria la configuració correcta." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "报告的轮毂与检测到的原厂版本冲突，请选择与车辆一致的配置。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "回報的輪圈與偵測到的原廠車型版本衝突，請選擇符合車輛的設定。" } }
+      }
+    },
+    "The model year is unavailable, so the generation was inferred." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The model year is unavailable, so the generation was inferred." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Das Modelljahr ist nicht verfügbar, daher wurde die Generation abgeleitet." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "El año del modelo no está disponible, por lo que se ha inferido la generación." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "L’anno modello non è disponibile, quindi la generazione è stata dedotta." } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "L’any del model no està disponible, així que s’ha inferit la generació." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "车型年份不可用，因此代际为推断结果。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "車款年份無法取得，因此世代為推斷結果。" } }
+      }
+    },
+    "The model year falls outside the catalog range. Check the detected generation." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The model year falls outside the catalog range. Check the detected generation." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Das Modelljahr liegt außerhalb des Katalogbereichs. Prüfen Sie die erkannte Generation." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "El año del modelo está fuera del intervalo del catálogo. Comprueba la generación detectada." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "L’anno modello è fuori dall’intervallo del catalogo. Controlla la generazione rilevata." } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "L’any del model queda fora de l’interval del catàleg. Comprova la generació detectada." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "车型年份超出目录范围，请检查检测到的代际。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "車款年份超出目錄範圍，請檢查偵測到的世代。" } }
+      }
+    },
+    "The vehicle model was not recognized. Choose a catalog generation manually." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The vehicle model was not recognized. Choose a catalog generation manually." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Das Fahrzeugmodell wurde nicht erkannt. Wählen Sie eine Kataloggeneration manuell." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "No se reconoció el modelo del vehículo. Elige manualmente una generación del catálogo." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Il modello del veicolo non è stato riconosciuto. Scegli manualmente una generazione dal catalogo." } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "No s’ha reconegut el model del vehicle. Tria manualment una generació del catàleg." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "无法识别车辆型号，请手动选择目录代际。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "無法識別車輛型號，請手動選擇目錄世代。" } }
+      }
+    },
     "Export Diagnostics" : {
       "localizations" : {
         "ca" : { "stringUnit" : { "state" : "translated", "value" : "Exporta el diagnostic" } },

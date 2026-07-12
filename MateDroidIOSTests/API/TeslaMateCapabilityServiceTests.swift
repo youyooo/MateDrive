@@ -91,8 +91,14 @@ final class TeslaMateCapabilityServiceTests: XCTestCase {
     }
 
     func testServerIdentityExcludesCredentialsQueryAndFragmentAndNormalizesEquivalentURLs() {
-        let credentialed = TeslaMateServerIdentity.key(for: URL(string: "HTTPS://alice:secret@TeslaMate.Example:443/base/path/?token=private#details")!)
-        let differentCredentials = TeslaMateServerIdentity.key(for: URL(string: "https://bob:other@teslamate.example/base/path?session=other#different")!)
+        let credentialed = TeslaMateServerIdentity.key(for: makeCredentialedURL(
+            scheme: "HTTPS", user: "alice", password: "secret", host: "TeslaMate.Example", port: 443,
+            path: "/base/path/", query: "token=private", fragment: "details"
+        ))
+        let differentCredentials = TeslaMateServerIdentity.key(for: makeCredentialedURL(
+            scheme: "https", user: "bob", password: "other", host: "teslamate.example",
+            path: "/base/path", query: "session=other", fragment: "different"
+        ))
         let canonical = TeslaMateServerIdentity.key(for: URL(string: "https://teslamate.example/base/path")!)
         let httpDefaultPort = TeslaMateServerIdentity.key(for: URL(string: "http://TeslaMate.Example:80/")!)
         let httpCanonical = TeslaMateServerIdentity.key(for: URL(string: "http://teslamate.example")!)
@@ -100,6 +106,28 @@ final class TeslaMateCapabilityServiceTests: XCTestCase {
         XCTAssertEqual(credentialed, canonical)
         XCTAssertEqual(differentCredentials, canonical)
         XCTAssertEqual(httpDefaultPort, httpCanonical)
+    }
+
+    private func makeCredentialedURL(
+        scheme: String,
+        user: String,
+        password: String,
+        host: String,
+        port: Int? = nil,
+        path: String,
+        query: String,
+        fragment: String
+    ) -> URL {
+        var components = URLComponents()
+        components.scheme = scheme
+        components.user = user
+        components.password = password
+        components.host = host
+        components.port = port
+        components.path = path
+        components.query = query
+        components.fragment = fragment
+        return components.url!
     }
 
     func testServerIdentityPreservesMeaningfulBasePaths() {

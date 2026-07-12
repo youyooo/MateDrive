@@ -25,6 +25,15 @@ public struct DashboardSnapshot: Codable, Equatable, Sendable {
     public let tpms: DashboardSnapshotTPMS?
     public let carImagePath: String?
     public let carImageScaleFactor: Double
+    public let vehicleImageAssetID: String?
+    public let vehicleImageGenerationID: String?
+    public let vehicleImageTrimID: String?
+    public let vehicleImageColorID: String?
+    public let vehicleImageWheelID: String?
+    public let vehicleImageConfidence: String?
+    public let vehicleImageEvidence: [String]
+    public let vehicleImageConflicts: [String]
+    public let vehicleImageUsesLegacyAsset: Bool
     public let exteriorColor: String?
     public let wheelType: String?
     public let trimBadging: String?
@@ -53,6 +62,15 @@ public struct DashboardSnapshot: Codable, Equatable, Sendable {
         self.tpms = state.tpmsDetails.map(DashboardSnapshotTPMS.init)
         self.carImagePath = state.carImagePath
         self.carImageScaleFactor = state.carImageScaleFactor
+        self.vehicleImageAssetID = state.vehicleImageResolution?.assetID
+        self.vehicleImageGenerationID = state.vehicleImageResolution?.generationID
+        self.vehicleImageTrimID = state.vehicleImageResolution?.trimID
+        self.vehicleImageColorID = state.vehicleImageResolution?.colorID
+        self.vehicleImageWheelID = state.vehicleImageResolution?.wheelID
+        self.vehicleImageConfidence = state.vehicleImageResolution?.confidence.rawValue
+        self.vehicleImageEvidence = state.vehicleImageResolution?.evidence.map(\.rawValue) ?? []
+        self.vehicleImageConflicts = state.vehicleImageResolution?.conflicts.map(\.rawValue) ?? []
+        self.vehicleImageUsesLegacyAsset = state.vehicleImageResolution?.usesLegacyAsset ?? false
         self.exteriorColor = state.exteriorColor
         self.wheelType = state.wheelType
         self.trimBadging = state.trimBadging
@@ -80,8 +98,7 @@ public struct DashboardSnapshot: Codable, Equatable, Sendable {
             locationText: locationText,
             softwareVersion: softwareVersion,
             tpmsDetails: tpms?.value,
-            carImagePath: carImagePath,
-            carImageScaleFactor: carImageScaleFactor,
+            vehicleImageResolution: resolvedVehicleImageResolution,
             exteriorColor: exteriorColor,
             wheelType: wheelType,
             trimBadging: trimBadging,
@@ -93,6 +110,72 @@ public struct DashboardSnapshot: Codable, Equatable, Sendable {
             isUsingCachedData: true,
             cachedAt: savedAt
         )
+    }
+
+    private var resolvedVehicleImageResolution: VehicleImageResolution? {
+        carImagePath.map {
+            VehicleImageResolution(
+                assetID: vehicleImageAssetID,
+                generationID: vehicleImageGenerationID,
+                trimID: vehicleImageTrimID,
+                colorID: vehicleImageColorID,
+                wheelID: vehicleImageWheelID,
+                assetPath: $0,
+                presentationScale: carImageScaleFactor,
+                confidence: vehicleImageConfidence.flatMap(VehicleImageConfidence.init(rawValue:)) ?? .fallback,
+                evidence: vehicleImageEvidence.compactMap(VehicleImageEvidence.init(rawValue:)),
+                conflicts: vehicleImageConflicts.compactMap(VehicleImageConflict.init(rawValue:)),
+                usesLegacyAsset: vehicleImageUsesLegacyAsset
+            )
+        }
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case savedAt, cars, selectedCarId, carName, vehicleModelName, batteryLevel, isCharging, isLocked
+        case sentryModeActive, outsideTemperature, insideTemperature, ratedRange, odometer, locationText
+        case softwareVersion, tpms, carImagePath, carImageScaleFactor, exteriorColor, wheelType, trimBadging
+        case vehicleImageAssetID
+        case units, totalCharges, totalDrives, totalUpdates, vehicleImageGenerationID, vehicleImageTrimID
+        case vehicleImageColorID, vehicleImageWheelID, vehicleImageConfidence, vehicleImageEvidence
+        case vehicleImageConflicts, vehicleImageUsesLegacyAsset
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        savedAt = try container.decode(Date.self, forKey: .savedAt)
+        cars = try container.decodeIfPresent([DashboardSnapshotCar].self, forKey: .cars) ?? []
+        selectedCarId = try container.decode(Int.self, forKey: .selectedCarId)
+        carName = try container.decodeIfPresent(String.self, forKey: .carName) ?? "Tesla"
+        vehicleModelName = try container.decodeIfPresent(String.self, forKey: .vehicleModelName)
+        batteryLevel = try container.decodeIfPresent(Int.self, forKey: .batteryLevel)
+        isCharging = try container.decodeIfPresent(Bool.self, forKey: .isCharging) ?? false
+        isLocked = try container.decodeIfPresent(Bool.self, forKey: .isLocked)
+        sentryModeActive = try container.decodeIfPresent(Bool.self, forKey: .sentryModeActive) ?? false
+        outsideTemperature = try container.decodeIfPresent(Double.self, forKey: .outsideTemperature)
+        insideTemperature = try container.decodeIfPresent(Double.self, forKey: .insideTemperature)
+        ratedRange = try container.decodeIfPresent(Double.self, forKey: .ratedRange)
+        odometer = try container.decodeIfPresent(Double.self, forKey: .odometer)
+        locationText = try container.decodeIfPresent(String.self, forKey: .locationText)
+        softwareVersion = try container.decodeIfPresent(String.self, forKey: .softwareVersion)
+        tpms = try container.decodeIfPresent(DashboardSnapshotTPMS.self, forKey: .tpms)
+        carImagePath = try container.decodeIfPresent(String.self, forKey: .carImagePath)
+        carImageScaleFactor = try container.decodeIfPresent(Double.self, forKey: .carImageScaleFactor) ?? 1
+        vehicleImageAssetID = try container.decodeIfPresent(String.self, forKey: .vehicleImageAssetID)
+        exteriorColor = try container.decodeIfPresent(String.self, forKey: .exteriorColor)
+        wheelType = try container.decodeIfPresent(String.self, forKey: .wheelType)
+        trimBadging = try container.decodeIfPresent(String.self, forKey: .trimBadging)
+        units = try container.decodeIfPresent(DashboardSnapshotUnits.self, forKey: .units)
+        totalCharges = try container.decodeIfPresent(Int.self, forKey: .totalCharges)
+        totalDrives = try container.decodeIfPresent(Int.self, forKey: .totalDrives)
+        totalUpdates = try container.decodeIfPresent(Int.self, forKey: .totalUpdates)
+        vehicleImageGenerationID = try container.decodeIfPresent(String.self, forKey: .vehicleImageGenerationID)
+        vehicleImageTrimID = try container.decodeIfPresent(String.self, forKey: .vehicleImageTrimID)
+        vehicleImageColorID = try container.decodeIfPresent(String.self, forKey: .vehicleImageColorID)
+        vehicleImageWheelID = try container.decodeIfPresent(String.self, forKey: .vehicleImageWheelID)
+        vehicleImageConfidence = try container.decodeIfPresent(String.self, forKey: .vehicleImageConfidence)
+        vehicleImageEvidence = try container.decodeIfPresent([String].self, forKey: .vehicleImageEvidence) ?? []
+        vehicleImageConflicts = try container.decodeIfPresent([String].self, forKey: .vehicleImageConflicts) ?? []
+        vehicleImageUsesLegacyAsset = try container.decodeIfPresent(Bool.self, forKey: .vehicleImageUsesLegacyAsset) ?? true
     }
 }
 

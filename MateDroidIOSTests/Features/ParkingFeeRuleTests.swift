@@ -52,10 +52,12 @@ final class ParkingFeeRuleTests: XCTestCase {
     }
 
     func testLocationAndPrioritySelectMostSpecificValidRule() {
+        let ruleLocation = SyntheticCoordinates.point()
+        let nearbyInput = SyntheticCoordinates.point(latitudeOffset: 0.0005, longitudeOffset: 0.0005)
         let fallback = ParkingFeeRule(id: "fallback", name: "Fallback", hourlyRate: 2)
-        let nearby = ParkingFeeRule(id: "nearby", name: "Nearby", latitude: 28.2, longitude: 112.8, radiusMeters: 300, hourlyRate: 5, priority: 10)
+        let nearby = ParkingFeeRule(id: "nearby", name: "Nearby", latitude: ruleLocation.latitude, longitude: ruleLocation.longitude, radiusMeters: 300, hourlyRate: 5, priority: 10)
         let estimate = ParkingFeeRuleEngine.estimate(
-            for: ParkingFeeInput(startDate: nil, address: nil, latitude: 28.2005, longitude: 112.8005, durationMinutes: 60),
+            for: ParkingFeeInput(startDate: nil, address: nil, latitude: nearbyInput.latitude, longitude: nearbyInput.longitude, durationMinutes: 60),
             rules: [fallback, nearby]
         )
         XCTAssertEqual(estimate?.rule.id, "nearby")
@@ -63,7 +65,7 @@ final class ParkingFeeRuleTests: XCTestCase {
     }
 
     func testValidatorRejectsUnsafeOrEmptyRules() {
-        let rule = ParkingFeeRule(name: "", latitude: 91, longitude: 1, radiusMeters: -1, freeMinutes: -1, billingIncrementMinutes: 0, hourlyRate: -.infinity, fixedFee: -1, sessionCap: -1, monthlyFee: -1)
+        let rule = ParkingFeeRule(name: "", latitude: SyntheticCoordinates.invalidLatitude, longitude: SyntheticCoordinates.point().longitude, radiusMeters: -1, freeMinutes: -1, billingIncrementMinutes: 0, hourlyRate: -.infinity, fixedFee: -1, sessionCap: -1, monthlyFee: -1)
         let issues = ParkingFeeRuleValidator.issues(for: rule)
         XCTAssertTrue(issues.contains(.emptyName))
         XCTAssertTrue(issues.contains(.invalidLocation))
@@ -81,8 +83,9 @@ final class ParkingFeeRuleTests: XCTestCase {
     }
 
     func testSettingsRoundTripPreservesParkingRuleFields() throws {
+        let location = SyntheticCoordinates.point()
         let rule = ParkingFeeRule(
-            id: "garage", name: "Garage", addressKeyword: "Office", latitude: 28.2, longitude: 112.8,
+            id: "garage", name: "Garage", addressKeyword: "Office", latitude: location.latitude, longitude: location.longitude,
             radiusMeters: 250, freeMinutes: 20, billingIncrementMinutes: 30, hourlyRate: 6,
             fixedFee: 1, sessionCap: 25, monthlyFee: 400, priority: 9
         )

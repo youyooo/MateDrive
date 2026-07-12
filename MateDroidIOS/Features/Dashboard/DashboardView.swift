@@ -6,6 +6,7 @@ public struct DashboardView: View {
     @Environment(\.appDisplayUnitSystem) private var appDisplayUnitSystem
     @StateObject private var viewModel: DashboardViewModel
     @State private var hasLoaded = false
+    @State private var carImagePickerViewModel: CarImagePickerViewModel?
 
     private let navigate: (AppRoute) -> Void
 
@@ -53,7 +54,14 @@ public struct DashboardView: View {
                 }
                 .accessibilityLabel(Text(t("Settings", "设置")))
             }
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Button {
+                    presentCarImagePicker()
+                } label: {
+                    Image(systemName: "car.side")
+                }
+                .accessibilityLabel(Text(t("Configure vehicle image", "配置车辆图片")))
+
                 Button {
                     Task { await viewModel.refresh() }
                 } label: {
@@ -61,6 +69,11 @@ public struct DashboardView: View {
                 }
                 .disabled(state.isRefreshing)
                 .accessibilityLabel(Text(t("Refresh", "刷新")))
+            }
+        }
+        .sheet(item: $carImagePickerViewModel) { pickerViewModel in
+            NavigationStack {
+                CarImagePickerView(viewModel: pickerViewModel)
             }
         }
         .task {
@@ -95,8 +108,19 @@ public struct DashboardView: View {
                     .fixedSize()
             }
 
-            CarImageView(assetPath: state.carImagePath, scaleFactor: CGFloat(state.carImageScaleFactor), displayScale: 1.18)
+            CarImageView(
+                assetPath: state.vehicleImageResolution?.assetPath,
+                scaleFactor: CGFloat(state.vehicleImageResolution?.presentationScale ?? 1),
+                displayScale: 1.18
+            )
                 .padding(.horizontal, -16)
+                .contextMenu {
+                    Button {
+                        presentCarImagePicker()
+                    } label: {
+                        Label(t("Configure vehicle image", "配置车辆图片"), systemImage: "car.side")
+                    }
+                }
 
             if let error = state.errorMessage {
                 Label(UserFacingErrorLocalizer.localized(error, language: appLanguage), systemImage: "exclamationmark.triangle")
@@ -112,6 +136,12 @@ public struct DashboardView: View {
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(.orange)
             }
+        }
+    }
+
+    private func presentCarImagePicker() {
+        Task {
+            carImagePickerViewModel = await viewModel.makeCarImagePickerViewModel(language: appLanguage)
         }
     }
 

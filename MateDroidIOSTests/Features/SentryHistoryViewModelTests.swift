@@ -8,14 +8,15 @@ final class SentryHistoryViewModelTests: XCTestCase {
         calendar.timeZone = TimeZone(secondsFromGMT: 0)!
         let now = Date(timeIntervalSince1970: 1_767_225_600) // 2026-01-01T00:00:00Z
         let activeSession: Int64 = 1_767_218_400_000
+        let location = SyntheticCoordinates.point()
         let records = [
             SentryAlertLogRecord(
                 id: "current",
                 carId: 1,
                 detectedAtMillis: 1_767_218_460_000,
                 sessionStartedAtMillis: activeSession,
-                latitude: 45.0,
-                longitude: 7.0
+                latitude: location.latitude,
+                longitude: location.longitude
             ),
             SentryAlertLogRecord(
                 id: "past",

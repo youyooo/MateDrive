@@ -59,7 +59,7 @@ final class CurrentChargeViewModelTests: XCTestCase {
 
     func testDisconnectedStatusDoesNotExposeChargingOrSentinelLocationValues() {
         let status = CarStatus(
-            carGeodata: CarGeodata(geofence: "", latitude: 0, longitude: 0),
+            carGeodata: CarGeodata(geofence: "", latitude: SyntheticCoordinates.zero.latitude, longitude: SyntheticCoordinates.zero.longitude),
             chargingDetails: ChargingDetails(pluggedIn: false, chargingState: "disconnected", chargerPhases: 0, chargerPower: 0)
         )
 

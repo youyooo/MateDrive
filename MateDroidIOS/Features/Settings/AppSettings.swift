@@ -46,6 +46,100 @@ public struct BatteryCalibration: Codable, Equatable, Sendable {
     }
 }
 
+public struct VehicleImageOverride: Codable, Equatable, Sendable {
+    public let generationID: String
+    public let trimID: String
+    public let colorID: String
+    public let wheelID: String
+    public let assetID: String?
+
+    public init(
+        generationID: String,
+        trimID: String,
+        colorID: String,
+        wheelID: String,
+        assetID: String? = nil
+    ) {
+        self.generationID = generationID
+        self.trimID = trimID
+        self.colorID = colorID
+        self.wheelID = wheelID
+        self.assetID = assetID
+    }
+
+    public func manualOverride(in catalog: VehicleImageCatalog) -> VehicleImageManualOverride? {
+        guard let generation = catalog.generations.first(where: { $0.id == generationID }),
+              generation.trims.contains(where: { $0.id == trimID }),
+              generation.colors.contains(where: { $0.id == colorID }),
+              generation.wheels.contains(where: { $0.id == wheelID })
+        else { return nil }
+
+        guard let asset = catalog.preferredAsset(
+            generationID: generationID,
+            trimID: trimID,
+            colorID: colorID,
+            wheelID: wheelID,
+            requestedAssetID: assetID
+        ) else { return nil }
+
+        return VehicleImageManualOverride(
+            generationID: generation.id,
+            trimID: trimID,
+            colorID: colorID,
+            wheelID: wheelID,
+            assetID: asset.id
+        )
+    }
+
+    public static func migrateLegacy(
+        variant: String,
+        wheelCode: String,
+        catalog: VehicleImageCatalog
+    ) -> VehicleImageOverride? {
+        guard let compatibleGenerationIDs = legacyCompatibleGenerationIDs[
+            variant.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        ] else { return nil }
+        let normalizedWheelCode = wheelCode.trimmingCharacters(in: .whitespacesAndNewlines)
+        let candidates = catalog.generations.compactMap { generation -> VehicleImageOverride? in
+            guard compatibleGenerationIDs.contains(generation.id) else { return nil }
+            let matchingWheels = generation.wheels.filter { wheel in
+                ([wheel.id] + wheel.aliases).contains {
+                    $0.caseInsensitiveCompare(normalizedWheelCode) == .orderedSame
+                }
+            }
+            guard matchingWheels.count == 1, let wheel = matchingWheels.first else { return nil }
+
+            guard let asset = catalog.preferredAsset(
+                generationID: generation.id,
+                trimID: generation.defaultTrimID,
+                colorID: generation.defaultColorID,
+                wheelID: wheel.id
+            ) else { return nil }
+
+            return VehicleImageOverride(
+                generationID: generation.id,
+                trimID: generation.defaultTrimID,
+                colorID: generation.defaultColorID,
+                wheelID: wheel.id,
+                assetID: asset.id
+            )
+        }
+        return candidates.count == 1 ? candidates[0] : nil
+    }
+
+    private static let legacyCompatibleGenerationIDs: [String: Set<String>] = [
+        "m3": ["model-3-early", "model-3-refresh", "model-3-refresh-performance"],
+        "m3h": ["model-3-highland"],
+        "m3hp": ["model-3-highland-performance"],
+        "my": ["model-y-legacy", "model-y-legacy-performance"],
+        "myjs": ["model-y-juniper-standard"],
+        "myj": ["model-y-juniper-premium"],
+        "myjp": ["model-y-juniper-performance"],
+        "ms": ["model-s-nosecone", "model-s-facelift", "model-s-refresh", "model-s-plaid"],
+        "mx": ["model-x-legacy", "model-x-refresh", "model-x-plaid"]
+    ]
+}
+
 public struct AppSettings: Codable, Equatable, Sendable {
     public static let currentFormatPreferencesVersion = 1
 
@@ -67,6 +161,9 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public var chargePricingRules: [ChargePricingRule]
     public var parkingFeeRules: [ParkingFeeRule]
     public var driveAnnotations: [String: DriveAnnotation]
+    private var vehicleImageOverrides: [String: VehicleImageOverride]
+    private var legacyVehicleImageVariants: [String: String]
+    private var legacyVehicleImageWheels: [String: String]
 
     public var forceChineseLanguage: Bool {
         get { appLanguage == .chinese }
@@ -112,6 +209,9 @@ public struct AppSettings: Codable, Equatable, Sendable {
         self.chargePricingRules = chargePricingRules
         self.parkingFeeRules = parkingFeeRules
         self.driveAnnotations = driveAnnotations
+        vehicleImageOverrides = [:]
+        legacyVehicleImageVariants = [:]
+        legacyVehicleImageWheels = [:]
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -133,6 +233,11 @@ public struct AppSettings: Codable, Equatable, Sendable {
         case chargePricingRules
         case parkingFeeRules
         case driveAnnotations
+        case vehicleImageOverrides
+        case vehicleImageOverrideVariants
+        case vehicleImageOverrideWheels
+        case carImageVariants
+        case carImageWheelCodes
         case forceChineseLanguage
     }
 
@@ -169,6 +274,15 @@ public struct AppSettings: Codable, Equatable, Sendable {
         chargePricingRules = try container.decodeIfPresent([ChargePricingRule].self, forKey: .chargePricingRules) ?? []
         parkingFeeRules = try container.decodeIfPresent([ParkingFeeRule].self, forKey: .parkingFeeRules) ?? []
         driveAnnotations = try container.decodeIfPresent([String: DriveAnnotation].self, forKey: .driveAnnotations) ?? [:]
+        vehicleImageOverrides = try container.decodeIfPresent([String: VehicleImageOverride].self, forKey: .vehicleImageOverrides) ?? [:]
+        legacyVehicleImageVariants = Self.legacyValues(
+            from: container,
+            keys: [.vehicleImageOverrideVariants, .carImageVariants]
+        )
+        legacyVehicleImageWheels = Self.legacyValues(
+            from: container,
+            keys: [.vehicleImageOverrideWheels, .carImageWheelCodes]
+        )
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -191,6 +305,7 @@ public struct AppSettings: Codable, Equatable, Sendable {
         try container.encode(chargePricingRules, forKey: .chargePricingRules)
         try container.encode(parkingFeeRules, forKey: .parkingFeeRules)
         try container.encode(driveAnnotations, forKey: .driveAnnotations)
+        try container.encode(vehicleImageOverrides, forKey: .vehicleImageOverrides)
         try container.encode(forceChineseLanguage, forKey: .forceChineseLanguage)
     }
 
@@ -252,5 +367,80 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public mutating func setDriveAnnotation(_ annotation: DriveAnnotation, carId: Int, driveId: Int) {
         let key = "\(carId):\(driveId)"
         if annotation.isEmpty { driveAnnotations.removeValue(forKey: key) } else { driveAnnotations[key] = annotation }
+    }
+
+    public func vehicleImageOverride(for serverURL: URL, carID: Int) -> VehicleImageOverride? {
+        vehicleImageOverrides[vehicleImageOverrideKey(for: serverURL, carID: carID)]
+    }
+
+    public func manualVehicleImageOverride(
+        for serverURL: URL,
+        carID: Int,
+        catalog: VehicleImageCatalog
+    ) -> VehicleImageManualOverride? {
+        vehicleImageOverride(for: serverURL, carID: carID)?.manualOverride(in: catalog)
+    }
+
+    public mutating func setVehicleImageOverride(
+        _ override: VehicleImageOverride,
+        for serverURL: URL,
+        carID: Int
+    ) {
+        vehicleImageOverrides[vehicleImageOverrideKey(for: serverURL, carID: carID)] = override
+    }
+
+    public mutating func clearVehicleImageOverride(for serverURL: URL, carID: Int) {
+        vehicleImageOverrides.removeValue(forKey: vehicleImageOverrideKey(for: serverURL, carID: carID))
+    }
+
+    var hasLegacyVehicleImageOverrideValues: Bool {
+        !legacyVehicleImageVariants.isEmpty || !legacyVehicleImageWheels.isEmpty
+    }
+
+    public mutating func migrateLegacyVehicleImageOverrides(catalog: VehicleImageCatalog) -> Bool {
+        let hadLegacyValues = hasLegacyVehicleImageOverrideValues
+        defer {
+            legacyVehicleImageVariants.removeAll()
+            legacyVehicleImageWheels.removeAll()
+        }
+        guard hadLegacyValues,
+              let serverURL = Self.validServerURL(from: serverURL)
+        else { return hadLegacyValues }
+
+        for (carIDText, variant) in legacyVehicleImageVariants {
+            guard let carID = Int(carIDText),
+                  let wheelCode = legacyVehicleImageWheels[carIDText],
+                  vehicleImageOverride(for: serverURL, carID: carID) == nil,
+                  let override = VehicleImageOverride.migrateLegacy(
+                      variant: variant,
+                      wheelCode: wheelCode,
+                      catalog: catalog
+                  )
+            else { continue }
+            setVehicleImageOverride(override, for: serverURL, carID: carID)
+        }
+        return true
+    }
+
+    private func vehicleImageOverrideKey(for serverURL: URL, carID: Int) -> String {
+        "\(TeslaMateServerIdentity.key(for: serverURL)):\(carID)"
+    }
+
+    private static func validServerURL(from value: String) -> URL? {
+        let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let url = URL(string: trimmedValue), url.scheme != nil, url.host != nil else { return nil }
+        return url
+    }
+
+    private static func legacyValues(
+        from container: KeyedDecodingContainer<CodingKeys>,
+        keys: [CodingKeys]
+    ) -> [String: String] {
+        for key in keys {
+            if let values = try? container.decodeIfPresent([String: String].self, forKey: key) {
+                return values
+            }
+        }
+        return [:]
     }
 }

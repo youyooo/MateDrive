@@ -5,17 +5,20 @@ final class WeatherServiceTests: XCTestCase {
     func testDriveWeatherUsesRouteSelectionBeforeCallingApi() async {
         let api = FakeWeatherAPI()
         let service = WeatherService(api: api)
+        let firstPoint = SyntheticCoordinates.point()
+        let middlePoint = SyntheticCoordinates.point(latitudeOffset: 0.1, longitudeOffset: 0.1)
+        let finalPoint = SyntheticCoordinates.point(latitudeOffset: 0.2, longitudeOffset: 0.2)
         let positions = [
-            WeatherRoutePosition(latitude: 48.0, longitude: 2.0, date: "2026-01-01"),
-            WeatherRoutePosition(latitude: 48.1, longitude: 2.1, date: "2026-01-01"),
-            WeatherRoutePosition(latitude: 48.2, longitude: 2.2, date: "2026-01-01")
+            WeatherRoutePosition(latitude: firstPoint.latitude, longitude: firstPoint.longitude, date: "2026-01-01"),
+            WeatherRoutePosition(latitude: middlePoint.latitude, longitude: middlePoint.longitude, date: "2026-01-01"),
+            WeatherRoutePosition(latitude: finalPoint.latitude, longitude: finalPoint.longitude, date: "2026-01-01")
         ]
 
         let points = await service.weatherAlongDrive(positions: positions, totalDistanceKm: 20)
 
-        XCTAssertEqual(points.map(\.latitude), [48.0, 48.2])
+        XCTAssertEqual(points.map(\.latitude), [firstPoint.latitude, finalPoint.latitude])
         let requestedLatitudes = await api.requestedLatitudeSnapshot()
-        XCTAssertEqual(requestedLatitudes, [48.0, 48.2])
+        XCTAssertEqual(requestedLatitudes, [firstPoint.latitude, finalPoint.latitude])
     }
 
     func testTripWeatherUsesHourlyClampedSamples() async {

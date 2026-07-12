@@ -84,12 +84,16 @@ final class DriveDetailViewModelTests: XCTestCase {
     }
 
     func testReplayBuilderKeepsMetricsAlignedWithValidRoutePoints() {
+        let firstPoint = SyntheticCoordinates.point()
+        let secondPoint = SyntheticCoordinates.point(latitudeOffset: 0.001, longitudeOffset: 0.001)
+        let implausiblePoint = SyntheticCoordinates.point(latitudeOffset: 40, longitudeOffset: 80)
+        let finalPoint = SyntheticCoordinates.point(latitudeOffset: 0.002, longitudeOffset: 0.002)
         let positions = [
-            DrivePosition(date: "2026-07-01T08:00:00Z", latitude: 0, longitude: 0, speed: 1),
-            DrivePosition(date: "2026-07-01T08:00:00Z", latitude: 28.10, longitude: 112.90, speed: 20),
-            DrivePosition(date: "2026-07-01T08:00:10Z", latitude: 28.101, longitude: 112.901, speed: 30, power: 8),
-            DrivePosition(date: "2026-07-01T08:00:11Z", latitude: 39.90, longitude: 116.40, speed: 99),
-            DrivePosition(date: "2026-07-01T08:00:20Z", latitude: 28.102, longitude: 112.902, speed: 40, batteryLevel: 78)
+            DrivePosition(date: "2026-07-01T08:00:00Z", latitude: SyntheticCoordinates.zero.latitude, longitude: SyntheticCoordinates.zero.longitude, speed: 1),
+            DrivePosition(date: "2026-07-01T08:00:00Z", latitude: firstPoint.latitude, longitude: firstPoint.longitude, speed: 20),
+            DrivePosition(date: "2026-07-01T08:00:10Z", latitude: secondPoint.latitude, longitude: secondPoint.longitude, speed: 30, power: 8),
+            DrivePosition(date: "2026-07-01T08:00:11Z", latitude: implausiblePoint.latitude, longitude: implausiblePoint.longitude, speed: 99),
+            DrivePosition(date: "2026-07-01T08:00:20Z", latitude: finalPoint.latitude, longitude: finalPoint.longitude, speed: 40, batteryLevel: 78)
         ]
 
         let samples = DriveReplayBuilder.samples(from: positions)
@@ -97,21 +101,22 @@ final class DriveDetailViewModelTests: XCTestCase {
         XCTAssertEqual(samples.count, 3)
         XCTAssertEqual(samples.map(\.position.speed), [20, 30, 40])
         XCTAssertEqual(samples.last?.position.batteryLevel, 78)
-        XCTAssertEqual(samples.map(\.latitude), [28.10, 28.101, 28.102])
+        XCTAssertEqual(samples.map(\.latitude), [firstPoint.latitude, secondPoint.latitude, finalPoint.latitude])
     }
 
     func testReplayBuilderReturnsEmptyForMissingCoordinates() {
         XCTAssertTrue(DriveReplayBuilder.samples(from: [
             DrivePosition(speed: 20),
-            DrivePosition(latitude: 91, longitude: 10)
+            DrivePosition(latitude: SyntheticCoordinates.invalidLatitude, longitude: SyntheticCoordinates.point().longitude)
         ]).isEmpty)
     }
 
     func testDriveDetailStatsUsePositionDataBeforeSummaryFallbacks() async throws {
         let detail = DriveDetail.fixture()
         let api = FakeDriveAPI(detail: detail)
+        let weatherLocation = SyntheticCoordinates.point()
         let weatherService = FakeDriveWeatherService(points: [
-            WeatherPoint(latitude: 48.0, longitude: 2.0, temperatureCelsius: 17, weatherCode: 1)
+            WeatherPoint(latitude: weatherLocation.latitude, longitude: weatherLocation.longitude, temperatureCelsius: 17, weatherCode: 1)
         ])
         let viewModel = DriveDetailViewModel(api: api, weatherService: weatherService)
 
@@ -463,7 +468,10 @@ private actor DriveAnnotationSettingsStore: SettingsStoring {
 
 private extension DriveDetail {
     static func fixture(energyConsumedNet: Double? = 4.8, consumptionNet: Double? = nil) -> DriveDetail {
-        DriveDetail(
+        let firstPoint = SyntheticCoordinates.point()
+        let secondPoint = SyntheticCoordinates.point(latitudeOffset: 0.1, longitudeOffset: 0.1)
+        let finalPoint = SyntheticCoordinates.point(latitudeOffset: 0.2, longitudeOffset: 0.2)
+        return DriveDetail(
             driveId: 10,
             startDate: "2026-07-01T08:00:00Z",
             endDate: "2026-07-01T08:30:00Z",
@@ -481,9 +489,9 @@ private extension DriveDetail {
             energyConsumedNet: energyConsumedNet,
             consumptionNet: consumptionNet,
             positions: [
-                DrivePosition(date: "2026-07-01T08:00:00Z", latitude: 48.0, longitude: 2.0, speed: 20, power: 10, batteryLevel: 80, elevation: 100),
-                DrivePosition(date: "2026-07-01T08:15:00Z", latitude: 48.1, longitude: 2.1, speed: 80, power: 30, batteryLevel: 75, elevation: 125),
-                DrivePosition(date: "2026-07-01T08:30:00Z", latitude: 48.2, longitude: 2.2, speed: 50, power: -12, batteryLevel: 72, elevation: 115)
+                DrivePosition(date: "2026-07-01T08:00:00Z", latitude: firstPoint.latitude, longitude: firstPoint.longitude, speed: 20, power: 10, batteryLevel: 80, elevation: 100),
+                DrivePosition(date: "2026-07-01T08:15:00Z", latitude: secondPoint.latitude, longitude: secondPoint.longitude, speed: 80, power: 30, batteryLevel: 75, elevation: 125),
+                DrivePosition(date: "2026-07-01T08:30:00Z", latitude: finalPoint.latitude, longitude: finalPoint.longitude, speed: 50, power: -12, batteryLevel: 72, elevation: 115)
             ]
         )
     }

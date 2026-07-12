@@ -3,50 +3,57 @@ import XCTest
 
 final class GeocodingServiceTests: XCTestCase {
     func testCoordinateValidationRejectsInvalidValuesAndAcceptsLegalZeroAxis() {
-        XCTAssertNil(GeoCoordinateValidator.location(latitude: nil, longitude: 1))
-        XCTAssertNil(GeoCoordinateValidator.location(latitude: .nan, longitude: 1))
-        XCTAssertNil(GeoCoordinateValidator.location(latitude: 1, longitude: .infinity))
-        XCTAssertNil(GeoCoordinateValidator.location(latitude: 91, longitude: 1))
-        XCTAssertNil(GeoCoordinateValidator.location(latitude: 1, longitude: -181))
-        XCTAssertNil(GeoCoordinateValidator.location(latitude: 0, longitude: 0))
-        XCTAssertNotNil(GeoCoordinateValidator.location(latitude: 0, longitude: 10))
-        XCTAssertNotNil(GeoCoordinateValidator.location(latitude: 10, longitude: 0))
+        let point = SyntheticCoordinates.point()
+        XCTAssertNil(GeoCoordinateValidator.location(latitude: nil, longitude: point.longitude))
+        XCTAssertNil(GeoCoordinateValidator.location(latitude: .nan, longitude: point.longitude))
+        XCTAssertNil(GeoCoordinateValidator.location(latitude: point.latitude, longitude: .infinity))
+        XCTAssertNil(GeoCoordinateValidator.location(latitude: SyntheticCoordinates.invalidLatitude, longitude: point.longitude))
+        XCTAssertNil(GeoCoordinateValidator.location(latitude: point.latitude, longitude: -SyntheticCoordinates.invalidLongitude))
+        XCTAssertNil(GeoCoordinateValidator.location(latitude: SyntheticCoordinates.zero.latitude, longitude: SyntheticCoordinates.zero.longitude))
+        XCTAssertNotNil(GeoCoordinateValidator.location(latitude: SyntheticCoordinates.zero.latitude, longitude: point.longitude))
+        XCTAssertNotNil(GeoCoordinateValidator.location(latitude: point.latitude, longitude: SyntheticCoordinates.zero.longitude))
     }
 
     func testRouteSanitizerDropsImpossibleTimestampedJump() {
+        let routeStart = SyntheticCoordinates.point()
+        let impossibleJump = SyntheticCoordinates.point(latitudeOffset: 50, longitudeOffset: -100)
+        let routeEnd = SyntheticCoordinates.point(latitudeOffset: 0.01, longitudeOffset: 0.01)
         let route = GeoCoordinateValidator.sanitizedRoute([
-            GeocodeRouteSample(latitude: 28.20, longitude: 112.85, date: "2026-07-11T08:00:00+08:00"),
-            GeocodeRouteSample(latitude: 40.71, longitude: -74.00, date: "2026-07-11T08:00:10+08:00"),
-            GeocodeRouteSample(latitude: 28.21, longitude: 112.86, date: "2026-07-11T08:01:00+08:00")
+            GeocodeRouteSample(latitude: routeStart.latitude, longitude: routeStart.longitude, date: "2026-07-11T08:00:00+08:00"),
+            GeocodeRouteSample(latitude: impossibleJump.latitude, longitude: impossibleJump.longitude, date: "2026-07-11T08:00:10+08:00"),
+            GeocodeRouteSample(latitude: routeEnd.latitude, longitude: routeEnd.longitude, date: "2026-07-11T08:01:00+08:00")
         ])
 
         XCTAssertEqual(route.count, 2)
-        XCTAssertEqual(route.last?.latitude, 28.21)
+        XCTAssertEqual(route.last?.latitude, routeEnd.latitude)
     }
 
     func testGridCoordMatchesAndroidPrecision() {
-        XCTAssertEqual(GeocodeGrid.gridCoord(48.8566), 4885)
-        XCTAssertEqual(GeocodeGrid.gridCoord(-122.4194), -12241)
+        XCTAssertEqual(GeocodeGrid.gridCoord(SyntheticCoordinates.positiveFractionalGridSample), 4885)
+        XCTAssertEqual(GeocodeGrid.gridCoord(SyntheticCoordinates.negativeFractionalGridSample), -12241)
     }
 
     func testEnqueueDeduplicatesByGridAndSkipsCachedLocations() async throws {
+        let cachedLocation = SyntheticCoordinates.point()
+        let duplicateLocation = SyntheticCoordinates.point(latitudeOffset: 0.0001, longitudeOffset: 0.0001)
+        let enqueuedLocation = SyntheticCoordinates.point(latitudeOffset: 0.1, longitudeOffset: 0.1)
         let store = InMemoryGeocodeQueueStore(cached: [
-            GridKey(latitude: 4885, longitude: 235)
+            GridKey(latitude: GeocodeGrid.gridCoord(cachedLocation.latitude), longitude: GeocodeGrid.gridCoord(cachedLocation.longitude))
         ])
         let service = GeocodingService(queueStore: store)
 
         let count = try await service.enqueueLocations(
             carId: 1,
             locations: [
-                GeocodeLocation(latitude: 48.8566, longitude: 2.3522),
-                GeocodeLocation(latitude: 48.8567, longitude: 2.3523),
-                GeocodeLocation(latitude: 49.0000, longitude: 2.0000)
+                GeocodeLocation(latitude: cachedLocation.latitude, longitude: cachedLocation.longitude),
+                GeocodeLocation(latitude: duplicateLocation.latitude, longitude: duplicateLocation.longitude),
+                GeocodeLocation(latitude: enqueuedLocation.latitude, longitude: enqueuedLocation.longitude)
             ]
         )
 
         XCTAssertEqual(count, 1)
         let enqueued = await store.enqueuedSnapshot()
-        XCTAssertEqual(enqueued.map(\.gridLatitude), [4900])
+        XCTAssertEqual(enqueued.map(\.gridLatitude), [GeocodeGrid.gridCoord(enqueuedLocation.latitude)])
     }
 
     func testReverseGeocodeCachesSuccessfulResult() async throws {
@@ -54,8 +61,11 @@ final class GeocodingServiceTests: XCTestCase {
         let api = CountingReverseGeocoder()
         let service = GeocodingService(queueStore: store, reverseGeocoder: api)
 
-        let first = await service.reverseGeocode(latitude: 28.2278, longitude: 112.9388)
-        let second = await service.reverseGeocode(latitude: 28.22781, longitude: 112.93881)
+        let firstCoordinate = SyntheticCoordinates.point(latitudeOffset: 0.002, longitudeOffset: 0.002)
+        let secondCoordinate = SyntheticCoordinates.point(latitudeOffset: 0.00201, longitudeOffset: 0.00201)
+        let cachedLocation = SyntheticCoordinates.point(latitudeOffset: 0.00202, longitudeOffset: 0.00202)
+        let first = await service.reverseGeocode(latitude: firstCoordinate.latitude, longitude: firstCoordinate.longitude)
+        let second = await service.reverseGeocode(latitude: secondCoordinate.latitude, longitude: secondCoordinate.longitude)
 
         guard case let .success(firstLocation) = first, case let .success(secondLocation) = second else {
             return XCTFail("Expected cached geocoding results")
@@ -64,7 +74,7 @@ final class GeocodingServiceTests: XCTestCase {
         XCTAssertEqual(secondLocation.countryCode, "CN")
         let requestCount = await api.requestCount
         XCTAssertEqual(requestCount, 1)
-        let cached = await service.cachedLocation(latitude: 28.22782, longitude: 112.93882)
+        let cached = await service.cachedLocation(latitude: cachedLocation.latitude, longitude: cachedLocation.longitude)
         XCTAssertEqual(cached?.countryCode, "CN")
     }
 
@@ -76,8 +86,9 @@ final class GeocodingServiceTests: XCTestCase {
         let store = GeocodeStore(database: database)
         let location = GeocodedLocation(address: "长沙市", countryCode: "CN", countryName: "China", regionName: "Hunan", city: "Changsha")
 
-        try await store.save(location: location, latitude: 28.2278, longitude: 112.9388)
-        let restored = try await store.cachedLocation(gridLatitude: 2822, gridLongitude: 11293)
+        let coordinate = SyntheticCoordinates.point(latitudeOffset: 0.002, longitudeOffset: 0.002)
+        try await store.save(location: location, latitude: coordinate.latitude, longitude: coordinate.longitude)
+        let restored = try await store.cachedLocation(gridLatitude: GeocodeGrid.gridCoord(coordinate.latitude), gridLongitude: GeocodeGrid.gridCoord(coordinate.longitude))
 
         XCTAssertEqual(restored, location)
     }
@@ -87,8 +98,10 @@ final class GeocodingServiceTests: XCTestCase {
         try await database.execute("CREATE TABLE geocode_cache (cache_key TEXT PRIMARY KEY, latitude REAL NOT NULL, longitude REAL NOT NULL, payload_json TEXT NOT NULL, updated_at TEXT NOT NULL);")
         try await database.execute("CREATE TABLE geocode_queue (cache_key TEXT PRIMARY KEY, latitude REAL NOT NULL, longitude REAL NOT NULL, created_at TEXT NOT NULL);")
         let store = GeocodeStore(database: database)
-        try await store.save(location: GeocodedLocation(countryCode: "CN"), latitude: 28.2278, longitude: 112.9388)
-        try await store.enqueue(GeocodeQueueRecord(cacheKey: "3000:12000", latitude: 30, longitude: 120, createdAt: "2026-07-11T10:00:00Z"))
+        let cachedCoordinate = SyntheticCoordinates.point(latitudeOffset: 0.002, longitudeOffset: 0.002)
+        let pendingCoordinate = SyntheticCoordinates.point(latitudeOffset: 0.1, longitudeOffset: 0.1)
+        try await store.save(location: GeocodedLocation(countryCode: "CN"), latitude: cachedCoordinate.latitude, longitude: cachedCoordinate.longitude)
+        try await store.enqueue(GeocodeQueueRecord(cacheKey: "1210:3410", latitude: pendingCoordinate.latitude, longitude: pendingCoordinate.longitude, createdAt: "2026-07-11T10:00:00Z"))
 
         let health = try await store.health()
 
@@ -99,9 +112,11 @@ final class GeocodingServiceTests: XCTestCase {
 
     func testQueueProcessorRemovesSuccessAndRetainsFailure() async throws {
         let store = InMemoryGeocodeQueueStore()
+        let successfulCoordinate = SyntheticCoordinates.point(latitudeOffset: 0.002, longitudeOffset: 0.002)
+        let failedCoordinate = SyntheticCoordinates.point(latitudeOffset: 0.1, longitudeOffset: 0.1)
         try await store.enqueue([
-            GeocodeQueueItem(gridLatitude: 2822, gridLongitude: 11293, carId: 1, latitude: 28.2278, longitude: 112.9388, addedAtMilliseconds: 1),
-            GeocodeQueueItem(gridLatitude: 3000, gridLongitude: 12000, carId: 1, latitude: 30, longitude: 120, addedAtMilliseconds: 2)
+            GeocodeQueueItem(gridLatitude: GeocodeGrid.gridCoord(successfulCoordinate.latitude), gridLongitude: GeocodeGrid.gridCoord(successfulCoordinate.longitude), carId: 1, latitude: successfulCoordinate.latitude, longitude: successfulCoordinate.longitude, addedAtMilliseconds: 1),
+            GeocodeQueueItem(gridLatitude: GeocodeGrid.gridCoord(failedCoordinate.latitude), gridLongitude: GeocodeGrid.gridCoord(failedCoordinate.longitude), carId: 1, latitude: failedCoordinate.latitude, longitude: failedCoordinate.longitude, addedAtMilliseconds: 2)
         ])
         let api = SequencedReverseGeocoder(results: [
             .success(GeocodedLocation(countryCode: "CN")),
@@ -113,7 +128,7 @@ final class GeocodingServiceTests: XCTestCase {
 
         XCTAssertEqual(report, GeocodeQueueProcessingReport(attemptedCount: 2, completedCount: 1, failedCount: 1))
         let remaining = await store.enqueuedSnapshot()
-        XCTAssertEqual(remaining.map(\.gridLatitude), [3000])
+        XCTAssertEqual(remaining.map(\.gridLatitude), [GeocodeGrid.gridCoord(failedCoordinate.latitude)])
     }
 
     func testQueueProcessorHonorsBatchLimit() async throws {
