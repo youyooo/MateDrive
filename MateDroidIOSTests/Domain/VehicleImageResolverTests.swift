@@ -393,6 +393,224 @@ final class VehicleImageResolverTests: XCTestCase {
         }
     }
 
+    @MainActor
+    func testBundledModelYGenerationsResolveReviewedAssetsAcrossBoundaryAndTrimGroups() throws {
+        let resolver = VehicleImageResolver(catalog: try BundledVehicleImageCatalogProvider(bundle: .main).catalog())
+        let cases: [(
+            label: String,
+            year: Int,
+            trim: String,
+            wheel: String,
+            color: String,
+            generationID: String,
+            assetID: String,
+            wheelID: String,
+            colorID: String,
+            confidence: VehicleImageConfidence,
+            conflicts: [VehicleImageConflict]
+        )] = [
+            ("legacy lower bound", 2020, "rwd", "WY19B", "PPSW", "model-y-legacy", "model-y-legacy-base-pearl-white-gemini-19", "gemini-19", "pearl-white", .exact, []),
+            ("legacy upper bound", 2024, "long range", "gemini19", "pearlwhite", "model-y-legacy", "model-y-legacy-base-pearl-white-gemini-19", "gemini-19", "pearl-white", .exact, []),
+            ("legacy performance factory wheel", 2024, "P74D", "WY21A", "PPSW", "model-y-legacy-performance", "model-y-legacy-performance-pearl-white-uberturbine-21", "uberturbine-21", "pearl-white", .exact, []),
+            ("legacy performance rejects base wheel", 2023, "performance", "WY19B", "PPSW", "model-y-legacy-performance", "model-y-legacy-performance-pearl-white-uberturbine-21", "uberturbine-21", "pearl-white", .inferred, [.reportedWheelContradictsFactoryTrim]),
+            ("Juniper Standard lower bound", 2025, "standard", "WY18P", "PN01", "model-y-juniper-standard", "model-y-juniper-standard-stealth-grey-photon-18", "photon-18", "stealth-grey", .exact, []),
+            ("Juniper Standard open upper bound", 2026, "50", "photon18", "StealthGray", "model-y-juniper-standard", "model-y-juniper-standard-stealth-grey-photon-18", "photon-18", "stealth-grey", .exact, []),
+            ("Juniper Premium", 2025, "74D", "WY19P", "PPSW", "model-y-juniper-premium", "model-y-juniper-premium-pearl-white-crossflow-19", "crossflow-19", "pearl-white", .exact, []),
+            ("Juniper Performance", 2025, "P74D", "WY21A", "PN01", "model-y-juniper-performance", "model-y-juniper-performance-stealth-grey-uberturbine-21", "uberturbine-21", "stealth-grey", .exact, []),
+            ("Juniper Performance rejects Premium wheel", 2026, "performance", "WY19P", "PN01", "model-y-juniper-performance", "model-y-juniper-performance-stealth-grey-uberturbine-21", "uberturbine-21", "stealth-grey", .inferred, [.reportedWheelContradictsFactoryTrim])
+        ]
+
+        for testCase in cases {
+            let resolution = resolver.resolve(
+                VehicleImageDescriptor(
+                    model: "Model Y",
+                    modelYear: testCase.year,
+                    trimBadging: testCase.trim,
+                    wheelType: testCase.wheel,
+                    exteriorColor: testCase.color,
+                    spoilerType: nil
+                )
+            )
+
+            XCTAssertEqual(resolution.generationID, testCase.generationID, testCase.label)
+            XCTAssertEqual(resolution.assetID, testCase.assetID, testCase.label)
+            XCTAssertEqual(resolution.wheelID, testCase.wheelID, testCase.label)
+            XCTAssertEqual(resolution.colorID, testCase.colorID, testCase.label)
+            XCTAssertEqual(resolution.confidence, testCase.confidence, testCase.label)
+            XCTAssertEqual(resolution.conflicts, testCase.conflicts, testCase.label)
+            XCTAssertFalse(resolution.usesLegacyAsset, testCase.label)
+        }
+    }
+
+    @MainActor
+    func testBundledModelYUnreviewedColorCombinationPrefersReviewedGenerationDefault() throws {
+        let resolver = VehicleImageResolver(catalog: try BundledVehicleImageCatalogProvider(bundle: .main).catalog())
+
+        let resolution = resolver.resolve(
+            VehicleImageDescriptor(
+                model: "Model Y",
+                modelYear: 2025,
+                trimBadging: "standard",
+                wheelType: "WY18P",
+                exteriorColor: "PPSW",
+                spoilerType: nil
+            )
+        )
+
+        XCTAssertEqual(resolution.generationID, "model-y-juniper-standard")
+        XCTAssertEqual(resolution.assetID, "model-y-juniper-standard-stealth-grey-photon-18")
+        XCTAssertEqual(
+            resolution.assetPath,
+            "CarImages/vehicle_model-y-juniper-standard_standard_stealth-grey_photon-18.png"
+        )
+        XCTAssertEqual(resolution.colorID, "stealth-grey")
+        XCTAssertEqual(resolution.confidence, .inferred)
+        XCTAssertFalse(resolution.usesLegacyAsset)
+    }
+
+    @MainActor
+    func testBundledModelSGenerationsResolveReviewedAssetsAcrossBoundariesAndPlaidWheel() throws {
+        let resolver = VehicleImageResolver(catalog: try BundledVehicleImageCatalogProvider(bundle: .main).catalog())
+        let cases: [(
+            label: String,
+            year: Int,
+            trim: String,
+            wheel: String,
+            generationID: String,
+            assetID: String,
+            wheelID: String,
+            confidence: VehicleImageConfidence,
+            conflicts: [VehicleImageConflict]
+        )] = [
+            ("nosecone lower bound", 2012, "85", "WT19", "model-s-nosecone", "model-s-nosecone-legacy-pearl-white-tempest-19", "tempest-19", .exact, []),
+            ("nosecone upper bound", 2015, "p85", "tempest19", "model-s-nosecone", "model-s-nosecone-legacy-pearl-white-tempest-19", "tempest-19", .exact, []),
+            ("facelift lower bound", 2016, "standard", "WT19", "model-s-facelift", "model-s-facelift-standard-pearl-white-tempest-19", "tempest-19", .exact, []),
+            ("facelift upper bound", 2020, "long range", "tempest19", "model-s-facelift", "model-s-facelift-standard-pearl-white-tempest-19", "tempest-19", .exact, []),
+            ("refresh lower bound", 2021, "dual motor", "WT19", "model-s-refresh", "model-s-refresh-dual-motor-pearl-white-tempest-19", "tempest-19", .exact, []),
+            ("refresh open upper bound", 2026, "long range", "tempest19", "model-s-refresh", "model-s-refresh-dual-motor-pearl-white-tempest-19", "tempest-19", .exact, []),
+            ("Plaid factory wheel", 2021, "plaid", "WT21", "model-s-plaid", "model-s-plaid-plaid-pearl-white-arachnid-21", "arachnid-21", .exact, []),
+            ("Plaid optional Tempest uses reviewed Arachnid default", 2026, "plaid", "WT19", "model-s-plaid", "model-s-plaid-plaid-pearl-white-arachnid-21", "arachnid-21", .inferred, [])
+        ]
+
+        for testCase in cases {
+            let resolution = resolver.resolve(
+                VehicleImageDescriptor(
+                    model: "Model S",
+                    modelYear: testCase.year,
+                    trimBadging: testCase.trim,
+                    wheelType: testCase.wheel,
+                    exteriorColor: "PPSW",
+                    spoilerType: nil
+                )
+            )
+
+            XCTAssertEqual(resolution.generationID, testCase.generationID, testCase.label)
+            XCTAssertEqual(resolution.assetID, testCase.assetID, testCase.label)
+            XCTAssertEqual(resolution.wheelID, testCase.wheelID, testCase.label)
+            XCTAssertEqual(resolution.confidence, testCase.confidence, testCase.label)
+            XCTAssertEqual(resolution.conflicts, testCase.conflicts, testCase.label)
+            XCTAssertFalse(resolution.usesLegacyAsset, testCase.label)
+        }
+    }
+
+    @MainActor
+    func testBundledModelXGenerationsResolveReviewedAssetsAcrossBoundaryAndPlaidWheel() throws {
+        let resolver = VehicleImageResolver(catalog: try BundledVehicleImageCatalogProvider(bundle: .main).catalog())
+        let cases: [(
+            label: String,
+            year: Int,
+            trim: String,
+            wheel: String,
+            generationID: String,
+            assetID: String,
+            wheelID: String,
+            confidence: VehicleImageConfidence,
+            conflicts: [VehicleImageConflict]
+        )] = [
+            ("legacy lower bound", 2015, "standard", "slipstream20", "model-x-legacy", "model-x-legacy-standard-pearl-white-slipstream-20", "slipstream-20", .exact, []),
+            ("legacy upper bound", 2020, "long range", "legacy20", "model-x-legacy", "model-x-legacy-standard-pearl-white-slipstream-20", "slipstream-20", .exact, []),
+            ("refresh lower bound", 2021, "dual motor", "WT20", "model-x-refresh", "model-x-refresh-dual-motor-pearl-white-cyberstream-20", "cyberstream-20", .exact, []),
+            ("refresh open upper bound", 2026, "long range", "cyberstream20", "model-x-refresh", "model-x-refresh-dual-motor-pearl-white-cyberstream-20", "cyberstream-20", .exact, []),
+            ("Plaid factory wheel", 2021, "plaid", "WT22", "model-x-plaid", "model-x-plaid-plaid-pearl-white-turbine-22", "turbine-22", .exact, []),
+            ("Plaid rejects Cyberstream telemetry", 2026, "plaid", "WT20", "model-x-plaid", "model-x-plaid-plaid-pearl-white-turbine-22", "turbine-22", .inferred, [.reportedWheelContradictsFactoryTrim])
+        ]
+
+        for testCase in cases {
+            let resolution = resolver.resolve(
+                VehicleImageDescriptor(
+                    model: "Model X",
+                    modelYear: testCase.year,
+                    trimBadging: testCase.trim,
+                    wheelType: testCase.wheel,
+                    exteriorColor: "PPSW",
+                    spoilerType: nil
+                )
+            )
+
+            XCTAssertEqual(resolution.generationID, testCase.generationID, testCase.label)
+            XCTAssertEqual(resolution.assetID, testCase.assetID, testCase.label)
+            XCTAssertEqual(resolution.wheelID, testCase.wheelID, testCase.label)
+            XCTAssertEqual(resolution.confidence, testCase.confidence, testCase.label)
+            XCTAssertEqual(resolution.conflicts, testCase.conflicts, testCase.label)
+            XCTAssertFalse(resolution.usesLegacyAsset, testCase.label)
+        }
+    }
+
+    @MainActor
+    func testBundledRoadsterAndCybertruckResolveReviewedProductionAssets() throws {
+        let resolver = VehicleImageResolver(catalog: try BundledVehicleImageCatalogProvider(bundle: .main).catalog())
+
+        let roadster = resolver.resolve(
+            VehicleImageDescriptor(
+                model: "Tesla Roadster",
+                modelYear: 2010,
+                trimBadging: "base",
+                wheelType: "forged16x17",
+                exteriorColor: "PPSW",
+                spoilerType: nil
+            )
+        )
+        XCTAssertEqual(roadster.generationID, "roadster-1")
+        XCTAssertEqual(roadster.assetID, "roadster-1-base-pearl-white-directional-16-17")
+        XCTAssertEqual(roadster.wheelID, "directional-16-17")
+        XCTAssertEqual(roadster.confidence, .exact)
+        XCTAssertFalse(roadster.usesLegacyAsset)
+
+        let cases: [(
+            label: String,
+            trim: String,
+            wheel: String,
+            generationID: String,
+            assetID: String,
+            wheelID: String,
+            confidence: VehicleImageConfidence,
+            conflicts: [VehicleImageConflict]
+        )] = [
+            ("AWD All Season", "awd", "allseason20", "cybertruck-awd", "cybertruck-awd-awd-stainless-all-season-20", "all-season-20", .exact, []),
+            ("Cyberbeast All Terrain", "cyberbeast", "allterrain20", "cybertruck-cyberbeast", "cybertruck-cyberbeast-cyberbeast-stainless-all-terrain-20", "all-terrain-20", .exact, []),
+            ("Cyberbeast rejects AWD wheel", "cyberbeast", "allseason20", "cybertruck-cyberbeast", "cybertruck-cyberbeast-cyberbeast-stainless-all-terrain-20", "all-terrain-20", .inferred, [.reportedWheelContradictsFactoryTrim])
+        ]
+
+        for testCase in cases {
+            let resolution = resolver.resolve(
+                VehicleImageDescriptor(
+                    model: "Cybertruck",
+                    modelYear: 2025,
+                    trimBadging: testCase.trim,
+                    wheelType: testCase.wheel,
+                    exteriorColor: "stainless",
+                    spoilerType: nil
+                )
+            )
+            XCTAssertEqual(resolution.generationID, testCase.generationID, testCase.label)
+            XCTAssertEqual(resolution.assetID, testCase.assetID, testCase.label)
+            XCTAssertEqual(resolution.wheelID, testCase.wheelID, testCase.label)
+            XCTAssertEqual(resolution.confidence, testCase.confidence, testCase.label)
+            XCTAssertEqual(resolution.conflicts, testCase.conflicts, testCase.label)
+            XCTAssertFalse(resolution.usesLegacyAsset, testCase.label)
+        }
+    }
+
     func testMissingYearCanBeInferredFromGenerationSpecificWheel() {
         let resolver = VehicleImageResolver(catalog: catalog(reviewStatus: .reviewed, includeEarlyGeneration: true))
 

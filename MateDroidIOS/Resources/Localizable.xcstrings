@@ -364,6 +364,17 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "18 吋 Aero 輪圈" } }
       }
     },
+    "vehicle.wheel.directional-16-17" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "16/17-inch Directional Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "16/17-Zoll-Directional-Felgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas direccionales de 16/17 pulgadas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi direzionali da 16/17 pollici" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes direccionals de 16/17 polzades" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "前 16 / 后 17 英寸定向轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "前 16 / 後 17 吋定向輪圈" } }
+      }
+    },
     "vehicle.wheel.tempest-19" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "19-inch Tempest Wheels" } },
@@ -375,6 +386,17 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "19 吋 Tempest 輪圈" } }
       }
     },
+    "vehicle.wheel.arachnid-21" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "21-inch Arachnid Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "21-Zoll-Arachnid-Felgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas Arachnid de 21 pulgadas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi Arachnid da 21 pollici" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes Arachnid de 21 polzades" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "21 英寸 Arachnid 轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "21 吋 Arachnid 輪圈" } }
+      }
+    },
     "vehicle.wheel.cyberstream-20" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "20-inch Cyberstream Wheels" } },
@@ -384,6 +406,17 @@
         "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes Cyberstream de 20 polzades" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "20 英寸 Cyberstream 轮毂" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "20 吋 Cyberstream 輪圈" } }
+      }
+    },
+    "vehicle.wheel.slipstream-20" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "20-inch Slipstream Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "20-Zoll-Slipstream-Felgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas Slipstream de 20 pulgadas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi Slipstream da 20 pollici" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes Slipstream de 20 polzades" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "20 英寸 Slipstream 轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "20 吋 Slipstream 輪圈" } }
       }
     },
     "vehicle.wheel.turbine-22" : {
@@ -472,6 +505,17 @@
         "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes All-Season de 20 polzades" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "20 英寸全季节轮毂" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "20 吋全季節輪圈" } }
+      }
+    },
+    "vehicle.wheel.all-terrain-20" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "20-inch All-Terrain Wheels" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "20-Zoll-All-Terrain-Felgen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Llantas todoterreno de 20 pulgadas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerchi all-terrain da 20 pollici" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Llandes tot terreny de 20 polzades" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "20 英寸全地形轮毂" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "20 吋全地形輪圈" } }
       }
     },
     "vehicle.color.pearl-white" : {
