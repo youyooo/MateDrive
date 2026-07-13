@@ -26,8 +26,8 @@ final class PersistenceMigrationTests: XCTestCase {
         XCTAssertTrue(tables.contains("charge_pricing_audit_batches"))
         XCTAssertTrue(tables.contains("charge_pricing_audit_items"))
         let version = try await database.userVersion()
-        XCTAssertEqual(version, 15)
-        XCTAssertEqual(DatabaseSchemaVersion.current, 15)
+        XCTAssertEqual(version, 16)
+        XCTAssertEqual(DatabaseSchemaVersion.current, 16)
         XCTAssertEqual(SchemaVersion.current, 13)
     }
 
@@ -73,6 +73,30 @@ final class PersistenceMigrationTests: XCTestCase {
         let missing = try await database.rows("SELECT distance, duration_min FROM drives_summary WHERE drive_id = 8;")
         XCTAssertEqual(missing, [[.null, .null]])
         let version = try await database.userVersion()
-        XCTAssertEqual(version, 15)
+        XCTAssertEqual(version, 16)
+    }
+
+    func testVersion15DriveSummariesGainNullableEnergyFieldsWithoutDataLoss() async throws {
+        let database = try SQLiteDatabase.inMemory()
+        try await database.execute("""
+            CREATE TABLE drives_summary (
+              drive_id INTEGER PRIMARY KEY NOT NULL,
+              car_id INTEGER NOT NULL,
+              start_date TEXT NOT NULL,
+              end_date TEXT NOT NULL,
+              distance REAL,
+              duration_min INTEGER,
+              schema_version INTEGER NOT NULL DEFAULT 13
+            );
+            """)
+        try await database.execute("INSERT INTO drives_summary VALUES (7, 1, 'start', 'end', 12.5, 30, 13);")
+        try await database.setUserVersion(15)
+
+        try await Migrations.applyAll(to: database)
+
+        let migrated = try await database.rows("SELECT drive_id, distance, duration_min, energy_consumed_net, consumption_net FROM drives_summary;")
+        XCTAssertEqual(migrated, [[.int(7), .double(12.5), .int(30), .null, .null]])
+        let version = try await database.userVersion()
+        XCTAssertEqual(version, 16)
     }
 }

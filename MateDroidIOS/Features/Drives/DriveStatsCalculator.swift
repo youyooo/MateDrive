@@ -1,6 +1,6 @@
 import Foundation
 
-public enum DriveEnergySource: Equatable, Sendable {
+public enum DriveEnergySource: String, Equatable, Sendable {
     case api
     case powerSamples
     case unavailable

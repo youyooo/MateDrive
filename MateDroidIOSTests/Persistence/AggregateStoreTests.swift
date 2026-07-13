@@ -2,6 +2,24 @@ import XCTest
 @testable import MateDroidIOS
 
 final class AggregateStoreTests: XCTestCase {
+    func testDriveSummaryStorePersistsEnergyAndReadsVehicleScopedRows() async throws {
+        let database = try SQLiteDatabase.inMemory()
+        try await Migrations.applyAll(to: database)
+        let store = DriveSummaryStore(database: database)
+
+        try await store.upsertAll([
+            DriveSummaryRecord(driveId: 10, carId: 1, startDate: "start", endDate: "end", distance: 20, durationMin: 30, energyConsumedNet: 4.2, consumptionNet: 210),
+            DriveSummaryRecord(driveId: 11, carId: 2, startDate: "other", endDate: "other-end", distance: 1, durationMin: 2, energyConsumedNet: 0.2, consumptionNet: 200)
+        ])
+
+        let records = try await store.records(carId: 1)
+
+        XCTAssertEqual(records.count, 1)
+        XCTAssertEqual(records.first?.driveId, 10)
+        XCTAssertEqual(records.first?.energyConsumedNet, 4.2)
+        XCTAssertEqual(records.first?.consumptionNet, 210)
+    }
+
     func testDatabaseBackedSyncStorePreservesProcessedVersionWhenSummariesRefresh() async throws {
         let database = try SQLiteDatabase.inMemory()
         try await Migrations.applyAll(to: database)

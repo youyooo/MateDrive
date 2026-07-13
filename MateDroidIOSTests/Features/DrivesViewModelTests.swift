@@ -91,6 +91,40 @@ final class DrivesViewModelTests: XCTestCase {
         XCTAssertEqual(item.efficiencySource, .powerSamples)
     }
 
+    func testAPISummaryProviderFallsBackToVehicleScopedCacheWhenAPIIsOffline() async throws {
+        let cached = DriveSummaryItem(
+            driveId: 42,
+            carId: 1,
+            startDate: "2026-07-01T08:00:00Z",
+            endDate: "2026-07-01T08:30:00Z",
+            distance: 21,
+            durationMin: 30,
+            startAddress: nil,
+            endAddress: nil,
+            speedMax: nil,
+            speedAvg: nil,
+            energyConsumedNet: 4.2,
+            efficiency: 200,
+            efficiencySource: .api,
+            outsideTempAvg: nil
+        )
+        let provider = APIDriveSummaryProvider(
+            api: OfflineDriveAPI(),
+            cache: FakeDriveSummaryCache(items: [cached])
+        )
+
+        let result = await provider.driveSummaries(carId: 1)
+        let items = try result.successValue()
+
+        XCTAssertEqual(items.map(\.driveId), [42])
+        XCTAssertEqual(items.first?.energyConsumedNet, 4.2)
+        XCTAssertEqual(items.first?.isCached, true)
+
+        let viewModel = DrivesViewModel(store: provider, showShortEntries: true, initialState: DrivesState(dateFilter: .allTime))
+        await viewModel.load(carId: 1)
+        XCTAssertTrue(viewModel.state.isUsingCachedData)
+    }
+
     func testSummaryItemMarksServerEfficiencyAsDirectData() {
         let item = DriveSummaryItem(
             data: DriveData(driveId: 1, distance: 10, durationMin: 20, consumptionNet: 168),
@@ -166,6 +200,30 @@ private struct MissingEnergyDriveAPI: DriveAPIProviding {
     func carStatus(carId _: Int) async -> APIResult<CarStatusPayload> {
         .success(CarStatusPayload(status: nil, units: nil))
     }
+}
+
+private struct OfflineDriveAPI: DriveAPIProviding {
+    func drives(carId _: Int, startDate _: String?, endDate _: String?, page _: Int?, show _: Int?) async -> APIResult<[DriveData]> {
+        .failure(.network("offline"))
+    }
+
+    func driveDetail(carId _: Int, driveId _: Int) async -> APIResult<DriveDetail> {
+        .failure(.network("offline"))
+    }
+
+    func carStatus(carId _: Int) async -> APIResult<CarStatusPayload> {
+        .failure(.network("offline"))
+    }
+}
+
+private struct FakeDriveSummaryCache: DriveSummaryCaching {
+    let items: [DriveSummaryItem]
+
+    func load(carId: Int) async -> [DriveSummaryItem] {
+        items.filter { $0.carId == carId }
+    }
+
+    func save(_: [DriveSummaryItem], carId _: Int) async {}
 }
 
 private extension APIResult {

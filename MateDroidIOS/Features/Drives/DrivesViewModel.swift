@@ -113,6 +113,7 @@ public struct DriveSummaryItem: Equatable, Identifiable, Sendable {
     public let efficiency: Double?
     public let efficiencySource: DriveEnergySource
     public let outsideTempAvg: Double?
+    public let isCached: Bool
 
     public init(
         driveId: Int,
@@ -128,7 +129,8 @@ public struct DriveSummaryItem: Equatable, Identifiable, Sendable {
         energyConsumedNet: Double? = nil,
         efficiency: Double? = nil,
         efficiencySource: DriveEnergySource = .unavailable,
-        outsideTempAvg: Double? = nil
+        outsideTempAvg: Double? = nil,
+        isCached: Bool = false
     ) {
         self.driveId = driveId
         self.carId = carId
@@ -144,6 +146,7 @@ public struct DriveSummaryItem: Equatable, Identifiable, Sendable {
         self.efficiency = efficiency
         self.efficiencySource = efficiencySource
         self.outsideTempAvg = outsideTempAvg
+        self.isCached = isCached
     }
 
     public init(data: DriveData, carId fallbackCarId: Int) {
@@ -239,6 +242,7 @@ public struct DrivesState: Equatable, Sendable {
     public var distanceFilter: DriveDistanceFilter
     public var units: UnitPreferences?
     public var errorMessage: String?
+    public var isUsingCachedData: Bool
 
     public init(
         isLoading: Bool = true,
@@ -250,7 +254,8 @@ public struct DrivesState: Equatable, Sendable {
         dateFilter: DriveDateFilter = .last7Days,
         distanceFilter: DriveDistanceFilter = .all,
         units: UnitPreferences? = nil,
-        errorMessage: String? = nil
+        errorMessage: String? = nil,
+        isUsingCachedData: Bool = false
     ) {
         self.isLoading = isLoading
         self.isRefreshing = isRefreshing
@@ -262,6 +267,7 @@ public struct DrivesState: Equatable, Sendable {
         self.distanceFilter = distanceFilter
         self.units = units
         self.errorMessage = errorMessage
+        self.isUsingCachedData = isUsingCachedData
     }
 }
 
@@ -270,19 +276,83 @@ public protocol DriveSummaryProviding: Sendable {
     func driveUnits(carId: Int) async -> APIResult<UnitPreferences?>
 }
 
+public protocol DriveSummaryCaching: Sendable {
+    func load(carId: Int) async -> [DriveSummaryItem]
+    func save(_ items: [DriveSummaryItem], carId: Int) async
+}
+
+public struct DatabaseBackedDriveSummaryCache: DriveSummaryCaching {
+    private let databaseProvider: any AppDatabaseProviding
+
+    public init(databaseProvider: any AppDatabaseProviding) {
+        self.databaseProvider = databaseProvider
+    }
+
+    public func load(carId: Int) async -> [DriveSummaryItem] {
+        guard let database = try? await databaseProvider.database(),
+              let records = try? await DriveSummaryStore(database: database).records(carId: carId)
+        else { return [] }
+        return records.map { record in
+            let source = record.energySource.flatMap(DriveEnergySource.init(rawValue:))
+                ?? (record.energyConsumedNet != nil || record.consumptionNet != nil ? .api : .unavailable)
+            let efficiency = record.consumptionNet ?? record.distance.flatMap { distance in
+                guard distance > 0, let energy = record.energyConsumedNet else { return nil }
+                return energy * 1000 / distance
+            }
+            return DriveSummaryItem(
+                driveId: record.driveId,
+                carId: record.carId,
+                startDate: record.startDate,
+                endDate: record.endDate,
+                distance: record.distance,
+                durationMin: record.durationMin,
+                energyConsumedNet: record.energyConsumedNet,
+                efficiency: efficiency,
+                efficiencySource: source,
+                isCached: true
+            )
+        }
+    }
+
+    public func save(_ items: [DriveSummaryItem], carId: Int) async {
+        guard let database = try? await databaseProvider.database() else { return }
+        let records = items.map { item in
+            DriveSummaryRecord(
+                driveId: item.driveId,
+                carId: carId,
+                startDate: item.startDate,
+                endDate: item.endDate ?? "",
+                distance: item.distance,
+                durationMin: item.durationMin,
+                energyConsumedNet: item.energyConsumedNet,
+                consumptionNet: item.efficiency,
+                energySource: item.efficiencySource.rawValue
+            )
+        }
+        try? await DriveSummaryStore(database: database).upsertAll(records)
+    }
+}
+
 public struct APIDriveSummaryProvider: DriveSummaryProviding {
     private let api: any DriveAPIProviding
+    private let cache: (any DriveSummaryCaching)?
 
-    public init(api: any DriveAPIProviding) {
+    public init(api: any DriveAPIProviding, cache: (any DriveSummaryCaching)? = nil) {
         self.api = api
+        self.cache = cache
     }
 
     public func driveSummaries(carId: Int) async -> APIResult<[DriveSummaryItem]> {
         switch await api.drives(carId: carId, startDate: nil, endDate: nil, page: 1, show: 50_000) {
         case let .success(drives):
             let summaries = drives.map { DriveSummaryItem(data: $0, carId: carId) }.filter { $0.driveId >= 0 }
-            return .success(await enrichMissingEnergy(in: summaries, carId: carId))
+            let enriched = await enrichMissingEnergy(in: summaries, carId: carId)
+            await cache?.save(enriched, carId: carId)
+            return .success(enriched)
         case let .failure(error):
+            if let cached = await cache?.load(carId: carId), !cached.isEmpty {
+                return .success(cached.map { $0.withCachedState() })
+            }
             return .failure(error)
         }
     }
@@ -338,6 +408,17 @@ public struct APIDriveSummaryProvider: DriveSummaryProviding {
 }
 
 private extension DriveSummaryItem {
+    func withCachedState() -> DriveSummaryItem {
+        DriveSummaryItem(
+            driveId: driveId, carId: carId, startDate: startDate, endDate: endDate,
+            distance: distance, durationMin: durationMin, startAddress: startAddress,
+            endAddress: endAddress, speedMax: speedMax, speedAvg: speedAvg,
+            energyConsumedNet: energyConsumedNet, efficiency: efficiency,
+            efficiencySource: efficiencySource, outsideTempAvg: outsideTempAvg,
+            isCached: true
+        )
+    }
+
     func withEnergyConsumedNet(_ energy: Double, source: DriveEnergySource) -> DriveSummaryItem {
         DriveSummaryItem(
             driveId: driveId,
@@ -353,7 +434,8 @@ private extension DriveSummaryItem {
             energyConsumedNet: energy,
             efficiency: distance.map { $0 > 0 ? energy * 1000 / $0 : efficiency } ?? efficiency,
             efficiencySource: source,
-            outsideTempAvg: outsideTempAvg
+            outsideTempAvg: outsideTempAvg,
+            isCached: isCached
         )
     }
 }
@@ -395,6 +477,7 @@ public final class DrivesViewModel: ObservableObject {
         self.carId = carId
         state.isLoading = true
         state.errorMessage = nil
+        state.isUsingCachedData = false
         if let settingsStore {
             settingsShowShortEntries = await settingsStore.load().showShortDrivesCharges
         }
@@ -413,6 +496,7 @@ public final class DrivesViewModel: ObservableObject {
         case let .success(items):
             allItems = items
             applyFilters()
+            state.isUsingCachedData = items.contains(where: \.isCached)
         case let .failure(error):
             state.isLoading = false
             state.isRefreshing = false

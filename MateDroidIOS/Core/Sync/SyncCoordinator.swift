@@ -394,6 +394,9 @@ public actor SyncCoordinator {
                     endDate: drive.endDate ?? "",
                     distance: drive.distance,
                     durationMin: drive.durationMin,
+                    energyConsumedNet: drive.usableEnergyConsumedNet,
+                    consumptionNet: drive.usableConsumptionNet,
+                    energySource: (drive.usableEnergyConsumedNet != nil || drive.usableConsumptionNet != nil) ? "api" : nil,
                     schemaVersion: 0
                 )
             }

@@ -5534,6 +5534,17 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "開啟詳細資料" } }
       }
     },
+    "Showing saved drives. Pull to refresh when the server is available." : {
+      "localizations" : {
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Es mostren els trajectes desats. Llisca cap avall per actualitzar quan el servidor estigui disponible." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Gespeicherte Fahrten werden angezeigt. Zum Aktualisieren nach unten ziehen, sobald der Server verfügbar ist." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Showing saved drives. Pull to refresh when the server is available." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Se muestran los trayectos guardados. Desliza hacia abajo para actualizar cuando el servidor esté disponible." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Sono mostrati i tragitti salvati. Trascina verso il basso per aggiornare quando il server è disponibile." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在显示已保存的行程；服务器恢复后下拉刷新。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "正在顯示已儲存的行程；伺服器恢復後下拉重新整理。" } }
+      }
+    },
     "trip" : {
       "localizations" : {
         "ca" : { "stringUnit" : { "state" : "translated", "value" : "viatge" } },

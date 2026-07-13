@@ -220,6 +220,14 @@ public enum Migrations {
                 "DROP TABLE drives_summary;",
                 "ALTER TABLE drives_summary_v15 RENAME TO drives_summary;"
             ]
+        ),
+        Migration(
+            version: 16,
+            statements: [
+                "ALTER TABLE drives_summary ADD COLUMN energy_consumed_net REAL;",
+                "ALTER TABLE drives_summary ADD COLUMN consumption_net REAL;",
+                "ALTER TABLE drives_summary ADD COLUMN energy_source TEXT;"
+            ]
         )
     ]
 }

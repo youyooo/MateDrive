@@ -25,6 +25,14 @@ public struct DrivesView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
                         filters
+                        if viewModel.state.isUsingCachedData {
+                            Label(
+                                t("Showing saved drives. Pull to refresh when the server is available.", "正在显示已保存的行程；服务器恢复后下拉刷新。"),
+                                systemImage: "icloud.slash"
+                            )
+                            .font(.footnote)
+                            .foregroundStyle(.orange)
+                        }
                         summary
                         histogram
                         rows

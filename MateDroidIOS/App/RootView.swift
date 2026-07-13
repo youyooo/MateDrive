@@ -434,7 +434,10 @@ public struct RootView: View {
     private func drivesViewModel() -> DrivesViewModel {
         let api = driveAPI()
         return DrivesViewModel(
-            store: APIDriveSummaryProvider(api: api),
+            store: APIDriveSummaryProvider(
+                api: api,
+                cache: DatabaseBackedDriveSummaryCache(databaseProvider: environment.databaseProvider)
+            ),
             settingsStore: environment.settingsStore
         )
     }
