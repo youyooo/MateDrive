@@ -98,7 +98,7 @@ public struct APITripDataProvider: TripDataProviding {
             endDate: endDate,
             distance: distance,
             durationMin: durationMin,
-            energyConsumed: drive.energyConsumedNet,
+            energyConsumed: drive.usableEnergyConsumedNet,
             speedMax: Double(drive.speedMax ?? Int(drive.speedAvg ?? 0)),
             startAddress: drive.startAddress,
             endAddress: drive.endAddress,

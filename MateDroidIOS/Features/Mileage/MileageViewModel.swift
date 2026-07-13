@@ -101,7 +101,7 @@ public struct APIMileageDataProvider: MileageDataProviding {
     }
 
     private func enrichMissingEnergy(in drives: [DriveData], carId: Int) async -> [DriveData] {
-        let missingIndices = drives.indices.filter { drives[$0].energyConsumedNet == nil && drives[$0].driveId != nil }
+        let missingIndices = drives.indices.filter { drives[$0].usableEnergyConsumedNet == nil && drives[$0].driveId != nil }
         guard !missingIndices.isEmpty else { return drives }
 
         var enriched = drives
@@ -114,7 +114,7 @@ public struct APIMileageDataProvider: MileageDataProviding {
                         guard case let .success(detail) = await api.driveDetail(carId: carId, driveId: driveId) else {
                             return (index, nil)
                         }
-                        return (index, detail.energyConsumedNet ?? DriveStatsCalculator.estimatedNetEnergyKWh(from: detail.positions ?? []))
+                        return (index, detail.usableEnergyConsumedNet ?? DriveStatsCalculator.estimatedNetEnergyKWh(from: detail.positions ?? []))
                     }
                 }
                 for await (index, energy) in group {
@@ -343,7 +343,7 @@ public final class MileageViewModel: ObservableObject {
     }
 
     private static func energySummary(for drives: [DriveData]) -> (value: Double?, isComplete: Bool) {
-        let values = drives.compactMap(\.energyConsumedNet)
+        let values = drives.compactMap(\.usableEnergyConsumedNet)
         return (values.isEmpty ? nil : values.reduce(0, +), values.count == drives.count)
     }
 

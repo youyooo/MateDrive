@@ -330,7 +330,7 @@ public final class ActivitiesViewModel: ObservableObject {
             startLongitude: nil,
             endLatitude: nil,
             endLongitude: nil,
-            kwh: drive.energyConsumedNet.map { -abs($0) },
+            kwh: drive.usableEnergyConsumedNet.map { -abs($0) },
             kwhUsed: nil,
             cost: nil,
             rangeDiffKm: nil,

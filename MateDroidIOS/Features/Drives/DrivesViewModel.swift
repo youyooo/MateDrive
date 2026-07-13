@@ -158,9 +158,9 @@ public struct DriveSummaryItem: Equatable, Identifiable, Sendable {
             endAddress: data.endAddress,
             speedMax: data.speedMax,
             speedAvg: data.speedAvg ?? data.averageSpeed,
-            energyConsumedNet: data.energyConsumedNet,
+            energyConsumedNet: data.usableEnergyConsumedNet,
             efficiency: data.efficiencyWhKm,
-            efficiencySource: data.energyConsumedNet != nil || data.efficiencyWhKm != nil ? .api : .unavailable,
+            efficiencySource: data.usableEnergyConsumedNet != nil || data.efficiencyWhKm != nil ? .api : .unavailable,
             outsideTempAvg: data.outsideTempAvg
         )
     }
@@ -304,11 +304,11 @@ public struct APIDriveSummaryProvider: DriveSummaryProviding {
                     let summary = summaries[index]
                     group.addTask {
                         guard case let .success(detail) = await api.driveDetail(carId: carId, driveId: summary.driveId),
-                              let energy = detail.energyConsumedNet ?? DriveStatsCalculator.estimatedNetEnergyKWh(from: detail.positions ?? [])
+                              let energy = detail.usableEnergyConsumedNet ?? DriveStatsCalculator.estimatedNetEnergyKWh(from: detail.positions ?? [])
                         else {
                             return (index, nil)
                         }
-                        let source: DriveEnergySource = detail.energyConsumedNet != nil ? .api : .powerSamples
+                        let source: DriveEnergySource = detail.usableEnergyConsumedNet != nil ? .api : .powerSamples
                         return (index, summary.withEnergyConsumedNet(energy, source: source))
                     }
                 }

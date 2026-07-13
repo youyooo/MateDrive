@@ -1,5 +1,14 @@
 import Foundation
 
+public enum DriveEnergyValueValidator {
+    public static func positiveFinite(_ value: Double?) -> Double? {
+        guard let value, value.isFinite, value > 0 else {
+            return nil
+        }
+        return value
+    }
+}
+
 public struct DrivesResponse: Decodable, Sendable {
     public let data: DrivesPayload?
     public let error: String?
@@ -41,11 +50,13 @@ public struct DriveData: Decodable, Equatable, Identifiable, Sendable {
     public var startBatteryLevel: Int? { batteryDetails?.startBatteryLevel }
     public var endBatteryLevel: Int? { batteryDetails?.endBatteryLevel }
     public var efficiencyWhKm: Double? {
-        guard let distance, distance > 0, let energyConsumedNet else {
-            return consumptionNet
+        guard let distance, distance > 0, let energy = DriveEnergyValueValidator.positiveFinite(energyConsumedNet) else {
+            return DriveEnergyValueValidator.positiveFinite(consumptionNet)
         }
-        return energyConsumedNet * 1000 / distance
+        return energy * 1000 / distance
     }
+    public var usableEnergyConsumedNet: Double? { DriveEnergyValueValidator.positiveFinite(energyConsumedNet) }
+    public var usableConsumptionNet: Double? { DriveEnergyValueValidator.positiveFinite(consumptionNet) }
 
     public let driveId: Int?
     public let carId: Int?
@@ -227,6 +238,8 @@ public struct DriveDetail: Decodable, Equatable, Identifiable, Sendable {
     public var distance: Double? { odometerDetails?.distance ?? rawDistance }
     public var startBatteryLevel: Int? { batteryDetails?.startBatteryLevel }
     public var endBatteryLevel: Int? { batteryDetails?.endBatteryLevel }
+    public var usableEnergyConsumedNet: Double? { DriveEnergyValueValidator.positiveFinite(energyConsumedNet) }
+    public var usableConsumptionNet: Double? { DriveEnergyValueValidator.positiveFinite(consumptionNet) }
 
     public let driveId: Int
     public let startDate: String?

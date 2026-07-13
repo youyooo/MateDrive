@@ -71,15 +71,16 @@ public enum DriveStatsCalculator {
         let distance = detail.distance
         let sampleEstimate = estimateEnergy(from: positions)
         let reliableSampleEstimate = sampleEstimate?.isReliable == true ? sampleEstimate : nil
-        let energyUsed = detail.energyConsumedNet ?? reliableSampleEstimate?.netKWh
-        let energySource: DriveEnergySource = detail.energyConsumedNet != nil
+        let energyUsed = detail.usableEnergyConsumedNet ?? reliableSampleEstimate?.netKWh
+        let energySource: DriveEnergySource = detail.usableEnergyConsumedNet != nil
             ? .api
-            : reliableSampleEstimate != nil ? .powerSamples : .unavailable
+            : reliableSampleEstimate != nil ? .powerSamples
+            : detail.usableConsumptionNet != nil ? .api : .unavailable
         let efficiency: Double?
         if let energyUsed, let distance, distance > 0 {
             efficiency = energyUsed * 1000 / distance
         } else {
-            efficiency = detail.consumptionNet
+            efficiency = detail.usableConsumptionNet
         }
         let durationMin = detail.durationMin
         let avgSpeedFromDistance: Double? = durationMin.flatMap { duration in

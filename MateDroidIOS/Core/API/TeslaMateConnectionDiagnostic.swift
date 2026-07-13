@@ -203,7 +203,7 @@ public struct TeslaMateConnectionDiagnostic: TeslaMateConnectionDiagnosing {
                 switch await api.driveDetail(carId: car.carId, driveId: driveId) {
                 case let .success(detail):
                     let positionCount = detail.positions?.count ?? 0
-                    let hasDirectEnergy = detail.energyConsumedNet != nil || detail.consumptionNet != nil
+                    let hasDirectEnergy = detail.usableEnergyConsumedNet != nil || detail.usableConsumptionNet != nil
                     let estimate = DriveStatsCalculator.estimateEnergy(from: detail.positions ?? [])
                     if hasDirectEnergy {
                         checks.append(.passed(
@@ -503,7 +503,7 @@ public struct TeslaMateConnectionDiagnostic: TeslaMateConnectionDiagnosing {
                   drive.startDate != nil,
                   drive.endDate != nil
             else { return DriveQualityResult(quality: .incomplete, distance: distance.map { max($0, 0) }) }
-            if drive.energyConsumedNet != nil || drive.consumptionNet != nil {
+            if drive.usableEnergyConsumedNet != nil || drive.usableConsumptionNet != nil {
                 return DriveQualityResult(quality: .direct, distance: distance)
             }
             guard case let .success(detail) = await api.driveDetail(carId: carId, driveId: driveId),

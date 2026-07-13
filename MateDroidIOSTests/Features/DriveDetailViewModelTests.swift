@@ -3,6 +3,15 @@ import XCTest
 
 @MainActor
 final class DriveDetailViewModelTests: XCTestCase {
+    func testDriveEnergyValidatorRejectsPlaceholderAndInvalidValues() {
+        XCTAssertEqual(DriveEnergyValueValidator.positiveFinite(12.5), 12.5)
+        XCTAssertNil(DriveEnergyValueValidator.positiveFinite(nil))
+        XCTAssertNil(DriveEnergyValueValidator.positiveFinite(0))
+        XCTAssertNil(DriveEnergyValueValidator.positiveFinite(-1))
+        XCTAssertNil(DriveEnergyValueValidator.positiveFinite(.infinity))
+        XCTAssertNil(DriveEnergyValueValidator.positiveFinite(.nan))
+    }
+
     func testDriveStatsPreserveMissingTelemetryInsteadOfInventingZeros() {
         let missing = DriveStatsCalculator.calculateStats(DriveDetail(driveId: 1))
 
@@ -175,6 +184,38 @@ final class DriveDetailViewModelTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(stats.energySampleCoverage), 1, accuracy: 0.001)
         XCTAssertEqual(try XCTUnwrap(stats.tractionEnergyKWh), 0.0625, accuracy: 0.001)
         XCTAssertEqual(try XCTUnwrap(stats.regeneratedEnergyKWh), 0.0125, accuracy: 0.001)
+    }
+
+    func testDriveDetailTreatsZeroAPIEnergyAsMissingAndUsesPowerSamples() throws {
+        let detail = DriveDetail(
+            driveId: 10,
+            startDate: "2026-07-01T08:00:00Z",
+            endDate: "2026-07-01T08:00:20Z",
+            odometerDetails: DriveOdometerDetails(distance: 0.5),
+            durationMin: 1,
+            energyConsumedNet: 0,
+            positions: [
+                DrivePosition(date: "2026-07-01T08:00:00Z", power: 18),
+                DrivePosition(date: "2026-07-01T08:00:10Z", power: 18),
+                DrivePosition(date: "2026-07-01T08:00:20Z", power: -18)
+            ]
+        )
+
+        let stats = DriveStatsCalculator.calculateStats(detail)
+
+        XCTAssertEqual(try XCTUnwrap(stats.energyUsed), 0.05, accuracy: 0.001)
+        XCTAssertEqual(try XCTUnwrap(stats.efficiency), 100, accuracy: 0.1)
+        XCTAssertEqual(stats.energySource, .powerSamples)
+    }
+
+    func testDriveDetailTreatsZeroEnergyAsMissingAndUsesPositiveConsumptionFallback() throws {
+        let detail = DriveDetail.fixture(energyConsumedNet: 0, consumptionNet: 165)
+
+        let stats = DriveStatsCalculator.calculateStats(detail)
+
+        XCTAssertNil(stats.energyUsed)
+        XCTAssertEqual(stats.efficiency, 165)
+        XCTAssertEqual(stats.energySource, .api)
     }
 
     func testDriveDetailRejectsLowCoveragePowerEstimate() throws {

@@ -79,7 +79,7 @@ final class DrivesViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.state.summary.reconstructedEfficiencyCount, 1)
     }
 
-    func testAPISummaryProviderEnrichesMissingEnergyFromDriveDetails() async throws {
+    func testAPISummaryProviderEnrichesZeroEnergyFromDriveDetails() async throws {
         let provider = APIDriveSummaryProvider(api: MissingEnergyDriveAPI())
 
         let result = await provider.driveSummaries(carId: 1)
@@ -141,7 +141,9 @@ private struct MissingEnergyDriveAPI: DriveAPIProviding {
                 startDate: "2026-07-01T08:00:00Z",
                 endDate: "2026-07-01T08:00:20Z",
                 distance: 0.5,
-                durationMin: 1
+                durationMin: 1,
+                energyConsumedNet: 0,
+                consumptionNet: 0
             )
         ])
     }

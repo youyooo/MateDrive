@@ -187,18 +187,18 @@ private struct DriveMetricDetailContent: View {
                 row("Displayed value", "显示值", valueText(for: .efficiency)),
                 row("Source", "来源", efficiencySource),
                 row("Formula", "公式", efficiencyFormula),
-                row("Net energy consumed", "净耗电量", formatEnergy(detail.energyConsumedNet)),
+                row("Net energy consumed", "净耗电量", formatEnergy(detail.usableEnergyConsumedNet)),
                 row("Integrated traction energy", "积分牵引能量", formatEnergy(stats.tractionEnergyKWh)),
                 row("Integrated regenerated energy", "积分回收能量", formatEnergy(stats.regeneratedEnergyKWh)),
                 row("Power sample coverage", "功率采样覆盖率", coverageText),
-                row("API efficiency fallback", "接口效率备用值", detail.consumptionNet.map { MateDroidUnitFormatter.formatEfficiency($0, units: units, decimals: 0) } ?? "--"),
+                row("API efficiency fallback", "接口效率备用值", detail.usableConsumptionNet.map { MateDroidUnitFormatter.formatEfficiency($0, units: units, decimals: 0) } ?? "--"),
                 row("Distance", "里程", formatDistance(stats.distance))
             ]
         case .energy:
             return [
                 row("Displayed value", "显示值", valueText(for: .energy)),
                 row("Source field", "来源字段", localized("energyConsumedNet", "净耗电量")),
-                row("Net energy consumed", "净耗电量", formatEnergy(detail.energyConsumedNet)),
+                row("Net energy consumed", "净耗电量", formatEnergy(detail.usableEnergyConsumedNet)),
                 row("Integrated traction energy", "积分牵引能量", formatEnergy(stats.tractionEnergyKWh)),
                 row("Integrated regenerated energy", "积分回收能量", formatEnergy(stats.regeneratedEnergyKWh)),
                 row("Power sample coverage", "功率采样覆盖率", coverageText),
@@ -253,7 +253,7 @@ private struct DriveMetricDetailContent: View {
                 "TeslaMate did not return energyConsumedNet or consumptionNet for this drive, so efficiency is unavailable.",
                 "TeslaMate 没有返回净耗电量或接口效率备用值，所以效率暂无数据。"
             )
-        case .efficiency where detail.energyConsumedNet == nil && detail.consumptionNet != nil:
+        case .efficiency where detail.usableEnergyConsumedNet == nil && detail.usableConsumptionNet != nil:
             return localized(
                 "energyConsumedNet is missing; this value uses the API consumptionNet fallback.",
                 "净耗电量缺失，当前效率使用接口返回的效率备用值。"
@@ -264,26 +264,26 @@ private struct DriveMetricDetailContent: View {
     }
 
     private var efficiencySource: String {
-        if detail.energyConsumedNet != nil, (stats.distance ?? 0) > 0 {
+        if detail.usableEnergyConsumedNet != nil, (stats.distance ?? 0) > 0 {
             return localized("Calculated from energyConsumedNet and distance", "由净耗电量和里程计算")
         }
         if stats.energySource == .powerSamples {
             return localized("Integrated power samples", "功率采样积分")
         }
-        if detail.consumptionNet != nil {
+        if detail.usableConsumptionNet != nil {
             return localized("API consumptionNet fallback", "接口效率备用值")
         }
         return localized("No source field returned", "接口未返回来源字段")
     }
 
     private var efficiencyFormula: String {
-        if detail.energyConsumedNet != nil, (stats.distance ?? 0) > 0 {
+        if detail.usableEnergyConsumedNet != nil, (stats.distance ?? 0) > 0 {
             return localized("energyConsumedNet * 1000 / distance", "净耗电量 × 1000 / 里程")
         }
         if stats.energySource == .powerSamples {
             return localized("(traction - regeneration) * 1000 / distance", "（牵引能量 - 回收能量）× 1000 / 里程")
         }
-        if detail.consumptionNet != nil {
+        if detail.usableConsumptionNet != nil {
             return localized("consumptionNet", "接口效率备用值")
         }
         return "--"
@@ -323,7 +323,9 @@ private struct DriveMetricDetailContent: View {
         case .energy:
             switch stats.energySource {
             case .api:
-                return localized("Direct TeslaMate field: energyConsumedNet", "TeslaMate 原始字段：净耗电量")
+                return detail.usableEnergyConsumedNet != nil
+                    ? localized("Direct TeslaMate field: energyConsumedNet", "TeslaMate 原始字段：净耗电量")
+                    : localized("No reliable energy source", "没有可靠电耗来源")
             case .powerSamples:
                 return localized("Integrated TeslaMate power samples", "TeslaMate 功率采样积分")
             case .unavailable:
