@@ -98,6 +98,11 @@ final class VehicleImageCatalogTests: XCTestCase {
         var assets = value["assets"] as! [[String: Any]]
         assets[0]["path"] = "CarImages/missing.png"
         value["assets"] = assets
+        var generations = value["generations"] as! [[String: Any]]
+        var fallback = generations[0]["legacyFallback"] as! [String: Any]
+        fallback["path"] = "CarImages/missing.png"
+        generations[0]["legacyFallback"] = fallback
+        value["generations"] = generations
 
         assertValidationFailure(value, expected: .missingBundledAssetPath("CarImages/missing.png"))
     }

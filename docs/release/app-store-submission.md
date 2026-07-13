@@ -8,7 +8,7 @@ MateDrive
 
 ## Submission Status
 
-Technical archive ready. GitHub Pages deployment, the temporary reviewer TeslaMate server, signing, TestFlight validation, and App Store distribution permission must be completed before submission.
+Technical archive ready. GitHub Pages deployment, the temporary reviewer TeslaMate server, signing, TestFlight validation, and App Store distribution permission must be completed before submission. The support and privacy pages in `docs/support/index.html` and `docs/support/privacy.html` must be published before submission.
 
 ## Subtitle
 

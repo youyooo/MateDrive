@@ -27,8 +27,8 @@ final class DashboardViewModelTests: XCTestCase {
 
         await live.load()
 
-        let expectedPath = "CarImages/m3_PPSW_W32D.png"
-        let expectedAssetID = "legacy-model-3-refresh-performance"
+        let expectedPath = "CarImages/vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png"
+        let expectedAssetID = "model-3-refresh-performance-midnight-silver-uberturbine-20"
         XCTAssertEqual(live.state.vehicleImageResolution?.generationID, "model-3-refresh-performance")
         XCTAssertEqual(live.state.vehicleImageResolution?.assetID, expectedAssetID)
         XCTAssertEqual(live.state.vehicleImageResolution?.assetPath, expectedPath)
@@ -307,7 +307,7 @@ final class DashboardViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.state.tpmsDetails?.pressureFl, 3.0)
         XCTAssertEqual(viewModel.state.tpmsDetails?.pressureFr, 3.075)
         XCTAssertFalse(viewModel.state.tpmsDetails?.hasWarning ?? true)
-        XCTAssertEqual(viewModel.state.carImagePath, "CarImages/my_PPSW_WY19B.png")
+        XCTAssertEqual(viewModel.state.carImagePath, "CarImages/vehicle_model-y-juniper-premium_premium_pearl-white_crossflow-19.png")
         XCTAssertEqual(viewModel.state.totalCharges, 24)
         XCTAssertEqual(viewModel.state.totalDrives, 120)
         XCTAssertEqual(viewModel.state.totalUpdates, 8)
@@ -348,7 +348,7 @@ final class DashboardViewModelTests: XCTestCase {
         await viewModel.load()
 
         XCTAssertEqual(viewModel.state.locationText, "梅溪湖街道, 长沙市")
-        XCTAssertEqual(resolver.requests, ["1:28.207471:112.857727"])
+        XCTAssertEqual(resolver.requests, ["1:12.207471:34.857727"])
     }
 
     func testDashboardIgnoresAppNameFromCarAndStatus() async throws {
@@ -580,7 +580,7 @@ final class DashboardViewModelTests: XCTestCase {
         XCTAssertEqual(sentryStore.records.count, 1)
         XCTAssertEqual(sentryStore.records.first?.id, "1:1788880000000")
         XCTAssertEqual(sentryStore.records.first?.address, "Garage")
-        XCTAssertEqual(sentryStore.records.first?.latitude, 28.2)
+        XCTAssertEqual(sentryStore.records.first?.latitude, SyntheticCoordinates.point().latitude)
         XCTAssertEqual(notifications.sentryDeliveries, ["Model Y:1:Garage"])
         XCTAssertEqual(settings.settings.notificationEventSignatures["1:sentry"], "active")
 

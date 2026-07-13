@@ -35,7 +35,10 @@ final class SentryHistoryViewModelTests: XCTestCase {
 
         XCTAssertTrue(viewModel.state.isSessionActive)
         XCTAssertEqual(viewModel.state.currentSessionAlerts.map(\.id), ["current"])
-        XCTAssertEqual(viewModel.state.currentSessionAlerts.first?.locationText, "45.0000, 7.0000")
+        XCTAssertEqual(
+            viewModel.state.currentSessionAlerts.first?.locationText,
+            String(format: "%.4f, %.4f", location.latitude, location.longitude)
+        )
         XCTAssertEqual(viewModel.state.pastAlertsByDay.count, 1)
         XCTAssertEqual(viewModel.state.pastAlertsByDay.first?.alerts.first?.locationText, "Garage")
         XCTAssertEqual(viewModel.state.heatmapCounts.reduce(0, +), 2)
