@@ -64,6 +64,12 @@
 		1B5358FB8AE30BB632C9E106 /* mx_PBSB_WT22.png in Resources */ = {isa = PBXBuildFile; fileRef = 31C43838E0AD69C571A926F5 /* mx_PBSB_WT22.png */; };
 		1C43CB2B6C78CA35D4C0F19D /* CarImageResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94CDDB545B47E2D20A879209 /* CarImageResolver.swift */; };
 		1DB5202E902EA23DE28C4454 /* vehicle_model-3-early_base_pearl-white_aero-18.png in Resources */ = {isa = PBXBuildFile; fileRef = BF74D4F1ADB5A8ECB51DBA05 /* vehicle_model-3-early_base_pearl-white_aero-18.png */; };
+		D4A97F1966C64B4AAB66A101 /* vehicle_model-3-highland-performance_performance_stealth-grey_performance-20.png in Resources */ = {isa = PBXBuildFile; fileRef = F6CB915E30B54ADDB813C303 /* vehicle_model-3-highland-performance_performance_stealth-grey_performance-20.png */; };
+		E5B80A2A77D75C5BBC77B202 /* vehicle_model-3-highland-performance_performance_stealth-grey_performance-20.png in Resources */ = {isa = PBXBuildFile; fileRef = F6CB915E30B54ADDB813C303 /* vehicle_model-3-highland-performance_performance_stealth-grey_performance-20.png */; };
+		C3E1425B98A64DA18C31A404 /* vehicle_model-3-refresh_base_pearl-white_aero-18.png in Resources */ = {isa = PBXBuildFile; fileRef = A1C9203D76844B8F9A19C606 /* vehicle_model-3-refresh_base_pearl-white_aero-18.png */; };
+		D4F2536CA9B75EB29D42B505 /* vehicle_model-3-refresh_base_pearl-white_aero-18.png in Resources */ = {isa = PBXBuildFile; fileRef = A1C9203D76844B8F9A19C606 /* vehicle_model-3-refresh_base_pearl-white_aero-18.png */; };
+		E5A3647DBAC86FC3AE53C606 /* vehicle_model-3-highland_base_pearl-white_photon-18.png in Resources */ = {isa = PBXBuildFile; fileRef = B2D0314E87955C90AB20D707 /* vehicle_model-3-highland_base_pearl-white_photon-18.png */; };
+		F6B4758ECBD970D4BF64D707 /* vehicle_model-3-highland_base_pearl-white_photon-18.png in Resources */ = {isa = PBXBuildFile; fileRef = B2D0314E87955C90AB20D707 /* vehicle_model-3-highland_base_pearl-white_photon-18.png */; };
 		1E2011B02C0A05684AB397F4 /* my_PPSB_WY19B.png in Resources */ = {isa = PBXBuildFile; fileRef = 13DD4D0D56049536058D020B /* my_PPSB_WY19B.png */; };
 		1F1A07DADD336FCBA3B75513 /* TripTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA82BB4B0156D6122D16CF84 /* TripTimelineView.swift */; };
 		1F62477954E1390F68C02A01 /* vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png in Resources */ = {isa = PBXBuildFile; fileRef = 519257D1302B242E9C10263B /* vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png */; };
@@ -773,6 +779,9 @@
 		BF54C6131048C2541AE40602 /* mx_PBSB_WT20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mx_PBSB_WT20.png; sourceTree = "<group>"; };
 		BF5FE552443D3733F4F326D8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		BF74D4F1ADB5A8ECB51DBA05 /* vehicle_model-3-early_base_pearl-white_aero-18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vehicle_model-3-early_base_pearl-white_aero-18.png"; sourceTree = "<group>"; };
+		F6CB915E30B54ADDB813C303 /* vehicle_model-3-highland-performance_performance_stealth-grey_performance-20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vehicle_model-3-highland-performance_performance_stealth-grey_performance-20.png"; sourceTree = "<group>"; };
+		A1C9203D76844B8F9A19C606 /* vehicle_model-3-refresh_base_pearl-white_aero-18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vehicle_model-3-refresh_base_pearl-white_aero-18.png"; sourceTree = "<group>"; };
+		B2D0314E87955C90AB20D707 /* vehicle_model-3-highland_base_pearl-white_photon-18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vehicle_model-3-highland_base_pearl-white_photon-18.png"; sourceTree = "<group>"; };
 		BFDBE7FF83C910E1CCA142DA /* CountriesVisitedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountriesVisitedView.swift; sourceTree = "<group>"; };
 		C0C924BC8F186CDDDE4A749D /* m3_PMNG_W32P.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3_PMNG_W32P.png; sourceTree = "<group>"; };
 		C0E313EB0B8726A37D81BBF6 /* AppText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppText.swift; sourceTree = "<group>"; };
@@ -1334,6 +1343,9 @@
 				C2F2A824491C8705D87ABDEE /* myjs_PX02_WY18P.png */,
 				25C903C6F69A1DFCD8A634C5 /* myjs_PX02_WY19P.png */,
 				BF74D4F1ADB5A8ECB51DBA05 /* vehicle_model-3-early_base_pearl-white_aero-18.png */,
+				F6CB915E30B54ADDB813C303 /* vehicle_model-3-highland-performance_performance_stealth-grey_performance-20.png */,
+				A1C9203D76844B8F9A19C606 /* vehicle_model-3-refresh_base_pearl-white_aero-18.png */,
+				B2D0314E87955C90AB20D707 /* vehicle_model-3-highland_base_pearl-white_photon-18.png */,
 				519257D1302B242E9C10263B /* vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png */,
 			);
 			path = CarImages;
@@ -1844,6 +1856,9 @@
 				463EC8E3DC959A2BDE25B60C /* myjs_PX02_WY18P.png in Resources */,
 				81008E1245A4F0E891631762 /* myjs_PX02_WY19P.png in Resources */,
 				1DB5202E902EA23DE28C4454 /* vehicle_model-3-early_base_pearl-white_aero-18.png in Resources */,
+				D4A97F1966C64B4AAB66A101 /* vehicle_model-3-highland-performance_performance_stealth-grey_performance-20.png in Resources */,
+				C3E1425B98A64DA18C31A404 /* vehicle_model-3-refresh_base_pearl-white_aero-18.png in Resources */,
+				E5A3647DBAC86FC3AE53C606 /* vehicle_model-3-highland_base_pearl-white_photon-18.png in Resources */,
 				1F62477954E1390F68C02A01 /* vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1954,6 +1969,9 @@
 				53FD3619D8620FFC900A230B /* myjs_PX02_WY18P.png in Resources */,
 				51815F5FE2E10D845635BB89 /* myjs_PX02_WY19P.png in Resources */,
 				63C1FA73B5C9AEA517D6B618 /* vehicle_model-3-early_base_pearl-white_aero-18.png in Resources */,
+				E5B80A2A77D75C5BBC77B202 /* vehicle_model-3-highland-performance_performance_stealth-grey_performance-20.png in Resources */,
+				D4F2536CA9B75EB29D42B505 /* vehicle_model-3-refresh_base_pearl-white_aero-18.png in Resources */,
+				F6B4758ECBD970D4BF64D707 /* vehicle_model-3-highland_base_pearl-white_photon-18.png in Resources */,
 				A20D303868541414DC7C739A /* vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

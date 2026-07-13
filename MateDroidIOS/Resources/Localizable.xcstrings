@@ -485,6 +485,17 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "珍珠白" } }
       }
     },
+    "vehicle.color.stealth-grey" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stealth Grey" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Stealth-Grau" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Gris sigiloso" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Grigio stealth" } },
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Gris sigil" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "隐形灰" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "隱形灰" } }
+      }
+    },
     "vehicle.color.stainless" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Stainless Steel" } },

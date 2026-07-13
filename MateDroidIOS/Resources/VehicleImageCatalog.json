@@ -64,7 +64,7 @@
     },
     {
       "id" : "model-3-highland-performance", "model" : "Model 3", "aliases" : ["model 3", "model3", "3"], "yearStart" : 2024, "matcherPriority" : 50, "localizationKey" : "vehicle.generation.model-3-highland-performance",
-      "trims" : [{"id" : "performance", "aliases" : ["performance", "P74D"], "localizationKey" : "vehicle.trim.performance"}], "wheels" : [{"id" : "performance-20", "aliases" : ["W30P", "performance20"], "localizationKey" : "vehicle.wheel.performance-20"}], "colors" : [{"id" : "pearl-white", "aliases" : ["PPSW", "pearlwhite"], "localizationKey" : "vehicle.color.pearl-white"}],
+      "trims" : [{"id" : "performance", "aliases" : ["performance", "P74D"], "localizationKey" : "vehicle.trim.performance"}], "wheels" : [{"id" : "performance-20", "aliases" : ["W30P", "performance20"], "localizationKey" : "vehicle.wheel.performance-20"}], "colors" : [{"id" : "pearl-white", "aliases" : ["PPSW", "pearlwhite"], "localizationKey" : "vehicle.color.pearl-white"}, {"id" : "stealth-grey", "aliases" : ["PN01", "StealthGrey"], "localizationKey" : "vehicle.color.stealth-grey"}],
       "defaultTrimID" : "performance", "defaultWheelID" : "performance-20", "defaultColorID" : "pearl-white", "legacyFallback" : {"assetID" : "legacy-model-3-highland-performance", "path" : "CarImages/m3hp_PPSW_W30P.png"}
     },
     {
@@ -125,6 +125,9 @@
     {"id" : "legacy-cybertruck-awd", "generationID" : "cybertruck-awd", "trimID" : "awd", "wheelID" : "all-season-20", "colorID" : "stainless", "path" : "CarImages/my_PPSW_WY19B.png", "reviewStatus" : "legacy"},
     {"id" : "legacy-cybertruck-cyberbeast", "generationID" : "cybertruck-cyberbeast", "trimID" : "cyberbeast", "wheelID" : "performance-20", "colorID" : "stainless", "path" : "CarImages/my_PPSW_WY20P.png", "reviewStatus" : "legacy"},
     {"id" : "model-3-refresh-performance-midnight-silver-uberturbine-20", "generationID" : "model-3-refresh-performance", "trimID" : "performance", "wheelID" : "uberturbine-20", "colorID" : "midnight-silver", "path" : "CarImages/vehicle_model-3-refresh_performance_midnight-silver_uberturbine-20.png", "reviewStatus" : "reviewed"},
-    {"id" : "model-3-early-base-pearl-white-aero-18", "generationID" : "model-3-early", "trimID" : "base", "wheelID" : "aero-18", "colorID" : "pearl-white", "path" : "CarImages/vehicle_model-3-early_base_pearl-white_aero-18.png", "reviewStatus" : "reviewed"}
+    {"id" : "model-3-early-base-pearl-white-aero-18", "generationID" : "model-3-early", "trimID" : "base", "wheelID" : "aero-18", "colorID" : "pearl-white", "path" : "CarImages/vehicle_model-3-early_base_pearl-white_aero-18.png", "reviewStatus" : "reviewed"},
+    {"id" : "model-3-highland-performance-performance-stealth-grey-performance-20", "generationID" : "model-3-highland-performance", "trimID" : "performance", "wheelID" : "performance-20", "colorID" : "stealth-grey", "path" : "CarImages/vehicle_model-3-highland-performance_performance_stealth-grey_performance-20.png", "reviewStatus" : "reviewed"},
+    {"id" : "model-3-refresh-base-pearl-white-aero-18", "generationID" : "model-3-refresh", "trimID" : "base", "wheelID" : "aero-18", "colorID" : "pearl-white", "path" : "CarImages/vehicle_model-3-refresh_base_pearl-white_aero-18.png", "reviewStatus" : "reviewed"},
+    {"id" : "model-3-highland-base-pearl-white-photon-18", "generationID" : "model-3-highland", "trimID" : "base", "wheelID" : "photon-18", "colorID" : "pearl-white", "path" : "CarImages/vehicle_model-3-highland_base_pearl-white_photon-18.png", "reviewStatus" : "reviewed"}
   ]
 }

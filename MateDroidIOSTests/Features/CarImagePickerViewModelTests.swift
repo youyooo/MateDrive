@@ -167,6 +167,72 @@ final class CarImagePickerViewModelTests: XCTestCase {
         )
     }
 
+    func testBundledRemainingModel3PickersPreferReviewedPreviewThumbnailAndSavedAsset() async throws {
+        let catalog = try BundledVehicleImageCatalogProvider(bundle: .main).catalog()
+        let cases = [
+            (
+                year: 2021,
+                trim: "rwd",
+                wheel: "W38B",
+                color: "PPSW",
+                generationID: "model-3-refresh",
+                wheelID: "aero-18",
+                assetID: "model-3-refresh-base-pearl-white-aero-18",
+                assetPath: "CarImages/vehicle_model-3-refresh_base_pearl-white_aero-18.png"
+            ),
+            (
+                year: 2024,
+                trim: "long range",
+                wheel: "W38A",
+                color: "PPSW",
+                generationID: "model-3-highland",
+                wheelID: "photon-18",
+                assetID: "model-3-highland-base-pearl-white-photon-18",
+                assetPath: "CarImages/vehicle_model-3-highland_base_pearl-white_photon-18.png"
+            ),
+            (
+                year: 2024,
+                trim: "P74D",
+                wheel: "W30P",
+                color: "PN01",
+                generationID: "model-3-highland-performance",
+                wheelID: "performance-20",
+                assetID: "model-3-highland-performance-performance-stealth-grey-performance-20",
+                assetPath: "CarImages/vehicle_model-3-highland-performance_performance_stealth-grey_performance-20.png"
+            )
+        ]
+
+        for testCase in cases {
+            let resolution = VehicleImageResolver(catalog: catalog).resolve(
+                VehicleImageDescriptor(
+                    model: "Model 3",
+                    modelYear: testCase.year,
+                    trimBadging: testCase.trim,
+                    wheelType: testCase.wheel,
+                    exteriorColor: testCase.color,
+                    spoilerType: nil
+                )
+            )
+            let recorder = SaveRecorder()
+            let viewModel = makeViewModel(catalog: catalog, resolution: resolution) { override in
+                await recorder.record(override)
+            }
+
+            XCTAssertEqual(viewModel.selectedAssetPath, testCase.assetPath, "year \(testCase.year)")
+            XCTAssertEqual(
+                viewModel.wheelOptions.first { $0.id == testCase.wheelID }?.assetPath,
+                testCase.assetPath,
+                "year \(testCase.year)"
+            )
+
+            await viewModel.save()
+            let savedValues = await recorder.snapshot()
+            XCTAssertEqual(savedValues.count, 1, "year \(testCase.year)")
+            XCTAssertEqual(savedValues.first??.generationID, testCase.generationID, "year \(testCase.year)")
+            XCTAssertEqual(savedValues.first??.assetID, testCase.assetID, "year \(testCase.year)")
+        }
+    }
+
     func testResetToAutomaticClearsOverrideAndRequestsDismissal() async {
         let recorder = SaveRecorder()
         let viewModel = makeViewModel(catalog: makeCatalog(), resolution: automaticResolution()) { override in

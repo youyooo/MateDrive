@@ -250,11 +250,11 @@ final class VehicleImageResolverTests: XCTestCase {
     }
 
     @MainActor
-    func testBundledModel3GenerationBoundaryKeeps2021RefreshOnLegacyFallback() throws {
+    func testBundledModel3GenerationBoundarySelectsReviewedAssets() throws {
         let resolver = VehicleImageResolver(catalog: try BundledVehicleImageCatalogProvider(bundle: .main).catalog())
         let cases = [
-            (year: 2020, generationID: "model-3-early", assetID: "model-3-early-base-pearl-white-aero-18", legacy: false),
-            (year: 2021, generationID: "model-3-refresh", assetID: "legacy-model-3-refresh", legacy: true)
+            (year: 2020, generationID: "model-3-early", assetID: "model-3-early-base-pearl-white-aero-18"),
+            (year: 2021, generationID: "model-3-refresh", assetID: "model-3-refresh-base-pearl-white-aero-18")
         ]
 
         for testCase in cases {
@@ -271,7 +271,125 @@ final class VehicleImageResolverTests: XCTestCase {
 
             XCTAssertEqual(resolution.generationID, testCase.generationID, "year \(testCase.year)")
             XCTAssertEqual(resolution.assetID, testCase.assetID, "year \(testCase.year)")
-            XCTAssertEqual(resolution.usesLegacyAsset, testCase.legacy, "year \(testCase.year)")
+            XCTAssertEqual(resolution.confidence, .exact, "year \(testCase.year)")
+            XCTAssertFalse(resolution.usesLegacyAsset, "year \(testCase.year)")
+        }
+    }
+
+    @MainActor
+    func testBundledHighlandPerformancePearlWhitePreservesLegacyFallback() throws {
+        let resolver = VehicleImageResolver(catalog: try BundledVehicleImageCatalogProvider(bundle: .main).catalog())
+
+        let resolution = resolver.resolve(
+            VehicleImageDescriptor(
+                model: "Model 3",
+                modelYear: 2024,
+                trimBadging: "P74D",
+                wheelType: "W30P",
+                exteriorColor: "PPSW",
+                spoilerType: nil
+            )
+        )
+
+        XCTAssertEqual(resolution.generationID, "model-3-highland-performance")
+        XCTAssertEqual(resolution.assetID, "legacy-model-3-highland-performance")
+        XCTAssertEqual(resolution.trimID, "performance")
+        XCTAssertEqual(resolution.colorID, "pearl-white")
+        XCTAssertEqual(resolution.wheelID, "performance-20")
+        XCTAssertEqual(resolution.assetPath, "CarImages/m3hp_PPSW_W30P.png")
+        XCTAssertEqual(resolution.confidence, .fallback)
+        XCTAssertEqual(resolution.conflicts, [])
+        XCTAssertTrue(resolution.usesLegacyAsset)
+    }
+
+    @MainActor
+    func testBundledRemainingModel3GenerationAliasesBoundariesAndContradictoryWheels() throws {
+        let resolver = VehicleImageResolver(catalog: try BundledVehicleImageCatalogProvider(bundle: .main).catalog())
+        let reviewedRefreshID = "model-3-refresh-base-pearl-white-aero-18"
+        let reviewedRefreshPath = "CarImages/vehicle_model-3-refresh_base_pearl-white_aero-18.png"
+        let reviewedHighlandID = "model-3-highland-base-pearl-white-photon-18"
+        let reviewedHighlandPath = "CarImages/vehicle_model-3-highland_base_pearl-white_photon-18.png"
+        let reviewedHighlandPerformanceID = "model-3-highland-performance-performance-stealth-grey-performance-20"
+        let reviewedHighlandPerformancePath = "CarImages/vehicle_model-3-highland-performance_performance_stealth-grey_performance-20.png"
+        let cases: [(
+            label: String,
+            year: Int,
+            trim: String,
+            wheel: String,
+            color: String,
+            generationID: String,
+            trimID: String,
+            wheelID: String,
+            colorID: String,
+            assetID: String,
+            assetPath: String,
+            confidence: VehicleImageConfidence,
+            conflicts: [VehicleImageConflict],
+            usesLegacyAsset: Bool
+        )] = [
+            ("refresh lower bound and canonical aliases", 2021, "rwd", "W38B", "PPSW", "model-3-refresh", "base", "aero-18", "pearl-white", reviewedRefreshID, reviewedRefreshPath, .exact, [], false),
+            ("refresh upper bound and normalized aliases", 2023, "long range", "aero18", "pearlwhite", "model-3-refresh", "base", "aero-18", "pearl-white", reviewedRefreshID, reviewedRefreshPath, .exact, [], false),
+            ("refresh rejects Highland wheel evidence", 2023, "rwd", "W38A", "PPSW", "model-3-refresh", "base", "aero-18", "pearl-white", reviewedRefreshID, reviewedRefreshPath, .inferred, [.reportedWheelContradictsFactoryTrim], false),
+            ("Highland lower bound and canonical aliases", 2024, "rwd", "W38A", "PPSW", "model-3-highland", "base", "photon-18", "pearl-white", reviewedHighlandID, reviewedHighlandPath, .exact, [], false),
+            ("Highland open upper bound and normalized aliases", 2026, "long range", "photon18", "pearlwhite", "model-3-highland", "base", "photon-18", "pearl-white", reviewedHighlandID, reviewedHighlandPath, .exact, [], false),
+            ("Highland rejects refresh wheel evidence", 2024, "rwd", "W38B", "PPSW", "model-3-highland", "base", "photon-18", "pearl-white", reviewedHighlandID, reviewedHighlandPath, .inferred, [.reportedWheelContradictsFactoryTrim], false),
+            ("Highland Performance lower bound and telemetry aliases", 2024, "P74D", "W30P", "PN01", "model-3-highland-performance", "performance", "performance-20", "stealth-grey", reviewedHighlandPerformanceID, reviewedHighlandPerformancePath, .exact, [], false),
+            ("Highland Performance open upper bound and normalized aliases", 2026, "performance", "performance20", "StealthGrey", "model-3-highland-performance", "performance", "performance-20", "stealth-grey", reviewedHighlandPerformanceID, reviewedHighlandPerformancePath, .exact, [], false),
+            ("Highland Performance rejects refresh wheel evidence", 2024, "performance", "W32D", "PN01", "model-3-highland-performance", "performance", "performance-20", "stealth-grey", reviewedHighlandPerformanceID, reviewedHighlandPerformancePath, .inferred, [.reportedWheelContradictsFactoryTrim], false)
+        ]
+
+        for testCase in cases {
+            let resolution = resolver.resolve(
+                VehicleImageDescriptor(
+                    model: "Model 3",
+                    modelYear: testCase.year,
+                    trimBadging: testCase.trim,
+                    wheelType: testCase.wheel,
+                    exteriorColor: testCase.color,
+                    spoilerType: nil
+                )
+            )
+
+            XCTAssertEqual(resolution.generationID, testCase.generationID, testCase.label)
+            XCTAssertEqual(resolution.trimID, testCase.trimID, testCase.label)
+            XCTAssertEqual(resolution.wheelID, testCase.wheelID, testCase.label)
+            XCTAssertEqual(resolution.colorID, testCase.colorID, testCase.label)
+            XCTAssertEqual(resolution.assetID, testCase.assetID, testCase.label)
+            XCTAssertEqual(resolution.assetPath, testCase.assetPath, testCase.label)
+            XCTAssertEqual(resolution.confidence, testCase.confidence, testCase.label)
+            XCTAssertEqual(resolution.conflicts, testCase.conflicts, testCase.label)
+            XCTAssertEqual(resolution.usesLegacyAsset, testCase.usesLegacyAsset, testCase.label)
+            XCTAssertFalse(
+                resolution.evidence.map(\.description).joined().localizedCaseInsensitiveContains(testCase.wheel),
+                testCase.label
+            )
+        }
+    }
+
+    @MainActor
+    func testBundledModel3GenerationTransitionsSelectExpectedCatalogAsset() throws {
+        let resolver = VehicleImageResolver(catalog: try BundledVehicleImageCatalogProvider(bundle: .main).catalog())
+        let cases = [
+            (year: 2020, trim: "rwd", wheel: "W38B", color: "PPSW", generationID: "model-3-early", assetID: "model-3-early-base-pearl-white-aero-18"),
+            (year: 2021, trim: "rwd", wheel: "W38B", color: "PPSW", generationID: "model-3-refresh", assetID: "model-3-refresh-base-pearl-white-aero-18"),
+            (year: 2023, trim: "long range", wheel: "aero18", color: "pearlwhite", generationID: "model-3-refresh", assetID: "model-3-refresh-base-pearl-white-aero-18"),
+            (year: 2024, trim: "long range", wheel: "photon18", color: "pearlwhite", generationID: "model-3-highland", assetID: "model-3-highland-base-pearl-white-photon-18")
+        ]
+
+        for testCase in cases {
+            let resolution = resolver.resolve(
+                VehicleImageDescriptor(
+                    model: "model3",
+                    modelYear: testCase.year,
+                    trimBadging: testCase.trim,
+                    wheelType: testCase.wheel,
+                    exteriorColor: testCase.color,
+                    spoilerType: nil
+                )
+            )
+
+            XCTAssertEqual(resolution.generationID, testCase.generationID, "year \(testCase.year)")
+            XCTAssertEqual(resolution.assetID, testCase.assetID, "year \(testCase.year)")
         }
     }
 
