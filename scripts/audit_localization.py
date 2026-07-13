@@ -32,6 +32,10 @@ SWIFTUI_LITERAL = re.compile(
     r"accessibilityLabel|accessibilityHint|help)\(\s*\"([^\"]*[A-Za-z][^\"]*)\""
 )
 
+RAW_ERROR_PRESENTATION = re.compile(
+    r"\b(?:Text|Label)\(\s*(?:error|message|errorMessage|auditError|exportError)\b"
+)
+
 SOURCE_LOCALIZATION_MARKERS = (
     't("',
     "localized(",
@@ -71,6 +75,7 @@ def main() -> int:
     english_like = {locale: [] for locale in CHINESE_LOCALES}
     translation_mismatches = []
     hardcoded_swiftui = []
+    raw_error_presentations = []
 
     for key, value in sorted(strings.items()):
         for locale in CHINESE_LOCALES:
@@ -96,6 +101,8 @@ def main() -> int:
                 literal = match.group(2)
                 if looks_like_hardcoded_english_ui(line, literal):
                     hardcoded_swiftui.append((path, line_number, literal))
+            if RAW_ERROR_PRESENTATION.search(line) and "UserFacingErrorLocalizer" not in line:
+                raw_error_presentations.append((path, line_number, line.strip()))
 
     print(f"localization keys: {len(strings)}")
     for locale in CHINESE_LOCALES:
@@ -103,6 +110,7 @@ def main() -> int:
         print(f"english-like {locale} values: {len(english_like[locale])}")
     print(f"required Chinese translation mismatches: {len(translation_mismatches)}")
     print(f"hardcoded SwiftUI English literals: {len(hardcoded_swiftui)}")
+    print(f"raw runtime error presentations: {len(raw_error_presentations)}")
 
     for locale in CHINESE_LOCALES:
         if missing[locale]:
@@ -125,9 +133,14 @@ def main() -> int:
         for path, line_number, literal in hardcoded_swiftui:
             print(f"- {path}:{line_number}: {literal}")
 
+    if raw_error_presentations:
+        print("\nRaw runtime error presentations:")
+        for path, line_number, line in raw_error_presentations:
+            print(f"- {path}:{line_number}: {line}")
+
     has_missing = any(missing.values())
     has_english_like = any(english_like.values())
-    return 1 if has_missing or has_english_like or translation_mismatches or hardcoded_swiftui else 0
+    return 1 if has_missing or has_english_like or translation_mismatches or hardcoded_swiftui or raw_error_presentations else 0
 
 
 if __name__ == "__main__":

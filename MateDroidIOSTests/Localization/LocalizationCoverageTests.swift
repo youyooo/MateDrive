@@ -391,10 +391,10 @@ final class LocalizationCoverageTests: XCTestCase {
     func testEuropeanEnglishEquivalentStringsAreExplicitlyAllowed() throws {
         let sourceCatalog = try SourceStringCatalog.load(relativePath: "MateDroidIOS/Resources/Localizable.xcstrings")
         let allowed: [String: Set<String>] = [
-            "ca": ["AC", "Accent", "Cost", "SOC", "DC", "Error", "MateDrive", "Quicksilver", "Vehicle", "AC / DC", "Regions"],
-            "de": ["AC", "Tesla Supercharger", "SOC", "DC", "MateDrive", "Midnight Cherry", "Midnight Silver", "Pearl White", "Quicksilver", "Server", "Solid Black", "Start", "Stealth Grey", "Trips", "Ultra Red", "Version", "Widget", "AC / DC"],
-            "es": ["AC", "SOC", "DC", "Error", "MateDrive", "Quicksilver", "Widget", "AC / DC"],
-            "it": ["AC", "SOC", "DC", "MateDrive", "Quicksilver", "Server", "Widget", "AC / DC"]
+            "ca": ["AC", "Accent", "Cost", "SOC", "DC", "Error", "MateDrive", "Quicksilver", "Vehicle", "Color", "AC / DC", "Regions", "vehicle.generation.cybertruck-cyberbeast", "vehicle.generation.model-3-early", "vehicle.generation.model-3-highland", "vehicle.generation.model-3-highland-performance", "vehicle.generation.model-s-plaid", "vehicle.generation.model-x-plaid", "vehicle.generation.model-y-juniper-performance", "vehicle.generation.model-y-juniper-premium", "vehicle.generation.roadster-1", "vehicle.trim.base", "vehicle.trim.cyberbeast", "vehicle.trim.performance", "vehicle.trim.plaid", "vehicle.trim.premium", "vehicle.trim.sport"],
+            "de": ["AC", "Tesla Supercharger", "SOC", "DC", "MateDrive", "Midnight Cherry", "Midnight Silver", "Pearl White", "Quicksilver", "Server", "Solid Black", "Start", "Stealth Grey", "Trips", "Ultra Red", "Version", "Widget", "Generation", "AC / DC", "vehicle.generation.cybertruck-cyberbeast", "vehicle.generation.model-3-early", "vehicle.generation.model-3-highland", "vehicle.generation.model-3-highland-performance", "vehicle.generation.model-3-refresh", "vehicle.generation.model-3-refresh-performance", "vehicle.generation.model-s-facelift", "vehicle.generation.model-s-nosecone", "vehicle.generation.model-s-plaid", "vehicle.generation.model-s-refresh", "vehicle.generation.model-x-plaid", "vehicle.generation.model-x-refresh", "vehicle.generation.model-y-juniper-performance", "vehicle.generation.model-y-juniper-premium", "vehicle.generation.model-y-juniper-standard", "vehicle.generation.roadster-1", "vehicle.trim.cyberbeast", "vehicle.trim.dual-motor", "vehicle.trim.performance", "vehicle.trim.plaid", "vehicle.trim.premium", "vehicle.trim.sport", "vehicle.trim.standard"],
+            "es": ["AC", "SOC", "DC", "Error", "MateDrive", "Quicksilver", "Widget", "Color", "AC / DC", "vehicle.generation.cybertruck-cyberbeast", "vehicle.generation.model-3-early", "vehicle.generation.model-3-highland", "vehicle.generation.model-3-highland-performance", "vehicle.generation.model-s-plaid", "vehicle.generation.model-x-plaid", "vehicle.generation.model-y-juniper-performance", "vehicle.generation.model-y-juniper-premium", "vehicle.generation.roadster-1", "vehicle.trim.base", "vehicle.trim.cyberbeast", "vehicle.trim.performance", "vehicle.trim.plaid", "vehicle.trim.premium", "vehicle.trim.sport"],
+            "it": ["AC", "SOC", "DC", "MateDrive", "Quicksilver", "Server", "Widget", "AC / DC", "vehicle.generation.cybertruck-cyberbeast", "vehicle.generation.model-3-early", "vehicle.generation.model-3-highland", "vehicle.generation.model-3-highland-performance", "vehicle.generation.model-s-plaid", "vehicle.generation.model-x-plaid", "vehicle.generation.model-y-juniper-performance", "vehicle.generation.model-y-juniper-premium", "vehicle.generation.model-y-juniper-standard", "vehicle.generation.roadster-1", "vehicle.trim.base", "vehicle.trim.cyberbeast", "vehicle.trim.dual-motor", "vehicle.trim.performance", "vehicle.trim.plaid", "vehicle.trim.premium", "vehicle.trim.sport", "vehicle.trim.standard"]
         ]
 
         for locale in allowed.keys.sorted() {
@@ -608,6 +608,10 @@ final class LocalizationCoverageTests: XCTestCase {
             "充电费用必须大于或等于 0。"
         )
         XCTAssertEqual(
+            UserFacingErrorLocalizer.localized("Charge cost writeback is unavailable.", language: .chinese),
+            "当前 TeslaMate API 不支持写回充电费用。"
+        )
+        XCTAssertEqual(
             UserFacingErrorLocalizer.localized("The request timed out.", language: .english),
             "The request timed out."
         )
@@ -627,6 +631,27 @@ final class LocalizationCoverageTests: XCTestCase {
         "DC",
         "HTTP",
         "MateDrive",
+        "Model",
+        "Cybertruck",
+        "Cyberbeast",
+        "Highland",
+        "Juniper",
+        "Performance",
+        "Plaid",
+        "Roadster",
+        "Aero",
+        "Arachnid",
+        "Crossflow",
+        "Cyberstream",
+        "Gemini",
+        "Photon",
+        "Slipstream",
+        "Tempest",
+        "Turbine",
+        "berturbine",
+        "S",
+        "X",
+        "Y",
         "SOC",
         "SSL",
         "TeslaMate",

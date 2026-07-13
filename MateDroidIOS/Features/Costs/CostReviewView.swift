@@ -55,7 +55,7 @@ public struct CostReviewView: View {
                 rangePicker
                 if let response = viewModel.state.response {
                     if let error = viewModel.state.errorMessage {
-                        Label(error, systemImage: "exclamationmark.triangle.fill")
+                        Label(UserFacingErrorLocalizer.localized(error, language: appLanguage), systemImage: "exclamationmark.triangle.fill")
                             .font(.footnote)
                             .foregroundStyle(.orange)
                     }

@@ -90,7 +90,9 @@ public struct DriveDetailView: View {
         }
         .alert(t("Export Failed", "导出失败"), isPresented: Binding(get: { exportError != nil }, set: { if !$0 { exportError = nil } })) {
             Button(t("OK", "确定"), role: .cancel) {}
-        } message: { Text(exportError ?? "") }
+        } message: {
+            Text(UserFacingErrorLocalizer.localizedOptional(exportError, language: appLanguage) ?? "")
+        }
         .task {
             guard !hasLoaded else {
                 return

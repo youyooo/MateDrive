@@ -100,7 +100,7 @@ public struct ChargePricingBatchView: View {
         )) {
             Button(t("OK", "确定"), role: .cancel) {}
         } message: {
-            Text(exportError ?? "")
+            Text(UserFacingErrorLocalizer.localizedOptional(exportError, language: appLanguage) ?? "")
         }
         .task {
             viewModel.preparePricingBatchPreview()
@@ -119,7 +119,7 @@ public struct ChargePricingBatchView: View {
                     .foregroundStyle(.orange)
             }
             if let error = viewModel.state.pricingBatch.auditErrorMessage {
-                Label(error, systemImage: "externaldrive.badge.exclamationmark")
+                Label(UserFacingErrorLocalizer.localized(error, language: appLanguage), systemImage: "externaldrive.badge.exclamationmark")
                     .font(.footnote)
                     .foregroundStyle(.orange)
             }

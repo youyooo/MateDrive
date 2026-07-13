@@ -34,6 +34,7 @@ public enum UserFacingErrorLocalizer {
             "The data could not be read because it is not in the correct format.": "数据格式不正确，无法读取。",
             "Enter a valid charge cost.": "请输入有效的充电费用。",
             "Charge cost must be zero or greater.": "充电费用必须大于或等于 0。",
+            "Charge cost writeback is unavailable.": "当前 TeslaMate API 不支持写回充电费用。",
             "A trip must contain at least one drive.": "一条路程必须至少包含一个驾驶分段。"
         ]
         if let localized = exactMappings[message] {
