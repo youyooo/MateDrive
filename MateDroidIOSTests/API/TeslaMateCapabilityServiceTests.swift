@@ -165,6 +165,30 @@ final class TeslaMateCapabilityServiceTests: XCTestCase {
         XCTAssertEqual(profile.status(for: .vehicleStatus)?.reason, .emptyPayload)
     }
 
+    func testStateHistoryNoContentIsUnknown() async {
+        let client = StateHistoryCapabilityHTTPClient(statusCode: 204, body: "")
+        let service = TeslaMateCapabilityService()
+        let api = TeslamateAPI(baseURL: URL(string: "https://teslamate.example")!, client: client)
+
+        let profile = await service.discover(api: api, carId: 1, force: true)
+
+        XCTAssertEqual(profile.status(for: .stateHistory)?.state, .unknown)
+        XCTAssertEqual(profile.status(for: .stateHistory)?.reason, .emptyPayload)
+    }
+
+    func testNoContentRemainsAvailableForOtherCapabilities() async {
+        let client = CapabilityRouteHTTPClient(routes: [
+            "/api/v1/cars/1/status": (204, "")
+        ])
+        let service = TeslaMateCapabilityService()
+        let api = TeslamateAPI(baseURL: URL(string: "https://teslamate.example")!, client: client)
+
+        let profile = await service.discover(api: api, carId: 1, force: true)
+
+        XCTAssertEqual(profile.status(for: .vehicleStatus)?.state, .available)
+        XCTAssertNil(profile.status(for: .vehicleStatus)?.reason)
+    }
+
     func testServerIdentityExcludesCredentialsQueryAndFragmentAndNormalizesEquivalentURLs() {
         let credentialed = TeslaMateServerIdentity.key(for: makeCredentialedURL(
             scheme: "HTTPS", user: "alice", password: "secret", host: "TeslaMate.Example", port: 443,

@@ -118,7 +118,8 @@ private extension TeslaMateCapabilityService {
         switch result {
         case let .success(response):
             let invalidPayloadState: TeslaMateCapabilityState = capability == .stateHistory ? .unknown : .degraded
-            if response.statusCode != 204 && response.data.isEmpty {
+            let requiresPayload = response.statusCode != 204 || capability == .stateHistory
+            if requiresPayload && response.data.isEmpty {
                 return (.init(state: invalidPayloadState, reason: .emptyPayload, source: .endpointProbe,
                               checkedAt: checkedAt, lastSuccessfulAt: checkedAt), nil)
             }
