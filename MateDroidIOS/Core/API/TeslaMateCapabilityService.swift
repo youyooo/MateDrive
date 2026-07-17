@@ -117,12 +117,13 @@ private extension TeslaMateCapabilityService {
     ) -> (status: TeslaMateCapabilityStatus, connectionIssue: TeslaMateConnectionIssue?) {
         switch result {
         case let .success(response):
+            let invalidPayloadState: TeslaMateCapabilityState = capability == .stateHistory ? .unknown : .degraded
             if response.statusCode != 204 && response.data.isEmpty {
-                return (.init(state: .degraded, reason: .emptyPayload, source: .endpointProbe,
+                return (.init(state: invalidPayloadState, reason: .emptyPayload, source: .endpointProbe,
                               checkedAt: checkedAt, lastSuccessfulAt: checkedAt), nil)
             }
             if response.statusCode != 204, (try? JSONSerialization.jsonObject(with: response.data)) == nil {
-                return (.init(state: .degraded, reason: .invalidPayload, source: .endpointProbe,
+                return (.init(state: invalidPayloadState, reason: .invalidPayload, source: .endpointProbe,
                               checkedAt: checkedAt, lastSuccessfulAt: checkedAt), nil)
             }
             if capability == .unifiedActivities, hasBrokenActivityPagination(response.data) {

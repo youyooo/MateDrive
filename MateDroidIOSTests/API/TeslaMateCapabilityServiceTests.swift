@@ -134,6 +134,37 @@ final class TeslaMateCapabilityServiceTests: XCTestCase {
         XCTAssertEqual(profile.status(for: .vehicleStatus)?.reason, .invalidPayload)
     }
 
+    func testStateHistorySuccessfulEmptyOrMalformedPayloadIsUnknown() async {
+        let cases: [(String, TeslaMateCapabilityReason)] = [
+            ("", .emptyPayload),
+            ("not-json", .invalidPayload)
+        ]
+
+        for (body, expectedReason) in cases {
+            let client = StateHistoryCapabilityHTTPClient(statusCode: 200, body: body)
+            let service = TeslaMateCapabilityService()
+            let api = TeslamateAPI(baseURL: URL(string: "https://teslamate.example")!, client: client)
+
+            let profile = await service.discover(api: api, carId: 1, force: true)
+
+            XCTAssertEqual(profile.status(for: .stateHistory)?.state, .unknown, "Body: \(body)")
+            XCTAssertEqual(profile.status(for: .stateHistory)?.reason, expectedReason, "Body: \(body)")
+        }
+    }
+
+    func testSuccessfulEmptyPayloadStillDegradesOtherCapabilities() async {
+        let client = CapabilityRouteHTTPClient(routes: [
+            "/api/v1/cars/1/status": (200, "")
+        ])
+        let service = TeslaMateCapabilityService()
+        let api = TeslamateAPI(baseURL: URL(string: "https://teslamate.example")!, client: client)
+
+        let profile = await service.discover(api: api, carId: 1, force: true)
+
+        XCTAssertEqual(profile.status(for: .vehicleStatus)?.state, .degraded)
+        XCTAssertEqual(profile.status(for: .vehicleStatus)?.reason, .emptyPayload)
+    }
+
     func testServerIdentityExcludesCredentialsQueryAndFragmentAndNormalizesEquivalentURLs() {
         let credentialed = TeslaMateServerIdentity.key(for: makeCredentialedURL(
             scheme: "HTTPS", user: "alice", password: "secret", host: "TeslaMate.Example", port: 443,
@@ -325,7 +356,13 @@ private actor StateHistoryRequestRecorder {
 
 private struct StateHistoryCapabilityHTTPClient: HTTPClient {
     let statusCode: Int
+    let body: String
     private let recorder = StateHistoryRequestRecorder()
+
+    init(statusCode: Int, body: String = "{}") {
+        self.statusCode = statusCode
+        self.body = body
+    }
 
     var stateHistoryRequest: URLRequest? {
         get async { await recorder.request }
@@ -342,7 +379,7 @@ private struct StateHistoryCapabilityHTTPClient: HTTPClient {
             httpVersion: "HTTP/1.1",
             headerFields: nil
         )!
-        return (Data("{}".utf8), response)
+        return (Data(body.utf8), response)
     }
 }
 
