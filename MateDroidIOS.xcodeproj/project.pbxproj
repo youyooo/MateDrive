@@ -96,6 +96,7 @@
 		29B5BBD6B7408C380404AE88 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90831E60861EF413FEF9CC83 /* SettingsView.swift */; };
 		2B0B31FD97EA009EF0C9F5B8 /* myj_PX02_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = A5278CCD9BF32784EAFD9D17 /* myj_PX02_WY19P.png */; };
 		2B93F9AA1E953A5C833FF042 /* m3_PMSS_W32P.png in Resources */ = {isa = PBXBuildFile; fileRef = B77AB6204C7F65C6EECA284A /* m3_PMSS_W32P.png */; };
+		2C44B590E37451D7B8C0A8B1 /* VehicleStateHistoryModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62F44BB204480A3E3E7F3ED /* VehicleStateHistoryModelsTests.swift */; };
 		2C8293FE62A07E2C30678122 /* TripDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC80D35F345A055C44B5986A /* TripDetailView.swift */; };
 		2D4DB017EF21AFFDFD33AAD1 /* DashboardSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69AF9A588681B0B4F07EEB5F /* DashboardSnapshotStore.swift */; };
 		2E08B29B667C206C170B27CD /* m3h_PN00_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = B474230F9DDEB7FD307A8CF8 /* m3h_PN00_W38A.png */; };
@@ -125,6 +126,7 @@
 		3F0645A789955A645F531C37 /* PrivacyDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FAC4E8CC585DBD7864A443 /* PrivacyDataView.swift */; };
 		40A0B02D5C75AA8A5E0FD63D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BF5FE552443D3733F4F326D8 /* PrivacyInfo.xcprivacy */; };
 		421E28748F014F583F6B7330 /* myj_PR01_WY20A.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F75ABC310641A50A1D524DB /* myj_PR01_WY20A.png */; };
+		421B5B61480FF9F8DDFFFA93 /* VehicleStateHistoryModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252DF0BF795C90E0CC2D5FFA /* VehicleStateHistoryModels.swift */; };
 		441D8E749F5FD723E7081E86 /* myjp_PPSW_WY21A.png in Resources */ = {isa = PBXBuildFile; fileRef = AC47F6E51A8B71210DB43ACD /* myjp_PPSW_WY21A.png */; };
 		44A3A8A0AD5E653995CEA7D5 /* my_PPMR_WY19B.png in Resources */ = {isa = PBXBuildFile; fileRef = 89C2D8DD00D9F642BB19C955 /* my_PPMR_WY19B.png */; };
 		4503698C28F3857FAEC0167B /* ParkingFeeRuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B435DB386DD8FC5EAD76F7 /* ParkingFeeRuleTests.swift */; };
@@ -596,6 +598,7 @@
 		20FF5F73D3F7184B1416D07A /* myjs_PPSW_WY19P.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myjs_PPSW_WY19P.png; sourceTree = "<group>"; };
 		2226F209C8AB43CD2489F60A /* ChargeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeModels.swift; sourceTree = "<group>"; };
 		2390317777006CFA7734D485 /* AchievementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsView.swift; sourceTree = "<group>"; };
+		252DF0BF795C90E0CC2D5FFA /* VehicleStateHistoryModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleStateHistoryModels.swift; sourceTree = "<group>"; };
 		258DBEBE9B63E2F7F372308B /* DashboardLocationResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardLocationResolver.swift; sourceTree = "<group>"; };
 		25C903C6F69A1DFCD8A634C5 /* myjs_PX02_WY19P.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myjs_PX02_WY19P.png; sourceTree = "<group>"; };
 		263ACCD002386F7CD719C1D5 /* TripPersistenceModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPersistenceModels.swift; sourceTree = "<group>"; };
@@ -817,6 +820,7 @@
 		B5329DCB23CDA0BCF5E1070C /* DriveInsightModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveInsightModels.swift; sourceTree = "<group>"; };
 		B5BDCCA9FECB434D2DEA359F /* m3_PPMR_W39B.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3_PPMR_W39B.png; sourceTree = "<group>"; };
 		B60FB9385437B194DE543C35 /* m3_PPMR_W32D.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3_PPMR_W32D.png; sourceTree = "<group>"; };
+		B62F44BB204480A3E3E7F3ED /* VehicleStateHistoryModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleStateHistoryModelsTests.swift; sourceTree = "<group>"; };
 		B68F7552D812BB1769169FAB /* TripsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripsViewModel.swift; sourceTree = "<group>"; };
 		B7223DB9F8B416B27AACF0DB /* mx_PPSW_WT22.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mx_PPSW_WT22.png; sourceTree = "<group>"; };
 		B77AB6204C7F65C6EECA284A /* m3_PMSS_W32P.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3_PMSS_W32P.png; sourceTree = "<group>"; };
@@ -1544,6 +1548,7 @@
 				9CCEE49AF9F0BD59A387294B /* TeslaMateAPIVersionTests.swift */,
 				2BCC44ADEB7665C2C1E4C9E6 /* TeslaMateCapabilityServiceTests.swift */,
 				D6098F5BA33EC58620EA4024 /* TeslaMateConnectionDiagnosticTests.swift */,
+				B62F44BB204480A3E3E7F3ED /* VehicleStateHistoryModelsTests.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -1685,6 +1690,7 @@
 				3C6D75EEBC3579923B045AF6 /* StandbyDrainModels.swift */,
 				7026429E74CA1E9539014A7D /* StatsExtremeModels.swift */,
 				190C92E73E25E09F07317F1C /* TeslaMateVersionModels.swift */,
+				252DF0BF795C90E0CC2D5FFA /* VehicleStateHistoryModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2269,6 +2275,7 @@
 				DDB2F077AA72494EA8376521 /* UserFacingErrorLocalizer.swift in Sources */,
 				5A27BD889EB4BC8A5D5EE0D6 /* VehicleImageCatalog.swift in Sources */,
 				7DC66818DD060B3DBFA625C7 /* VehicleImageResolver.swift in Sources */,
+				421B5B61480FF9F8DDFFFA93 /* VehicleStateHistoryModels.swift in Sources */,
 				7C11CBE61E7E7C36B71E7FDF /* WeatherAlongTheWayView.swift in Sources */,
 				8B48105CDF7160D35E2E1CE7 /* WeatherSelection.swift in Sources */,
 				9274390396C9BDFFBE9CED94 /* WeatherService.swift in Sources */,
@@ -2346,6 +2353,7 @@
 				1154B1FEAB2E047AC9D37745 /* VehicleImageCatalogTests.swift in Sources */,
 				06584FFAD99FB6E3FA5AFEFE /* VehicleImageOverrideTests.swift in Sources */,
 				AFBE8FDCF53D5714355EA02E /* VehicleImageResolverTests.swift in Sources */,
+				2C44B590E37451D7B8C0A8B1 /* VehicleStateHistoryModelsTests.swift in Sources */,
 				78734CCD325CC4B13BE9657F /* WeatherSelectionTests.swift in Sources */,
 				E06CDF7CAA676392AD274AFB /* WeatherServiceTests.swift in Sources */,
 				06E8285C5BA76487CC023BCE /* WidgetDisplayDataTests.swift in Sources */,

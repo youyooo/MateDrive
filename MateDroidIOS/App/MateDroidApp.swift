@@ -11,8 +11,7 @@ struct MateDroidApp: App {
         let scheduler = BackgroundSyncScheduler()
         let dataPreloader = AppDataPreloader(
             settingsStore: environment.settingsStore,
-            secretStore: environment.secretStore,
-            activitiesCache: ActivitiesStateCache.shared
+            secretStore: environment.secretStore
         )
         self.environment = environment
         self.backgroundScheduler = scheduler
