@@ -74,6 +74,20 @@ final class CloudBackupViewModelTests: XCTestCase {
         XCTAssertNil(viewModel.state.operation)
     }
 
+    func testRefreshShowsNoAccountWithoutBlockingOnRemoteList() async {
+        let coordinator = CloudBackupViewModelCoordinator(accountStatus: .noAccount)
+        let viewModel = CloudBackupViewModel(coordinator: coordinator)
+
+        await viewModel.loadCached()
+        await viewModel.refreshRemote()
+
+        XCTAssertEqual(viewModel.state.accountStatus, .noAccount)
+        XCTAssertNil(viewModel.state.error)
+        XCTAssertFalse(viewModel.state.isRefreshing)
+        let remoteListCount = await coordinator.remoteListCount
+        XCTAssertEqual(remoteListCount, 0)
+    }
+
     private func backup(id: String, age: TimeInterval) -> CloudBackupDescriptor {
         CloudBackupDescriptor(
             id: id,
@@ -90,6 +104,7 @@ final class CloudBackupViewModelTests: XCTestCase {
 
 private actor CloudBackupViewModelCoordinator: CloudBackupCoordinating {
     private var preferencesValue = CloudBackupPreferences()
+    private let accountStatusValue: CloudBackupAccountStatus
     private let cached: [CloudBackupDescriptor]
     private let remote: [CloudBackupDescriptor]
     private var remoteListStarted = false
@@ -102,14 +117,20 @@ private actor CloudBackupViewModelCoordinator: CloudBackupCoordinating {
     private var manualReleaseWaiters: [CheckedContinuation<Void, Never>] = []
     private(set) var manualBackupCount = 0
     private(set) var restoreCount = 0
+    private(set) var remoteListCount = 0
 
-    init(cached: [CloudBackupDescriptor] = [], remote: [CloudBackupDescriptor] = []) {
+    init(
+        cached: [CloudBackupDescriptor] = [],
+        remote: [CloudBackupDescriptor] = [],
+        accountStatus: CloudBackupAccountStatus = .available
+    ) {
         self.cached = cached
         self.remote = remote
+        accountStatusValue = accountStatus
         preferencesValue.cachedBackups = cached
     }
 
-    func accountStatus() async throws -> CloudBackupAccountStatus { .available }
+    func accountStatus() async throws -> CloudBackupAccountStatus { accountStatusValue }
     func preferences() -> CloudBackupPreferences { preferencesValue }
 
     func acceptDisclosure() {
@@ -125,6 +146,7 @@ private actor CloudBackupViewModelCoordinator: CloudBackupCoordinating {
 
     func listBackups(forceRefresh: Bool) async throws -> [CloudBackupDescriptor] {
         guard forceRefresh else { return preferencesValue.cachedBackups }
+        remoteListCount += 1
         remoteListStarted = true
         remoteStartWaiters.forEach { $0.resume() }
         remoteStartWaiters.removeAll()

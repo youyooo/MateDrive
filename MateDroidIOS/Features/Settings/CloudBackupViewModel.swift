@@ -46,16 +46,29 @@ public final class CloudBackupViewModel: ObservableObject {
         defer { state.isRefreshing = false }
 
         do {
-            async let accountStatus = coordinator.accountStatus()
-            async let backups = coordinator.listBackups(forceRefresh: true)
-            let (newStatus, newBackups) = try await (accountStatus, backups)
+            let newStatus = try await coordinator.accountStatus()
             state.accountStatus = newStatus
-            state.backups = newBackups
             state.preferences = await coordinator.preferences()
             state.cleanupWarning = await coordinator.cleanupWarning()
+            guard newStatus == .available else {
+                state.error = nil
+                return
+            }
+
+            state.backups = try await coordinator.listBackups(forceRefresh: true)
             state.error = nil
         } catch {
-            state.error = Self.map(error)
+            let mapped = Self.map(error)
+            switch mapped {
+            case .noICloudAccount:
+                state.accountStatus = .noAccount
+                state.error = nil
+            case .iCloudUnavailable:
+                state.accountStatus = .unavailable
+                state.error = nil
+            default:
+                state.error = mapped
+            }
         }
     }
 

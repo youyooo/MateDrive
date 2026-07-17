@@ -125,7 +125,10 @@ public struct CloudBackupView: View {
                     set: { value in Task { await viewModel.requestAutomaticBackup(value) } }
                 )
             )
-            .disabled(viewModel.state.operation != nil)
+            .disabled(
+                viewModel.state.operation != nil
+                    || viewModel.state.accountStatus != .available
+            )
             if let lastBackup = viewModel.state.preferences.lastSuccessfulBackupAt {
                 LabeledContent(t("Last Successful Backup", "上次成功备份")) {
                     Text(lastBackup, format: .dateTime.year().month().day().hour().minute())
@@ -151,7 +154,11 @@ public struct CloudBackupView: View {
                     systemImage: "icloud.and.arrow.up"
                 )
             }
-            .disabled(viewModel.state.operation != nil || viewModel.state.isRefreshing)
+            .disabled(
+                viewModel.state.operation != nil
+                    || viewModel.state.isRefreshing
+                    || viewModel.state.accountStatus != .available
+            )
 
             if viewModel.state.backups.isEmpty {
                 ContentUnavailableView(
