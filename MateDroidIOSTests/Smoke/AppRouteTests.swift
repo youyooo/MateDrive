@@ -60,8 +60,10 @@ final class AppRouteTests: XCTestCase {
         XCTAssertEqual(AppRoute.costReview(carId: 1, exteriorColor: nil).title(language: .chinese), "用车成本回顾")
     }
 
-    func testDashboardMakesTopLevelHistoryFeaturesReachable() {
-        let routes = DashboardNavigation.items(carId: 7, exteriorColor: "PPSW").map(\.route)
+    func testFeatureHubMakesTopLevelHistoryFeaturesReachable() {
+        let routes = FeatureHubCatalog.sections(carId: 7, exteriorColor: "PPSW")
+            .flatMap(\.items)
+            .map(\.route)
 
         XCTAssertTrue(routes.contains(.charges(carId: 7, exteriorColor: "PPSW")))
         XCTAssertTrue(routes.contains(.drives(carId: 7, exteriorColor: "PPSW")))
@@ -72,5 +74,6 @@ final class AppRouteTests: XCTestCase {
         XCTAssertTrue(routes.contains(.places(carId: 7)))
         XCTAssertTrue(routes.contains(.commuteRoutes(carId: 7)))
         XCTAssertTrue(routes.contains(.recentDrivingMap(carId: 7, exteriorColor: "PPSW")))
+        XCTAssertTrue(routes.contains(.energyCycles(carId: 7, exteriorColor: "PPSW")))
     }
 }
