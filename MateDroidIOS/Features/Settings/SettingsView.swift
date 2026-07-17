@@ -666,7 +666,7 @@ public struct SettingsView: View {
         case .batteryHealthHistory: t("Battery History", "电池历史")
         case .driveInsights: t("Drive Insights", "行程洞察")
         case .environmentHistory: t("Environment History", "环境与胎压")
-        case .stateHistory: t("State History", "休眠历史")
+        case .stateHistory: t("Sleep History", "休眠历史")
         case .topDrainLocations: t("Standby Hotspots", "待机耗电热点")
         case .commuteRoutes: t("Commute Routes", "通勤路线")
         case .statsExtremes: t("Driving Records", "驾驶纪录")

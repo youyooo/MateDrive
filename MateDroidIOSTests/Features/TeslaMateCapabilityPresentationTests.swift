@@ -15,7 +15,7 @@ final class TeslaMateCapabilityPresentationTests: XCTestCase {
         XCTAssertEqual(TeslaMateCapabilityPresentation.visibleCapabilities, [
             .serverStats, .costReview, .unifiedActivities, .batteryHealthHistory, .driveInsights, .environmentHistory, .stateHistory, .topDrainLocations, .commuteRoutes, .statsExtremes, .drivingCoordinates, .serverPlaces
         ])
-        XCTAssertEqual(TeslaMateCapabilityPresentation.titleLocalizationKey(for: .stateHistory), "State History")
+        XCTAssertEqual(TeslaMateCapabilityPresentation.titleLocalizationKey(for: .stateHistory), "Sleep History")
     }
 
     func testEveryCapabilityStateHasAnIconAndLocalizationKey() {
@@ -35,6 +35,6 @@ final class TeslaMateCapabilityPresentationTests: XCTestCase {
             encoding: .utf8
         )
 
-        XCTAssertTrue(settingsSource.contains(#"case .stateHistory: t("State History", "休眠历史")"#))
+        XCTAssertTrue(settingsSource.contains(#"case .stateHistory: t("Sleep History", "休眠历史")"#))
     }
 }

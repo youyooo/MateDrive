@@ -16,7 +16,7 @@ public enum TeslaMateCapabilityPresentation {
         case .batteryHealthHistory: "Battery History"
         case .driveInsights: "Drive Insights"
         case .environmentHistory: "Environment History"
-        case .stateHistory: "State History"
+        case .stateHistory: "Sleep History"
         case .topDrainLocations: "Standby Hotspots"
         case .commuteRoutes: "Commute Routes"
         case .statsExtremes: "Driving Records"
