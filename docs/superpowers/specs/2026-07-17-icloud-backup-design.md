@@ -1,7 +1,7 @@
 # MateDrive iCloud Backup Design
 
 **Date:** 2026-07-17  
-**Status:** Approved direction and scope; awaiting written-spec review  
+**Status:** Approved for implementation
 **Product:** MateDrive iOS
 
 ## Purpose
