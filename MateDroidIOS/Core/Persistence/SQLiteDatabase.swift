@@ -18,6 +18,18 @@ public struct SQLiteCommand: Sendable {
     }
 }
 
+public struct SQLiteBackupMetadata: Equatable, Sendable {
+    public let schemaVersion: Int
+    public let byteCount: Int64
+    public let pageCount: Int
+
+    public init(schemaVersion: Int, byteCount: Int64, pageCount: Int) {
+        self.schemaVersion = schemaVersion
+        self.byteCount = byteCount
+        self.pageCount = pageCount
+    }
+}
+
 public enum SQLiteColumnValue: Equatable, Sendable {
     case int(Int)
     case double(Double)
@@ -198,6 +210,136 @@ public actor SQLiteDatabase {
 
     public func setUserVersion(_ version: Int) throws {
         try execute("PRAGMA user_version = \(version);")
+    }
+
+    public func schemaVersion() throws -> Int {
+        try userVersion()
+    }
+
+    public func integrityCheck() throws -> Bool {
+        try textValues("PRAGMA quick_check;") == ["ok"]
+    }
+
+    public func backup(to destinationURL: URL) throws -> SQLiteBackupMetadata {
+        let fileManager = FileManager.default
+        try fileManager.createDirectory(
+            at: destinationURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        if fileManager.fileExists(atPath: destinationURL.path) {
+            try fileManager.removeItem(at: destinationURL)
+        }
+
+        let destination = try Self.openConnection(
+            path: destinationURL.path,
+            flags: SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE
+        )
+        let pageCount: Int
+        do {
+            pageCount = try Self.copyDatabase(from: db, to: destination)
+        } catch {
+            sqlite3_close(destination)
+            try? fileManager.removeItem(at: destinationURL)
+            throw error
+        }
+        let closeStatus = sqlite3_close(destination)
+        guard closeStatus == SQLITE_OK else {
+            try? fileManager.removeItem(at: destinationURL)
+            throw SQLiteError.backupFailed("Could not close snapshot database (\(closeStatus)).")
+        }
+
+        try fileManager.setAttributes(
+            [.protectionKey: FileProtectionType.complete],
+            ofItemAtPath: destinationURL.path
+        )
+        let attributes = try fileManager.attributesOfItem(atPath: destinationURL.path)
+        let byteCount = (attributes[.size] as? NSNumber)?.int64Value ?? 0
+        return SQLiteBackupMetadata(
+            schemaVersion: try userVersion(),
+            byteCount: byteCount,
+            pageCount: pageCount
+        )
+    }
+
+    public func restore(from sourceURL: URL) throws {
+        let source = try Self.openConnection(
+            path: sourceURL.path,
+            flags: SQLITE_OPEN_READONLY
+        )
+        defer { sqlite3_close(source) }
+
+        guard try Self.integrityCheck(connection: source) else {
+            throw SQLiteError.integrityCheckFailed("The backup database did not pass SQLite quick_check.")
+        }
+        _ = try Self.copyDatabase(from: source, to: db)
+        guard try integrityCheck() else {
+            throw SQLiteError.integrityCheckFailed("The restored database did not pass SQLite quick_check.")
+        }
+    }
+
+    private static func openConnection(path: String, flags: Int32) throws -> OpaquePointer {
+        var pointer: OpaquePointer?
+        let status = sqlite3_open_v2(path, &pointer, flags, nil)
+        guard status == SQLITE_OK, let pointer else {
+            let message = pointer.map { String(cString: sqlite3_errmsg($0)) } ?? "Unknown SQLite open error"
+            if let pointer { sqlite3_close(pointer) }
+            throw SQLiteError.openFailed(message)
+        }
+        return pointer
+    }
+
+    private static func copyDatabase(from source: OpaquePointer, to destination: OpaquePointer) throws -> Int {
+        guard let backup = sqlite3_backup_init(destination, "main", source, "main") else {
+            throw SQLiteError.backupFailed(String(cString: sqlite3_errmsg(destination)))
+        }
+
+        var status = SQLITE_OK
+        var busyRetries = 0
+        var pageCount = 0
+        repeat {
+            if Task.isCancelled {
+                status = SQLITE_INTERRUPT
+                break
+            }
+
+            status = sqlite3_backup_step(backup, 128)
+            pageCount = Int(sqlite3_backup_pagecount(backup))
+            if status == SQLITE_BUSY || status == SQLITE_LOCKED {
+                busyRetries += 1
+                guard busyRetries <= 20 else { break }
+                sqlite3_sleep(25)
+            } else {
+                busyRetries = 0
+            }
+        } while status == SQLITE_OK || status == SQLITE_BUSY || status == SQLITE_LOCKED
+
+        let finishStatus = sqlite3_backup_finish(backup)
+        guard status == SQLITE_DONE, finishStatus == SQLITE_OK else {
+            let message = String(cString: sqlite3_errmsg(destination))
+            if status == SQLITE_INTERRUPT || Task.isCancelled {
+                throw CancellationError()
+            }
+            throw SQLiteError.backupFailed("\(message) (step: \(status), finish: \(finishStatus))")
+        }
+        return pageCount
+    }
+
+    private static func integrityCheck(connection: OpaquePointer) throws -> Bool {
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(connection, "PRAGMA quick_check;", -1, &statement, nil) == SQLITE_OK,
+              let statement
+        else {
+            throw SQLiteError.integrityCheckFailed(String(cString: sqlite3_errmsg(connection)))
+        }
+        defer { sqlite3_finalize(statement) }
+
+        guard sqlite3_step(statement) == SQLITE_ROW,
+              let text = sqlite3_column_text(statement, 0)
+        else {
+            throw SQLiteError.integrityCheckFailed(String(cString: sqlite3_errmsg(connection)))
+        }
+        let result = String(cString: UnsafeRawPointer(text).assumingMemoryBound(to: CChar.self))
+        return result == "ok"
     }
 
     private func prepare(_ sql: String) throws -> OpaquePointer {

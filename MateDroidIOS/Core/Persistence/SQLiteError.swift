@@ -5,6 +5,8 @@ public enum SQLiteError: LocalizedError, Equatable {
     case prepareFailed(String)
     case bindFailed(String)
     case executionFailed(String)
+    case backupFailed(String)
+    case integrityCheckFailed(String)
     case noRows
 
     public var errorDescription: String? {
@@ -17,6 +19,10 @@ public enum SQLiteError: LocalizedError, Equatable {
             return "SQLite bind failed: \(message)"
         case let .executionFailed(message):
             return "SQLite execution failed: \(message)"
+        case let .backupFailed(message):
+            return "SQLite backup failed: \(message)"
+        case let .integrityCheckFailed(message):
+            return "SQLite integrity check failed: \(message)"
         case .noRows:
             return "SQLite returned no rows."
         }
