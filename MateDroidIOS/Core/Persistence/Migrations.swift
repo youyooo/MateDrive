@@ -228,6 +228,23 @@ public enum Migrations {
                 "ALTER TABLE drives_summary ADD COLUMN consumption_net REAL;",
                 "ALTER TABLE drives_summary ADD COLUMN energy_source TEXT;"
             ]
+        ),
+        Migration(
+            version: 20,
+            statements: [
+                """
+                CREATE TABLE IF NOT EXISTS sleep_intervals (
+                  car_id INTEGER NOT NULL,
+                  start_date TEXT NOT NULL,
+                  end_date TEXT NOT NULL,
+                  PRIMARY KEY(car_id, start_date, end_date)
+                );
+                """,
+                """
+                CREATE INDEX IF NOT EXISTS sleep_intervals_car_range
+                ON sleep_intervals(car_id, start_date, end_date);
+                """
+            ]
         )
     ]
 }

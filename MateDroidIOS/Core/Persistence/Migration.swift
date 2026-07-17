@@ -15,5 +15,5 @@ public enum SchemaVersion {
 }
 
 public enum DatabaseSchemaVersion {
-    public static let current = 16
+    public static let current = 20
 }

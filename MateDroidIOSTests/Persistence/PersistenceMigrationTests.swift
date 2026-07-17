@@ -25,10 +25,32 @@ final class PersistenceMigrationTests: XCTestCase {
         XCTAssertTrue(tables.contains("saved_trip_consumed_fingerprints"))
         XCTAssertTrue(tables.contains("charge_pricing_audit_batches"))
         XCTAssertTrue(tables.contains("charge_pricing_audit_items"))
+        XCTAssertTrue(tables.contains("sleep_intervals"))
         let version = try await database.userVersion()
-        XCTAssertEqual(version, 16)
-        XCTAssertEqual(DatabaseSchemaVersion.current, 16)
+        XCTAssertEqual(version, 20)
+        XCTAssertEqual(DatabaseSchemaVersion.current, 20)
         XCTAssertEqual(SchemaVersion.current, 13)
+    }
+
+    func testVersion20CreatesSleepIntervalsWithCompositePrimaryKeyAndRangeIndex() async throws {
+        let database = try SQLiteDatabase.inMemory()
+
+        try await Migrations.applyAll(to: database)
+
+        let columns = try await database.rows("PRAGMA table_info(sleep_intervals);")
+        let primaryKeyColumns = columns.compactMap { row -> String? in
+            guard row.count >= 6, let name = row[1].textValue, let position = row[5].intValue else {
+                return nil
+            }
+            return position > 0 ? name : nil
+        }
+        let indexes = try await database.rows("PRAGMA index_list(sleep_intervals);")
+        let version = try await database.userVersion()
+
+        XCTAssertEqual(columns.map { $0[1].textValue }, ["car_id", "start_date", "end_date"])
+        XCTAssertEqual(primaryKeyColumns, ["car_id", "start_date", "end_date"])
+        XCTAssertTrue(indexes.contains { $0.count >= 2 && $0[1].textValue == "sleep_intervals_car_range" })
+        XCTAssertEqual(version, 20)
     }
 
     func testDriveSummarySchemaPreservesMissingDistanceAndDuration() async throws {
@@ -73,7 +95,7 @@ final class PersistenceMigrationTests: XCTestCase {
         let missing = try await database.rows("SELECT distance, duration_min FROM drives_summary WHERE drive_id = 8;")
         XCTAssertEqual(missing, [[.null, .null]])
         let version = try await database.userVersion()
-        XCTAssertEqual(version, 16)
+        XCTAssertEqual(version, DatabaseSchemaVersion.current)
     }
 
     func testVersion15DriveSummariesGainNullableEnergyFieldsWithoutDataLoss() async throws {
@@ -97,6 +119,6 @@ final class PersistenceMigrationTests: XCTestCase {
         let migrated = try await database.rows("SELECT drive_id, distance, duration_min, energy_consumed_net, consumption_net FROM drives_summary;")
         XCTAssertEqual(migrated, [[.int(7), .double(12.5), .int(30), .null, .null]])
         let version = try await database.userVersion()
-        XCTAssertEqual(version, 16)
+        XCTAssertEqual(version, DatabaseSchemaVersion.current)
     }
 }
