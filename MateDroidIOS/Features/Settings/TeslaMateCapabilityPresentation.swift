@@ -5,7 +5,7 @@ public enum TeslaMateCapabilityPresentation {
     public static let enhancedFeatureMinimumDisplayVersion = "2.5"
 
     public static let visibleCapabilities: [TeslaMateCapability] = [
-        .serverStats, .costReview, .unifiedActivities, .batteryHealthHistory, .driveInsights, .environmentHistory, .topDrainLocations, .commuteRoutes, .statsExtremes, .drivingCoordinates, .serverPlaces
+        .serverStats, .costReview, .unifiedActivities, .batteryHealthHistory, .driveInsights, .environmentHistory, .stateHistory, .topDrainLocations, .commuteRoutes, .statsExtremes, .drivingCoordinates, .serverPlaces
     ]
 
     public static func titleLocalizationKey(for capability: TeslaMateCapability) -> String {
@@ -16,6 +16,7 @@ public enum TeslaMateCapabilityPresentation {
         case .batteryHealthHistory: "Battery History"
         case .driveInsights: "Drive Insights"
         case .environmentHistory: "Environment History"
+        case .stateHistory: "State History"
         case .topDrainLocations: "Standby Hotspots"
         case .commuteRoutes: "Commute Routes"
         case .statsExtremes: "Driving Records"

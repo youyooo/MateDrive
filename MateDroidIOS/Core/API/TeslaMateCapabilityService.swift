@@ -42,7 +42,7 @@ public struct TeslaMateCapabilityService: TeslaMateCapabilityDiscovering, Sendab
         })
         var connectionIssue: TeslaMateConnectionIssue?
 
-        for spec in Self.probeSpecs(carId: carId) {
+        for spec in Self.probeSpecs(carId: carId, checkedAt: checkedAt) {
             let classified = Self.classify(
                 capability: spec.capability,
                 result: await api.probe(path: spec.path, queryItems: spec.queryItems),
@@ -75,8 +75,13 @@ private struct ProbeSpec {
 }
 
 private extension TeslaMateCapabilityService {
-    static func probeSpecs(carId: Int) -> [ProbeSpec] {
+    static func probeSpecs(carId: Int, checkedAt: Date) -> [ProbeSpec] {
         let firstPage = [URLQueryItem(name: "page", value: "1"), URLQueryItem(name: "show", value: "1")]
+        let dateFormatter = ISO8601DateFormatter()
+        let stateHistoryQuery = [
+            URLQueryItem(name: "startDate", value: dateFormatter.string(from: checkedAt.addingTimeInterval(-24 * 60 * 60))),
+            URLQueryItem(name: "endDate", value: dateFormatter.string(from: checkedAt))
+        ]
         return [
             ProbeSpec(capability: .coreCars, path: "api/v1/cars", queryItems: []),
             ProbeSpec(capability: .vehicleStatus, path: "api/v1/cars/\(carId)/status", queryItems: []),
@@ -93,6 +98,7 @@ private extension TeslaMateCapabilityService {
                 URLQueryItem(name: "range", value: "7d"),
                 URLQueryItem(name: "grain", value: "day")
             ]),
+            ProbeSpec(capability: .stateHistory, path: "api/v1/cars/\(carId)/states", queryItems: stateHistoryQuery),
             ProbeSpec(capability: .achievements, path: "api/v1/cars/\(carId)/achievements", queryItems: []),
             ProbeSpec(capability: .geofences, path: "api/v1/geofences", queryItems: []),
             ProbeSpec(capability: .topDrainLocations, path: "api/v1/cars/\(carId)/top-drain-locations", queryItems: []),

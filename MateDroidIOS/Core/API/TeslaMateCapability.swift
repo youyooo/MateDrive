@@ -16,6 +16,7 @@ public enum TeslaMateCapability: String, CaseIterable, Codable, Equatable, Hasha
     case batteryHealthHistory
     case driveInsights
     case environmentHistory
+    case stateHistory
     case achievements
     case geofences
     case standbyDrain

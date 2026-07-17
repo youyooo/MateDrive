@@ -139,6 +139,28 @@ final class APIClientTests: XCTestCase {
         XCTAssertEqual(query.map(\.value), ["2025-07-01T00:00:00Z", "2025-07-08T00:00:00Z"])
     }
 
+    func testVehicleStateHistoryUsesOptionalEndpointAndBoundedQuery() async throws {
+        let client = URLRecordingHTTPClient(json: #"{"data":{"states":[]}}"#)
+        let api = TeslamateAPI(baseURL: URL(string: "https://example.com/base")!, client: client)
+
+        let result = await api.vehicleStateHistory(
+            carId: 7,
+            startDate: "2026-07-16T00:00:00Z",
+            endDate: "2026-07-17T00:00:00Z"
+        )
+
+        guard case let .success(intervals) = result else {
+            return XCTFail("Expected state history response")
+        }
+        XCTAssertTrue(intervals.isEmpty)
+
+        let requestedURL = try XCTUnwrap(await client.requestedURL)
+        XCTAssertEqual(requestedURL.path, "/base/api/v1/cars/7/states")
+        let query = try XCTUnwrap(URLComponents(url: requestedURL, resolvingAgainstBaseURL: false)?.queryItems)
+        XCTAssertEqual(query.map(\.name), ["startDate", "endDate"])
+        XCTAssertEqual(query.map(\.value), ["2026-07-16T00:00:00Z", "2026-07-17T00:00:00Z"])
+    }
+
     func testUpdateChargeCostUsesAPI26PutEndpointAndNumericJSONBody() async throws {
         let client = RequestRecordingHTTPClient(json: #"{"message":"updated"}"#)
         let api = TeslamateAPI(baseURL: URL(string: "https://example.com/base")!, client: client)

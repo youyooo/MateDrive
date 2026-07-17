@@ -176,6 +176,21 @@ public struct TeslamateAPI: Sendable {
         }
     }
 
+    public func vehicleStateHistory(
+        carId: Int,
+        startDate: String,
+        endDate: String
+    ) async -> APIResult<[VehicleStateInterval]> {
+        let queryItems = [
+            URLQueryItem(name: "startDate", value: startDate),
+            URLQueryItem(name: "endDate", value: endDate)
+        ]
+        return await decode(
+            VehicleStateHistoryResponse.self,
+            endpoint: endpoint("api/v1/cars/\(carId)/states", queryItems: queryItems)
+        ) { $0.intervals }
+    }
+
     public func battery(carId: Int) async -> APIResult<BatteryData?> {
         await decodeOptional(
             BatteryResponse.self,

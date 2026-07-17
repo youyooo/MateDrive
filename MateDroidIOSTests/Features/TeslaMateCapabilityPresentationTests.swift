@@ -12,8 +12,9 @@ final class TeslaMateCapabilityPresentationTests: XCTestCase {
     }
     func testVisibleCapabilitiesHaveStableOrder() {
         XCTAssertEqual(TeslaMateCapabilityPresentation.visibleCapabilities, [
-            .serverStats, .costReview, .unifiedActivities, .batteryHealthHistory, .driveInsights, .environmentHistory, .topDrainLocations, .commuteRoutes, .statsExtremes, .drivingCoordinates, .serverPlaces
+            .serverStats, .costReview, .unifiedActivities, .batteryHealthHistory, .driveInsights, .environmentHistory, .stateHistory, .topDrainLocations, .commuteRoutes, .statsExtremes, .drivingCoordinates, .serverPlaces
         ])
+        XCTAssertEqual(TeslaMateCapabilityPresentation.titleLocalizationKey(for: .stateHistory), "State History")
     }
 
     func testEveryCapabilityStateHasAnIconAndLocalizationKey() {

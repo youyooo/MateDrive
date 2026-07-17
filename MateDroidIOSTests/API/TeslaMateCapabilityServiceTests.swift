@@ -18,6 +18,7 @@ final class TeslaMateCapabilityServiceTests: XCTestCase {
             "/api/v1/cars/1/battery-health/history": (200, #"{"data":{"capacity":[]}}"#),
             "/api/v1/cars/1/drive-stats": (200, #"{"data":{"routes":[]}}"#),
             "/api/v1/cars/1/environment-history": (200, #"{"data":{"series":[]}}"#),
+            "/api/v1/cars/1/states": (404, #"{"error":"not found"}"#),
             "/api/v1/cars/1/achievements": (404, #"{"error":"not found"}"#),
             "/api/v1/geofences": (500, #"{"error":"temporary"}"#),
             "/api/v1/cars/1/top-drain-locations": (200, #"{"locations":[]}"#),
@@ -40,6 +41,8 @@ final class TeslaMateCapabilityServiceTests: XCTestCase {
         XCTAssertEqual(profile.status(for: .unifiedActivities)?.state, .degraded)
         XCTAssertEqual(profile.status(for: .unifiedActivities)?.reason, .paginationMetadataInvalid)
         XCTAssertEqual(profile.status(for: .environmentHistory)?.state, .available)
+        XCTAssertEqual(profile.status(for: .stateHistory)?.state, .unavailable)
+        XCTAssertEqual(profile.status(for: .stateHistory)?.reason, .endpointNotFound)
         XCTAssertEqual(profile.status(for: .topDrainLocations)?.state, .available)
         XCTAssertEqual(profile.status(for: .commuteRoutes)?.state, .available)
         XCTAssertEqual(profile.status(for: .statsExtremes)?.state, .available)
@@ -82,12 +85,39 @@ final class TeslaMateCapabilityServiceTests: XCTestCase {
         XCTAssertTrue(TeslaMateCapability.allCases.contains(.batteryHealthHistory))
         XCTAssertTrue(TeslaMateCapability.allCases.contains(.driveInsights))
         XCTAssertTrue(TeslaMateCapability.allCases.contains(.environmentHistory))
+        XCTAssertTrue(TeslaMateCapability.allCases.contains(.stateHistory))
         XCTAssertTrue(TeslaMateCapability.allCases.contains(.standbyDrain))
         XCTAssertTrue(TeslaMateCapability.allCases.contains(.topDrainLocations))
         XCTAssertTrue(TeslaMateCapability.allCases.contains(.commuteRoutes))
         XCTAssertTrue(TeslaMateCapability.allCases.contains(.statsExtremes))
         XCTAssertTrue(TeslaMateCapability.allCases.contains(.drivingCoordinates))
         XCTAssertTrue(TeslaMateCapability.allCases.contains(.serverPlaces))
+    }
+
+    func testStateHistoryProbeUsesOneDayRangeAndOnlyEndpointAbsenceIsUnavailable() async throws {
+        let now = Date(timeIntervalSince1970: 1_784_246_400)
+        let cases: [(Int, TeslaMateCapabilityState, TeslaMateCapabilityReason)] = [
+            (404, .unavailable, .endpointNotFound),
+            (405, .unavailable, .methodNotAllowed),
+            (401, .unknown, .authenticationRequired),
+            (500, .unknown, .temporaryServerFailure)
+        ]
+
+        for (statusCode, expectedState, expectedReason) in cases {
+            let client = StateHistoryCapabilityHTTPClient(statusCode: statusCode)
+            let service = TeslaMateCapabilityService(now: { now })
+            let api = TeslamateAPI(baseURL: URL(string: "https://teslamate.example")!, client: client)
+
+            let profile = await service.discover(api: api, carId: 1, force: true)
+
+            XCTAssertEqual(profile.status(for: .stateHistory)?.state, expectedState, "HTTP \(statusCode)")
+            XCTAssertEqual(profile.status(for: .stateHistory)?.reason, expectedReason, "HTTP \(statusCode)")
+            let recordedRequest = await client.stateHistoryRequest
+            let request = try XCTUnwrap(recordedRequest, "HTTP \(statusCode)")
+            let query = try XCTUnwrap(URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems)
+            XCTAssertEqual(query.map(\.name), ["startDate", "endDate"])
+            XCTAssertEqual(query.map(\.value), ["2026-07-16T00:00:00Z", "2026-07-17T00:00:00Z"])
+        }
     }
 
     func testServerIdentityExcludesCredentialsQueryAndFragmentAndNormalizesEquivalentURLs() {
@@ -271,6 +301,34 @@ private final class CapabilityRouteHTTPClient: HTTPClient, @unchecked Sendable {
             headerFields: nil
         )!
         return (Data(route.1.utf8), response)
+    }
+}
+
+private actor StateHistoryRequestRecorder {
+    private(set) var request: URLRequest?
+    func record(_ request: URLRequest) { self.request = request }
+}
+
+private struct StateHistoryCapabilityHTTPClient: HTTPClient {
+    let statusCode: Int
+    private let recorder = StateHistoryRequestRecorder()
+
+    var stateHistoryRequest: URLRequest? {
+        get async { await recorder.request }
+    }
+
+    func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let isStateHistory = request.url?.path == "/api/v1/cars/1/states"
+        if isStateHistory {
+            await recorder.record(request)
+        }
+        let response = HTTPURLResponse(
+            url: request.url!,
+            statusCode: isStateHistory ? statusCode : 200,
+            httpVersion: "HTTP/1.1",
+            headerFields: nil
+        )!
+        return (Data("{}".utf8), response)
     }
 }
 
