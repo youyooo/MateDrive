@@ -152,6 +152,32 @@ final class TeslaMateCapabilityServiceTests: XCTestCase {
         }
     }
 
+    func testStateHistoryInvalidObjectShapesAreUnknown() async {
+        for body in [#"{}"#, #"{"data":{}}"#] {
+            let client = StateHistoryCapabilityHTTPClient(statusCode: 200, body: body)
+            let service = TeslaMateCapabilityService()
+            let api = TeslamateAPI(baseURL: URL(string: "https://teslamate.example")!, client: client)
+
+            let profile = await service.discover(api: api, carId: 1, force: true)
+
+            XCTAssertEqual(profile.status(for: .stateHistory)?.state, .unknown, "Body: \(body)")
+            XCTAssertEqual(profile.status(for: .stateHistory)?.reason, .invalidPayload, "Body: \(body)")
+        }
+    }
+
+    func testStateHistoryValidEmptyShapesAreAvailable() async {
+        for body in [#"[]"#, #"{"data":{"states":[]}}"#] {
+            let client = StateHistoryCapabilityHTTPClient(statusCode: 200, body: body)
+            let service = TeslaMateCapabilityService()
+            let api = TeslamateAPI(baseURL: URL(string: "https://teslamate.example")!, client: client)
+
+            let profile = await service.discover(api: api, carId: 1, force: true)
+
+            XCTAssertEqual(profile.status(for: .stateHistory)?.state, .available, "Body: \(body)")
+            XCTAssertNil(profile.status(for: .stateHistory)?.reason, "Body: \(body)")
+        }
+    }
+
     func testSuccessfulEmptyPayloadStillDegradesOtherCapabilities() async {
         let client = CapabilityRouteHTTPClient(routes: [
             "/api/v1/cars/1/status": (200, "")
@@ -165,8 +191,8 @@ final class TeslaMateCapabilityServiceTests: XCTestCase {
         XCTAssertEqual(profile.status(for: .vehicleStatus)?.reason, .emptyPayload)
     }
 
-    func testStateHistoryNoContentIsUnknown() async {
-        let client = StateHistoryCapabilityHTTPClient(statusCode: 204, body: "")
+    func testStateHistoryNoContentIsUnknownRegardlessOfBody() async {
+        let client = StateHistoryCapabilityHTTPClient(statusCode: 204, body: #"{"data":{"states":[]}}"#)
         let service = TeslaMateCapabilityService()
         let api = TeslamateAPI(baseURL: URL(string: "https://teslamate.example")!, client: client)
 

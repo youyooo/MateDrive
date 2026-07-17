@@ -14,7 +14,7 @@ public struct VehicleStateHistoryResponse: Decodable, Equatable, Sendable {
         }
 
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        intervals = try container.decodeIfPresent(VehicleStateHistoryEnvelope.self, forKey: .data)?.states ?? []
+        intervals = try container.decode(VehicleStateHistoryEnvelope.self, forKey: .data).states
     }
 }
 

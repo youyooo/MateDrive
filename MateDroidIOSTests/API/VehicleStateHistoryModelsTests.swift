@@ -26,6 +26,18 @@ final class VehicleStateHistoryModelsTests: XCTestCase {
         XCTAssertNil(result.intervals[0].endDate)
     }
 
+    func testRejectsObjectEnvelopesWithoutStatesArray() {
+        for json in [#"{}"#, #"{"data":{}}"#] {
+            XCTAssertThrowsError(
+                try JSONDecoder.teslamate.decode(
+                    VehicleStateHistoryResponse.self,
+                    from: Data(json.utf8)
+                ),
+                "JSON: \(json)"
+            )
+        }
+    }
+
     func testConvertsOnlyValidAsleepIntervalsToSleepIntervals() throws {
         let json = #"[{"state":"asleep","start_date":"2026-07-17T00:00:00Z","end_date":null},{"state":"online","start_date":"2026-07-17T00:00:00Z","end_date":"2026-07-17T01:00:00Z"},{"state":"asleep","start_date":"not-a-date","end_date":"2026-07-17T01:00:00Z"}]"#
         let result = try JSONDecoder.teslamate.decode(
