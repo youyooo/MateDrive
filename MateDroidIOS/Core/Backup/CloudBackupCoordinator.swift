@@ -12,7 +12,10 @@ public actor CloudBackupCoordinator {
     private let service: any CloudBackupServicing
     private let databaseProvider: any DatabaseBackupProviding
     private let preferencesStore: any CloudBackupPreferencesStoring
+    private let syncController: any AppDataSyncSuspending
+    private let cacheInvalidator: any BackupCacheInvalidating
     private let appVersion: @Sendable () -> String
+    private let didRestore: @Sendable () async throws -> Void
     private let now: @Sendable () -> Date
     private let automaticInterval: TimeInterval
     private let retentionCount: Int
@@ -25,7 +28,10 @@ public actor CloudBackupCoordinator {
         service: any CloudBackupServicing,
         databaseProvider: any DatabaseBackupProviding,
         preferencesStore: any CloudBackupPreferencesStoring,
+        syncController: any AppDataSyncSuspending = NoopAppDataSyncSuspender(),
+        cacheInvalidator: any BackupCacheInvalidating = NoopBackupCacheInvalidator(),
         appVersion: @escaping @Sendable () -> String,
+        didRestore: @escaping @Sendable () async throws -> Void = {},
         now: @escaping @Sendable () -> Date = Date.init,
         automaticInterval: TimeInterval = 24 * 60 * 60,
         retentionCount: Int = 3
@@ -33,7 +39,10 @@ public actor CloudBackupCoordinator {
         self.service = service
         self.databaseProvider = databaseProvider
         self.preferencesStore = preferencesStore
+        self.syncController = syncController
+        self.cacheInvalidator = cacheInvalidator
         self.appVersion = appVersion
+        self.didRestore = didRestore
         self.now = now
         self.automaticInterval = automaticInterval
         self.retentionCount = retentionCount
@@ -108,6 +117,24 @@ public actor CloudBackupCoordinator {
         }
     }
 
+    public func restore(_ descriptor: CloudBackupDescriptor) async throws {
+        try begin(.restoring(descriptor.id))
+        await syncController.suspendAndWait()
+
+        do {
+            try await restoreWhileSuspended(descriptor)
+            lastOperationError = nil
+            await syncController.resume()
+            endOperation()
+        } catch {
+            let mapped = Self.map(error)
+            lastOperationError = mapped
+            await syncController.resume()
+            endOperation()
+            throw mapped
+        }
+    }
+
     private func createBackup(kind: CloudBackupKind) async throws -> CloudBackupDescriptor {
         try begin(.backingUp(kind))
         defer { endOperation() }
@@ -163,6 +190,50 @@ public actor CloudBackupCoordinator {
             preferences.cachedBackups.insert(saved, at: 0)
             preferences.cachedBackups = Array(preferences.cachedBackups.prefix(retentionCount))
             await preferencesStore.save(preferences)
+        }
+    }
+
+    private func restoreWhileSuspended(_ descriptor: CloudBackupDescriptor) async throws {
+        var downloaded: DownloadedCloudBackup?
+        var safetyArtifact: DatabaseBackupArtifact?
+
+        do {
+            let cloudBackup = try await service.download(descriptor)
+            downloaded = cloudBackup
+            let validated = try await databaseProvider.validate(cloudBackup)
+            let originalSettings = await databaseProvider.currentSettings()
+            let safety = try await databaseProvider.createArtifact(appVersion: appVersion())
+            safetyArtifact = safety
+
+            do {
+                try await databaseProvider.restoreDatabase(from: validated.databaseURL)
+                try await databaseProvider.migrateRestoredDatabase()
+                await databaseProvider.restoreSettings(validated.settings)
+                try await cacheInvalidator.invalidateAfterRestore()
+                try await didRestore()
+            } catch {
+                do {
+                    try await databaseProvider.restoreDatabase(from: safety.databaseURL)
+                    try await databaseProvider.migrateRestoredDatabase()
+                    await databaseProvider.restoreSettings(originalSettings)
+                    try await cacheInvalidator.invalidateAfterRestore()
+                    try await didRestore()
+                } catch {
+                    throw CloudBackupError.rollbackFailed(error.localizedDescription)
+                }
+                throw CloudBackupError.restoreFailed(error.localizedDescription)
+            }
+
+            databaseProvider.removeArtifact(at: cloudBackup.databaseURL)
+            databaseProvider.removeArtifact(at: safety.databaseURL)
+        } catch {
+            if let downloaded {
+                databaseProvider.removeArtifact(at: downloaded.databaseURL)
+            }
+            if let safetyArtifact {
+                databaseProvider.removeArtifact(at: safetyArtifact.databaseURL)
+            }
+            throw error
         }
     }
 

@@ -5,9 +5,14 @@ public protocol DatabaseBackupProviding: Sendable {
     func createArtifact(appVersion: String) async throws -> DatabaseBackupArtifact
     func validate(_ backup: DownloadedCloudBackup) async throws -> ValidatedCloudBackup
     func restoreDatabase(from url: URL) async throws
+    func migrateRestoredDatabase() async throws
     func restoreSettings(_ settings: AppSettings) async
     func currentSettings() async -> AppSettings
     func removeArtifact(at url: URL)
+}
+
+public extension DatabaseBackupProviding {
+    func migrateRestoredDatabase() async throws {}
 }
 
 public struct DatabaseBackupProvider: DatabaseBackupProviding, Sendable {
@@ -99,6 +104,11 @@ public struct DatabaseBackupProvider: DatabaseBackupProviding, Sendable {
     public func restoreDatabase(from url: URL) async throws {
         let database = try await databaseProvider.database()
         try await database.restore(from: url)
+    }
+
+    public func migrateRestoredDatabase() async throws {
+        let database = try await databaseProvider.database()
+        try await Migrations.applyAll(to: database)
     }
 
     public func restoreSettings(_ settings: AppSettings) async {
