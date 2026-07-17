@@ -99,6 +99,8 @@
 		2C44B590E37451D7B8C0A8B1 /* VehicleStateHistoryModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62F44BB204480A3E3E7F3ED /* VehicleStateHistoryModelsTests.swift */; };
 		2C8293FE62A07E2C30678122 /* TripDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC80D35F345A055C44B5986A /* TripDetailView.swift */; };
 		2D4DB017EF21AFFDFD33AAD1 /* DashboardSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69AF9A588681B0B4F07EEB5F /* DashboardSnapshotStore.swift */; };
+		F02638607577163F8FE8AB8B /* DashboardSummaryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94B6D1D12D3C087691DE764 /* DashboardSummaryProvider.swift */; };
+		ED5E53C9516446030C1FBD0A /* DashboardSummaryProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28B7756F3CFB02C095826A5 /* DashboardSummaryProviderTests.swift */; };
 		2E08B29B667C206C170B27CD /* m3h_PN00_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = B474230F9DDEB7FD307A8CF8 /* m3h_PN00_W38A.png */; };
 		2E8FE17815E1E14933CB3F97 /* m3h_PX02_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = D2EA6D8696C5CDC9437ABE06 /* m3h_PX02_W38A.png */; };
 		30F24793F87C9DBD6EEA1AE1 /* my_PPMR_WY20P.png in Resources */ = {isa = PBXBuildFile; fileRef = 1441824E79BFBD28F9F6E57E /* my_PPMR_WY20P.png */; };
@@ -704,6 +706,8 @@
 		691D6E1A5C0EF21B386B9E2C /* DrivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrivesView.swift; sourceTree = "<group>"; };
 		69AE48525785E5A65483D8DF /* AchievementModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementModels.swift; sourceTree = "<group>"; };
 		69AF9A588681B0B4F07EEB5F /* DashboardSnapshotStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardSnapshotStore.swift; sourceTree = "<group>"; };
+		D94B6D1D12D3C087691DE764 /* DashboardSummaryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardSummaryProvider.swift; sourceTree = "<group>"; };
+		E28B7756F3CFB02C095826A5 /* DashboardSummaryProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardSummaryProviderTests.swift; sourceTree = "<group>"; };
 		6B7456CD37AB14E9F0DCFE92 /* DriveChartPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveChartPresentation.swift; sourceTree = "<group>"; };
 		6D680E625173307F71495928 /* ShortEntryFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortEntryFilter.swift; sourceTree = "<group>"; };
 		6F18850DC5B2D23D3A03C644 /* m3_PBSB_W39B.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3_PBSB_W39B.png; sourceTree = "<group>"; };
@@ -994,6 +998,7 @@
 				4C04928B797BEC251F202A89 /* CarImagePickerView.swift */,
 				258DBEBE9B63E2F7F372308B /* DashboardLocationResolver.swift */,
 				69AF9A588681B0B4F07EEB5F /* DashboardSnapshotStore.swift */,
+				D94B6D1D12D3C087691DE764 /* DashboardSummaryProvider.swift */,
 				73947C31F5467F15660F9708 /* DashboardTextFormatter.swift */,
 				88CE810264D89FDBA93D5AA9 /* DashboardView.swift */,
 				41A86CB5BA0F8FEEC8DC5544 /* DashboardViewModel.swift */,
@@ -1609,6 +1614,7 @@
 				B3B4FB5936A048496B89A65A /* CostReviewViewModelTests.swift */,
 				3AD873D136EC95F552DC6826 /* CurrentChargeViewModelTests.swift */,
 				D135F34657BFFB57600320A4 /* DashboardViewModelTests.swift */,
+				E28B7756F3CFB02C095826A5 /* DashboardSummaryProviderTests.swift */,
 				B1F2170022EB35DA52E7A822 /* DetailLayoutTests.swift */,
 				7212AA93C44B91DE1D20A3F7 /* DriveDetailViewModelTests.swift */,
 				728A6953A76EA0B3392D1AF2 /* DriveInsightsViewModelTests.swift */,
@@ -2159,6 +2165,7 @@
 				03246602688B3CD6E053D4F3 /* CurrentChargeViewModel.swift in Sources */,
 				271C1C3C2D4398A009DA821F /* DashboardLocationResolver.swift in Sources */,
 				2D4DB017EF21AFFDFD33AAD1 /* DashboardSnapshotStore.swift in Sources */,
+				F02638607577163F8FE8AB8B /* DashboardSummaryProvider.swift in Sources */,
 				29205BE598F4C672491DA975 /* DashboardTextFormatter.swift in Sources */,
 				676FB9E3D947EEFE929CA946 /* DashboardView.swift in Sources */,
 				C039B0A5BDAE4335493C9920 /* DashboardViewModel.swift in Sources */,
@@ -2312,6 +2319,7 @@
 				C7A596170221492142D78914 /* CostReviewViewModelTests.swift in Sources */,
 				0748F144307EBE59B8CC9FDA /* CurrentChargeViewModelTests.swift in Sources */,
 				5F85CD6915FCE7B8883E4BA7 /* DashboardViewModelTests.swift in Sources */,
+				ED5E53C9516446030C1FBD0A /* DashboardSummaryProviderTests.swift in Sources */,
 				E0F6DE850615CF121F330962 /* DebugLocalTeslamateSeederTests.swift in Sources */,
 				9CBC524BAF29C77F86B54270 /* DetailLayoutTests.swift in Sources */,
 				6604F245AA4C4CCD586EE0C9 /* DriveDetailViewModelTests.swift in Sources */,

@@ -120,6 +120,7 @@ public struct RootView: View {
             settingsStore: environment.settingsStore,
             notificationService: environment.notificationService,
             sentryAlertStore: sentryStore(),
+            summaryProvider: DashboardSummaryProvider(databaseProvider: environment.databaseProvider),
             locationResolver: dashboardLocationResolver()
         )
     }

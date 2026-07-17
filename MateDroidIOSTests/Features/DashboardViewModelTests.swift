@@ -95,6 +95,79 @@ final class DashboardViewModelTests: XCTestCase {
         XCTAssertEqual(state.carImageScaleFactor, 1)
         XCTAssertNil(state.vehicleImageResolution?.generationID)
         XCTAssertNil(state.vehicleImageResolution?.assetID)
+        XCTAssertNil(state.vehicleState)
+        XCTAssertNil(state.vehicleStateSince)
+        XCTAssertNil(state.latestDrive)
+        XCTAssertNil(state.latestCharge)
+    }
+
+    func testDashboardRetainsLocalSummaryWhenStatusRefreshFails() async throws {
+        let summary = DashboardCachedSummary(
+            latestDrive: DashboardLatestDrive(
+                driveId: 20,
+                startedAt: Date(timeIntervalSince1970: 1_768_000_000),
+                endedAt: Date(timeIntervalSince1970: 1_768_000_900),
+                distanceKm: 22,
+                durationMinutes: 15,
+                energyConsumedNet: nil,
+                consumptionNet: nil
+            ),
+            latestCharge: DashboardLatestCharge(
+                chargeId: 30,
+                startedAt: Date(timeIntervalSince1970: 1_768_100_000),
+                endedAt: Date(timeIntervalSince1970: 1_768_103_600),
+                energyAddedKWh: 20,
+                cost: 4,
+                durationMinutes: 60,
+                address: nil,
+                startBatteryLevel: nil,
+                endBatteryLevel: nil,
+                odometerKm: 123_456
+            ),
+            odometerKm: 123_456,
+            sleepSummaries: [:]
+        )
+        let viewModel = DashboardViewModel(
+            api: FakeDashboardAPI(
+                carsResult: .success([.modelYWhite]),
+                statuses: [1: .failure(.network("offline"))]
+            ),
+            settingsStore: InMemoryDashboardSettingsStore(settings: AppSettings(
+                serverURL: "https://teslamate.example",
+                lastSelectedCarId: 1
+            )),
+            dashboardSnapshotStore: EmptyDashboardSnapshotStore(),
+            summaryProvider: StubDashboardSummaryProvider(summary: summary)
+        )
+
+        await viewModel.load()
+
+        XCTAssertEqual(viewModel.state.latestDrive?.driveId, 20)
+        XCTAssertEqual(viewModel.state.latestCharge?.chargeId, 30)
+        XCTAssertEqual(viewModel.state.odometer, 123_456)
+        XCTAssertTrue(viewModel.state.errorMessage?.contains("offline") == true)
+    }
+
+    func testDashboardComputesCurrentSleepFromExplicitAsleepStateUsingInjectedClock() async throws {
+        let now = Date(timeIntervalSince1970: 1_768_009_200)
+        let status = CarStatusPayload(
+            status: CarStatus(
+                state: "asleep",
+                stateSince: "2026-01-01T00:00:00Z",
+                batteryDetails: BatteryDetails(batteryLevel: 50)
+            )
+        )
+        let viewModel = DashboardViewModel(
+            api: FakeDashboardAPI(cars: [.modelYWhite], statuses: [1: status]),
+            settingsStore: InMemoryDashboardSettingsStore(settings: AppSettings(serverURL: "https://teslamate.example")),
+            now: { now }
+        )
+
+        await viewModel.load()
+
+        XCTAssertEqual(viewModel.state.vehicleState, "asleep")
+        XCTAssertEqual(viewModel.state.vehicleStateSince, Date(timeIntervalSince1970: 1_767_225_600))
+        XCTAssertEqual(viewModel.state.currentSleepDuration, 783_600)
     }
 
     func testCarImageViewUsesCarFillForMissingAssetsInStableFrame() {
@@ -636,6 +709,18 @@ private final class StubDashboardLocationResolver: DashboardLocationResolving, @
     func address(carId: Int, latitude: Double, longitude: Double) async -> String? {
         requests.append("\(carId):\(latitude):\(longitude)")
         return result
+    }
+}
+
+private struct StubDashboardSummaryProvider: DashboardSummaryProviding {
+    let value: DashboardCachedSummary
+
+    init(summary: DashboardCachedSummary) {
+        value = summary
+    }
+
+    func summary(carId _: Int) async throws -> DashboardCachedSummary {
+        value
     }
 }
 

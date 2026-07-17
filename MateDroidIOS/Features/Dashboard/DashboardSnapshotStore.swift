@@ -41,6 +41,10 @@ public struct DashboardSnapshot: Codable, Equatable, Sendable {
     public let totalCharges: Int?
     public let totalDrives: Int?
     public let totalUpdates: Int?
+    public let vehicleState: String?
+    public let vehicleStateSince: Date?
+    public let latestDrive: DashboardLatestDrive?
+    public let latestCharge: DashboardLatestCharge?
 
     public init?(state: DashboardState, savedAt: Date = Date()) {
         guard let selectedCarId = state.selectedCarId else { return nil }
@@ -78,9 +82,13 @@ public struct DashboardSnapshot: Codable, Equatable, Sendable {
         self.totalCharges = state.totalCharges
         self.totalDrives = state.totalDrives
         self.totalUpdates = state.totalUpdates
+        self.vehicleState = state.vehicleState
+        self.vehicleStateSince = state.vehicleStateSince
+        self.latestDrive = state.latestDrive
+        self.latestCharge = state.latestCharge
     }
 
-    public func state(errorMessage: String) -> DashboardState {
+    public func state(errorMessage: String, now: Date = Date()) -> DashboardState {
         DashboardState(
             isLoading: false,
             cars: cars.map { DashboardCarOption(id: $0.id, name: $0.name) },
@@ -106,6 +114,15 @@ public struct DashboardSnapshot: Codable, Equatable, Sendable {
             totalCharges: totalCharges,
             totalDrives: totalDrives,
             totalUpdates: totalUpdates,
+            vehicleState: vehicleState,
+            vehicleStateSince: vehicleStateSince,
+            currentSleepDuration: SleepDurationCalculator.currentDuration(
+                state: vehicleState,
+                stateSince: vehicleStateSince,
+                now: now
+            ),
+            latestDrive: latestDrive,
+            latestCharge: latestCharge,
             errorMessage: errorMessage,
             isUsingCachedData: true,
             cachedAt: savedAt
@@ -138,6 +155,7 @@ public struct DashboardSnapshot: Codable, Equatable, Sendable {
         case units, totalCharges, totalDrives, totalUpdates, vehicleImageGenerationID, vehicleImageTrimID
         case vehicleImageColorID, vehicleImageWheelID, vehicleImageConfidence, vehicleImageEvidence
         case vehicleImageConflicts, vehicleImageUsesLegacyAsset
+        case vehicleState, vehicleStateSince, latestDrive, latestCharge
     }
 
     public init(from decoder: Decoder) throws {
@@ -168,6 +186,10 @@ public struct DashboardSnapshot: Codable, Equatable, Sendable {
         totalCharges = try container.decodeIfPresent(Int.self, forKey: .totalCharges)
         totalDrives = try container.decodeIfPresent(Int.self, forKey: .totalDrives)
         totalUpdates = try container.decodeIfPresent(Int.self, forKey: .totalUpdates)
+        vehicleState = try container.decodeIfPresent(String.self, forKey: .vehicleState)
+        vehicleStateSince = try container.decodeIfPresent(Date.self, forKey: .vehicleStateSince)
+        latestDrive = try container.decodeIfPresent(DashboardLatestDrive.self, forKey: .latestDrive)
+        latestCharge = try container.decodeIfPresent(DashboardLatestCharge.self, forKey: .latestCharge)
         vehicleImageGenerationID = try container.decodeIfPresent(String.self, forKey: .vehicleImageGenerationID)
         vehicleImageTrimID = try container.decodeIfPresent(String.self, forKey: .vehicleImageTrimID)
         vehicleImageColorID = try container.decodeIfPresent(String.self, forKey: .vehicleImageColorID)

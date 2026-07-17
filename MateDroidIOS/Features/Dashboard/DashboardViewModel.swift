@@ -74,6 +74,12 @@ public struct DashboardState: Equatable, Sendable {
     public var totalCharges: Int?
     public var totalDrives: Int?
     public var totalUpdates: Int?
+    public var vehicleState: String?
+    public var vehicleStateSince: Date?
+    public var currentSleepDuration: TimeInterval?
+    public var latestDrive: DashboardLatestDrive?
+    public var latestCharge: DashboardLatestCharge?
+    public var sleepSummaries: [SleepDurationPeriod: SleepDurationSummary]
     public var errorMessage: String?
     public var isUsingCachedData: Bool
     public var cachedAt: Date?
@@ -106,6 +112,12 @@ public struct DashboardState: Equatable, Sendable {
         totalCharges: Int? = nil,
         totalDrives: Int? = nil,
         totalUpdates: Int? = nil,
+        vehicleState: String? = nil,
+        vehicleStateSince: Date? = nil,
+        currentSleepDuration: TimeInterval? = nil,
+        latestDrive: DashboardLatestDrive? = nil,
+        latestCharge: DashboardLatestCharge? = nil,
+        sleepSummaries: [SleepDurationPeriod: SleepDurationSummary] = [:],
         errorMessage: String? = nil,
         isUsingCachedData: Bool = false,
         cachedAt: Date? = nil
@@ -137,6 +149,12 @@ public struct DashboardState: Equatable, Sendable {
         self.totalCharges = totalCharges
         self.totalDrives = totalDrives
         self.totalUpdates = totalUpdates
+        self.vehicleState = vehicleState
+        self.vehicleStateSince = vehicleStateSince
+        self.currentSleepDuration = currentSleepDuration
+        self.latestDrive = latestDrive
+        self.latestCharge = latestCharge
+        self.sleepSummaries = sleepSummaries
         self.errorMessage = errorMessage
         self.isUsingCachedData = isUsingCachedData
         self.cachedAt = cachedAt
@@ -169,6 +187,7 @@ public final class DashboardViewModel: ObservableObject {
     private let dashboardSnapshotStore: any DashboardSnapshotStoring
     private let notificationService: any AppNotificationServicing
     private let sentryAlertStore: any SentryAlertLogStoring
+    private let summaryProvider: any DashboardSummaryProviding
     private let locationResolver: (any DashboardLocationResolving)?
     private let vehicleImageCatalogProvider: any VehicleImageCatalogProviding
     private let now: @Sendable () -> Date
@@ -182,6 +201,7 @@ public final class DashboardViewModel: ObservableObject {
         dashboardSnapshotStore: any DashboardSnapshotStoring = DashboardSnapshotStore.shared,
         notificationService: any AppNotificationServicing = DisabledAppNotificationService(),
         sentryAlertStore: any SentryAlertLogStoring = EmptySentryAlertLogStore(),
+        summaryProvider: any DashboardSummaryProviding = EmptyDashboardSummaryProvider(),
         locationResolver: (any DashboardLocationResolving)? = nil,
         vehicleImageCatalogProvider: any VehicleImageCatalogProviding = BundledVehicleImageCatalogProvider(),
         now: @escaping @Sendable () -> Date = Date.init,
@@ -193,6 +213,7 @@ public final class DashboardViewModel: ObservableObject {
         self.dashboardSnapshotStore = dashboardSnapshotStore
         self.notificationService = notificationService
         self.sentryAlertStore = sentryAlertStore
+        self.summaryProvider = summaryProvider
         self.locationResolver = locationResolver
         self.vehicleImageCatalogProvider = vehicleImageCatalogProvider
         self.now = now
@@ -205,6 +226,10 @@ public final class DashboardViewModel: ObservableObject {
 
         let settings = await settingsStore.load()
         serverURL = settings.serverURL
+        if let carId = settings.lastSelectedCarId {
+            state.selectedCarId = carId
+            await loadCachedSummary(for: carId)
+        }
         switch await api.cars() {
         case let .success(cars):
             loadedCars = cars
@@ -212,6 +237,7 @@ public final class DashboardViewModel: ObservableObject {
             let options = cars.map { DashboardCarOption(id: $0.carId, name: $0.dashboardDisplayName) }
             if let selectedCar {
                 apply(car: selectedCar, options: options, settings: settings, isLoading: false)
+                await loadCachedSummary(for: selectedCar.carId)
                 await loadStatus(for: selectedCar)
             } else {
                 state = DashboardState(
@@ -224,8 +250,9 @@ public final class DashboardViewModel: ObservableObject {
 
         case let .failure(error):
             if let carId = settings.lastSelectedCarId,
-               let snapshot = await dashboardSnapshotStore.load(serverURL: serverURL, carId: carId, now: Date()) {
-                state = snapshot.state(errorMessage: error.dashboardMessage)
+               let snapshot = await dashboardSnapshotStore.load(serverURL: serverURL, carId: carId, now: now()) {
+                state = snapshot.state(errorMessage: error.dashboardMessage, now: now())
+                await loadCachedSummary(for: carId)
             } else {
                 state.isLoading = false
                 state.errorMessage = error.dashboardMessage
@@ -253,6 +280,7 @@ public final class DashboardViewModel: ObservableObject {
         let options = loadedCars.map { DashboardCarOption(id: $0.carId, name: $0.dashboardDisplayName) }
         let settings = await settingsStore.load()
         apply(car: car, options: options, settings: settings, isLoading: false)
+        await loadCachedSummary(for: carId)
         await saveSelectedCarId(carId)
         await loadStatus(for: car)
     }
@@ -385,6 +413,21 @@ public final class DashboardViewModel: ObservableObject {
         usesLegacyAsset: false
     )
 
+    private func loadCachedSummary(for carId: Int) async {
+        guard let summary = try? await summaryProvider.summary(carId: carId) else { return }
+        state.latestDrive = summary.latestDrive
+        state.latestCharge = summary.latestCharge
+        state.sleepSummaries = summary.sleepSummaries
+        if state.odometer == nil {
+            state.odometer = summary.odometerKm
+        }
+        state.currentSleepDuration = SleepDurationCalculator.currentDuration(
+            state: state.vehicleState,
+            stateSince: state.vehicleStateSince,
+            now: now()
+        )
+    }
+
     private func loadStatus(for car: CarData) async {
         switch await api.carStatus(carId: car.carId) {
         case let .success(payload):
@@ -397,6 +440,13 @@ public final class DashboardViewModel: ObservableObject {
             state.batteryLevel = status?.batteryLevel
             state.isCharging = status?.isCharging ?? false
             state.isLocked = status?.locked
+            state.vehicleState = status?.state
+            state.vehicleStateSince = status?.stateSince.flatMap(DomainDateParser.date(from:))
+            state.currentSleepDuration = SleepDurationCalculator.currentDuration(
+                state: state.vehicleState,
+                stateSince: state.vehicleStateSince,
+                now: now()
+            )
             state.sentryModeActive = status?.sentryMode ?? false
             state.outsideTemperature = status?.outsideTemp
             state.insideTemperature = status?.insideTemp
@@ -427,8 +477,9 @@ public final class DashboardViewModel: ObservableObject {
             WidgetCenter.shared.reloadTimelines(ofKind: WidgetConstants.carStatusKind)
 
         case let .failure(error):
-            if let snapshot = await dashboardSnapshotStore.load(serverURL: serverURL, carId: car.carId, now: Date()) {
-                state = snapshot.state(errorMessage: error.dashboardMessage)
+            if let snapshot = await dashboardSnapshotStore.load(serverURL: serverURL, carId: car.carId, now: now()) {
+                state = snapshot.state(errorMessage: error.dashboardMessage, now: now())
+                await loadCachedSummary(for: car.carId)
             } else {
                 state.errorMessage = error.dashboardMessage
             }
