@@ -99,6 +99,7 @@ final class TeslaMateCapabilityServiceTests: XCTestCase {
         let cases: [(Int, TeslaMateCapabilityState, TeslaMateCapabilityReason)] = [
             (404, .unavailable, .endpointNotFound),
             (405, .unavailable, .methodNotAllowed),
+            (400, .unknown, .invalidPayload),
             (401, .unknown, .authenticationRequired),
             (500, .unknown, .temporaryServerFailure)
         ]
@@ -118,6 +119,19 @@ final class TeslaMateCapabilityServiceTests: XCTestCase {
             XCTAssertEqual(query.map(\.name), ["startDate", "endDate"])
             XCTAssertEqual(query.map(\.value), ["2026-07-16T00:00:00Z", "2026-07-17T00:00:00Z"])
         }
+    }
+
+    func testGenericHTTPFailureStillDegradesOtherCapabilities() async {
+        let client = CapabilityRouteHTTPClient(routes: [
+            "/api/v1/cars/1/status": (400, #"{"error":"bad request"}"#)
+        ])
+        let service = TeslaMateCapabilityService()
+        let api = TeslamateAPI(baseURL: URL(string: "https://teslamate.example")!, client: client)
+
+        let profile = await service.discover(api: api, carId: 1, force: true)
+
+        XCTAssertEqual(profile.status(for: .vehicleStatus)?.state, .degraded)
+        XCTAssertEqual(profile.status(for: .vehicleStatus)?.reason, .invalidPayload)
     }
 
     func testServerIdentityExcludesCredentialsQueryAndFragmentAndNormalizesEquivalentURLs() {

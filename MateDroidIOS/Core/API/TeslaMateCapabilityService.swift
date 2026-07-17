@@ -146,6 +146,9 @@ private extension TeslaMateCapabilityService {
         case .failure(.network), .failure(.sslCertificate):
             return (.init(state: .unknown, reason: .networkFailure, source: .endpointProbe,
                           checkedAt: checkedAt, lastSuccessfulAt: previousSuccess), .network)
+        case .failure where capability == .stateHistory:
+            return (.init(state: .unknown, reason: .invalidPayload, source: .endpointProbe,
+                          checkedAt: checkedAt, lastSuccessfulAt: previousSuccess), nil)
         case .failure:
             return (.init(state: .degraded, reason: .invalidPayload, source: .endpointProbe,
                           checkedAt: checkedAt, lastSuccessfulAt: previousSuccess), nil)

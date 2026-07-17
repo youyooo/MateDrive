@@ -1,3 +1,4 @@
+import Foundation
 import XCTest
 @testable import MateDroidIOS
 
@@ -22,5 +23,18 @@ final class TeslaMateCapabilityPresentationTests: XCTestCase {
             XCTAssertFalse(TeslaMateCapabilityPresentation.icon(for: state).isEmpty)
             XCTAssertFalse(TeslaMateCapabilityPresentation.stateLocalizationKey(for: state).isEmpty)
         }
+    }
+
+    func testSettingsViewLocalizesStateHistoryTitle() throws {
+        let repositoryRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let settingsSource = try String(
+            contentsOf: repositoryRoot.appendingPathComponent("MateDroidIOS/Features/Settings/SettingsView.swift"),
+            encoding: .utf8
+        )
+
+        XCTAssertTrue(settingsSource.contains(#"case .stateHistory: t("State History", "休眠历史")"#))
     }
 }
