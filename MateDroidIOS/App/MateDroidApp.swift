@@ -9,6 +9,11 @@ struct MateDroidApp: App {
     init() {
         let environment = AppEnvironment.live
         let scheduler = BackgroundSyncScheduler()
+        let dataPreloader = AppDataPreloader(
+            settingsStore: environment.settingsStore,
+            secretStore: environment.secretStore,
+            activitiesCache: ActivitiesStateCache.shared
+        )
         self.environment = environment
         self.backgroundScheduler = scheduler
 
@@ -36,9 +41,12 @@ struct MateDroidApp: App {
                     )
                 }
                 await viewModel.load()
-                return await MainActor.run {
+                let statusRefreshed = await MainActor.run {
                     viewModel.state.selectedCarId != nil && viewModel.state.errorMessage == nil
                 }
+                guard statusRefreshed, !Task.isCancelled else { return false }
+                _ = await dataPreloader.preload()
+                return !Task.isCancelled
             }
         )
 

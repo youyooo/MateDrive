@@ -14,6 +14,10 @@
 		01DEB624BD1E7D8B66EA7158 /* vehicle_model-y-juniper-standard_standard_stealth-grey_photon-18.png in Resources */ = {isa = PBXBuildFile; fileRef = B49F23313941ABAB99BD4551 /* vehicle_model-y-juniper-standard_standard_stealth-grey_photon-18.png */; };
 		020DDF5C6D95D8F76FC166CB /* TripsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D09DE5F38C3816CC75A57A92 /* TripsViewModelTests.swift */; };
 		022473DA4E6A59F0A676A11F /* ChargePricingAuditStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 890069412B409CB59A8C9EA1 /* ChargePricingAuditStoreTests.swift */; };
+		397EB8C17841B258F435DA6F /* SleepIntervalRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D7D68461295E37271F7AF6 /* SleepIntervalRecord.swift */; };
+		3B40324808AEF86E13CFC3D3 /* SleepIntervalStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFE69B039F93D4CD90CAEF7 /* SleepIntervalStore.swift */; };
+		F75DF227E4A3C6490D0E6DFF /* SleepIntervalStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63614E0CAA8153C3429E504D /* SleepIntervalStoreTests.swift */; };
+		FC05135542DFD2CCE7247BA8 /* AppDataPreloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F97549BEE2BE5CC722D758C /* AppDataPreloader.swift */; };
 		02373CCF2C32814DB33455DD /* vehicle_model-s-refresh_dual-motor_pearl-white_tempest-19.png in Resources */ = {isa = PBXBuildFile; fileRef = 65CF558EDFF8D968B715079D /* vehicle_model-s-refresh_dual-motor_pearl-white_tempest-19.png */; };
 		03231305E2CE96F4EB667D94 /* myj_PB01_WY20A.png in Resources */ = {isa = PBXBuildFile; fileRef = D5CE287A4B41DD1D92B18AE5 /* myj_PB01_WY20A.png */; };
 		03246602688B3CD6E053D4F3 /* CurrentChargeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F1171337416549D3771395C /* CurrentChargeViewModel.swift */; };
@@ -656,6 +660,10 @@
 		544AEF09163586EB3EB8A164 /* KeychainStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStoreTests.swift; sourceTree = "<group>"; };
 		54AFA3EC18F255664BC87D9C /* DriveAPIProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveAPIProvider.swift; sourceTree = "<group>"; };
 		54B02345C108A1F524C8957F /* PersistenceMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceMigrationTests.swift; sourceTree = "<group>"; };
+		4EFE69B039F93D4CD90CAEF7 /* SleepIntervalStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepIntervalStore.swift; sourceTree = "<group>"; };
+		63614E0CAA8153C3429E504D /* SleepIntervalStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepIntervalStoreTests.swift; sourceTree = "<group>"; };
+		88D7D68461295E37271F7AF6 /* SleepIntervalRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepIntervalRecord.swift; sourceTree = "<group>"; };
+		9F97549BEE2BE5CC722D758C /* AppDataPreloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataPreloader.swift; sourceTree = "<group>"; };
 		5524928F57028393F6C06F20 /* RecentDrivingMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentDrivingMapView.swift; sourceTree = "<group>"; };
 		55421AA10888C2EB6915D8A1 /* my_PMNG_WY19B.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = my_PMNG_WY19B.png; sourceTree = "<group>"; };
 		55A623D623A710CCF5486C9D /* DrivesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrivesViewModelTests.swift; sourceTree = "<group>"; };
@@ -1016,6 +1024,7 @@
 				8E723091F52F2FE24D01708B /* ChargeCostOverrideStoreTests.swift */,
 				890069412B409CB59A8C9EA1 /* ChargePricingAuditStoreTests.swift */,
 				54B02345C108A1F524C8957F /* PersistenceMigrationTests.swift */,
+				63614E0CAA8153C3429E504D /* SleepIntervalStoreTests.swift */,
 				0563F9DBE1EE19B8F6C8DFF1 /* TeslaMateServerProfileStoreTests.swift */,
 				31EBA95C136B39A265072518 /* TripRouteCacheTests.swift */,
 			);
@@ -1084,6 +1093,7 @@
 		2F93E6D75838B7B0597C64CE /* Sync */ = {
 			isa = PBXGroup;
 			children = (
+				9F97549BEE2BE5CC722D758C /* AppDataPreloader.swift */,
 				AFFF061FE97136309E1C214F /* BackgroundRefreshWorkRunner.swift */,
 				B12B5C9A57A15B84ABD426BC /* BackgroundSyncScheduler.swift */,
 				07617EFD0B09C40AFA9023B8 /* GeocodingService.swift */,
@@ -1500,6 +1510,7 @@
 				608672828845DD9CB0230901 /* DriveSummaryStore.swift */,
 				9AB162016C47A3D53A804661 /* GeocodeStore.swift */,
 				7179472AF96900E829D122C2 /* SentryAlertLogStore.swift */,
+				4EFE69B039F93D4CD90CAEF7 /* SleepIntervalStore.swift */,
 				D29FD409374B824BE0D8B34B /* TeslaMateServerProfileStore.swift */,
 				CF5300742A994A2436DE024F /* TripStore.swift */,
 			);
@@ -1687,6 +1698,7 @@
 				CA728256DE808FF49962B145 /* DriveSummaryRecord.swift */,
 				3940E84BA7A4AC940027B4E8 /* GeocodeRecords.swift */,
 				B2E09C0DE63F6D83B4E88830 /* SentryRecords.swift */,
+				88D7D68461295E37271F7AF6 /* SleepIntervalRecord.swift */,
 				595BF1BED1BCA93F405EAE83 /* TripRecords.swift */,
 			);
 			path = Records;
@@ -2086,6 +2098,7 @@
 				8CA1F7A24136EAABC25299A8 /* AggregateRecords.swift in Sources */,
 				C9E2380C8EB52E2EBAF7D758 /* AggregateStore.swift in Sources */,
 				3A40359F1E5E5F71D24F81B7 /* AnalyticsAPIProvider.swift in Sources */,
+				FC05135542DFD2CCE7247BA8 /* AppDataPreloader.swift in Sources */,
 				72DDD605C418F029C58A8AB9 /* AppDatabaseProvider.swift in Sources */,
 				FFCF425908D1B1A4CEFF7746 /* AppEnvironment.swift in Sources */,
 				C587AA5C66C73C7B3C279367 /* AppFormattingEnvironment.swift in Sources */,
@@ -2203,6 +2216,8 @@
 				90DCF6BBEE6A4ECDF41DFA14 /* SQLiteDatabase.swift in Sources */,
 				7BD919E5E8578C8E756CDF21 /* SQLiteError.swift in Sources */,
 				A822ADABDF7CCE9684822DA4 /* SentryAlertLogStore.swift in Sources */,
+				397EB8C17841B258F435DA6F /* SleepIntervalRecord.swift in Sources */,
+				3B40324808AEF86E13CFC3D3 /* SleepIntervalStore.swift in Sources */,
 				06CFB65CA832E7353A55A32A /* SentryHistoryView.swift in Sources */,
 				DD2DBCCD603E88C9EF57CB3F /* SentryHistoryViewModel.swift in Sources */,
 				60C6536BE2950390308526D3 /* SentryNotificationContent.swift in Sources */,
@@ -2305,6 +2320,7 @@
 				FC8EBAA99906F060BEFE014A /* NotificationContentTests.swift in Sources */,
 				4503698C28F3857FAEC0167B /* ParkingFeeRuleTests.swift in Sources */,
 				803634E960660D8A303BAEC3 /* PersistenceMigrationTests.swift in Sources */,
+				F75DF227E4A3C6490D0E6DFF /* SleepIntervalStoreTests.swift in Sources */,
 				9924C70CE099C09171076C6D /* PlaceInsightsViewModelTests.swift in Sources */,
 				03747BEC32AF1F98CEA0E4AD /* RecentDrivingMapViewModelTests.swift in Sources */,
 				7AD164D64542ADBC81E6EC3D /* RequestAuthenticatorTests.swift in Sources */,

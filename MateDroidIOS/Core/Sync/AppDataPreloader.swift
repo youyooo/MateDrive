@@ -144,21 +144,22 @@ public actor AppDataPreloader {
         var successful = 0
 
         for car in cars where !Task.isCancelled {
-            guard let profile = try? await serverProfileStore.profile(serverKey: serverKey, carId: car.carId),
-                  profile.status(for: .stateHistory)?.state == .available
-            else {
+            let profile = try? await serverProfileStore.profile(serverKey: serverKey, carId: car.carId)
+            guard !Task.isCancelled else { break }
+            guard let profile, profile.status(for: .stateHistory)?.state == .available else {
                 continue
             }
 
             requested += 1
-            guard case let .success(intervals) = await api.vehicleStateHistory(
+            let response = await api.vehicleStateHistory(
                 carId: car.carId,
                 startDate: startDate,
                 endDate: endDate
-            ) else {
+            )
+            guard !Task.isCancelled else { break }
+            guard case let .success(intervals) = response else {
                 continue
             }
-            successful += 1
             let records = intervals.compactMap { interval -> SleepIntervalRecord? in
                 guard let sleepInterval = interval.sleepInterval(now: referenceDate) else {
                     return nil
@@ -169,7 +170,10 @@ public actor AppDataPreloader {
                     endDate: formatter.string(from: sleepInterval.end)
                 )
             }
+            guard !Task.isCancelled else { break }
             try? await sleepIntervalStore.upsertAll(records)
+            guard !Task.isCancelled else { break }
+            successful += 1
         }
 
         return (requested, successful)

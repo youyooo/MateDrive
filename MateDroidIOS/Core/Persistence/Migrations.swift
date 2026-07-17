@@ -9,6 +9,16 @@ public enum Migrations {
                 for statement in migration.statements {
                     try await database.execute(statement)
                 }
+                for column in migration.columnsToAddIfMissing {
+                    let existing = try await database.rows(
+                        "SELECT name FROM pragma_table_info(?) WHERE name = ? LIMIT 1;",
+                        bindings: [.text(column.table), .text(column.name)]
+                    )
+                    guard existing.isEmpty else { continue }
+                    try await database.execute(
+                        "ALTER TABLE \(quotedIdentifier(column.table)) ADD COLUMN \(quotedIdentifier(column.name)) \(column.definition);"
+                    )
+                }
                 try await database.setUserVersion(migration.version)
                 try await database.execute("COMMIT;")
             } catch {
@@ -230,6 +240,35 @@ public enum Migrations {
             ]
         ),
         Migration(
+            version: 17,
+            statements: [
+                "ALTER TABLE charges_summary ADD COLUMN duration_min INTEGER;",
+                "ALTER TABLE charges_summary ADD COLUMN address TEXT;",
+                "ALTER TABLE charges_summary ADD COLUMN latitude REAL;",
+                "ALTER TABLE charges_summary ADD COLUMN longitude REAL;"
+            ]
+        ),
+        Migration(
+            version: 18,
+            statements: [
+                "ALTER TABLE charges_summary ADD COLUMN charge_energy_used REAL;",
+                "ALTER TABLE charges_summary ADD COLUMN start_battery_level INTEGER;",
+                "ALTER TABLE charges_summary ADD COLUMN end_battery_level INTEGER;",
+                "ALTER TABLE charges_summary ADD COLUMN start_rated_range_km REAL;",
+                "ALTER TABLE charges_summary ADD COLUMN end_rated_range_km REAL;",
+                "ALTER TABLE charges_summary ADD COLUMN odometer_km REAL;",
+                "ALTER TABLE drives_summary ADD COLUMN start_battery_level INTEGER;",
+                "ALTER TABLE drives_summary ADD COLUMN end_battery_level INTEGER;"
+            ]
+        ),
+        Migration(
+            version: 19,
+            statements: [],
+            columnsToAddIfMissing: [
+                MigrationColumn(table: "drives_summary", name: "energy_source", definition: "TEXT")
+            ]
+        ),
+        Migration(
             version: 20,
             statements: [
                 """
@@ -247,4 +286,8 @@ public enum Migrations {
             ]
         )
     ]
+
+    private static func quotedIdentifier(_ value: String) -> String {
+        "\"" + value.replacingOccurrences(of: "\"", with: "\"\"") + "\""
+    }
 }

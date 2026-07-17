@@ -77,6 +77,11 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
 
         let report = await preloader.preload(force: true)
         let requestedPaths = await client.requestedPaths
+        let stateHistoryPath = try XCTUnwrap(requestedPaths.first { $0.hasPrefix("/api/v1/cars/7/states?") })
+        let stateHistoryURL = try XCTUnwrap(URL(string: "https://teslamate.example\(stateHistoryPath)"))
+        let queryItems = try XCTUnwrap(URLComponents(url: stateHistoryURL, resolvingAgainstBaseURL: false)?.queryItems)
+        let monthStart = try XCTUnwrap(Calendar.current.dateInterval(of: .month, for: now)?.start)
+        let formatter = ISO8601DateFormatter()
         let records = try await SleepIntervalStore(database: database).records(
             carId: 7,
             start: "2026-07-01T00:00:00Z",
@@ -84,11 +89,42 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
         )
 
         XCTAssertTrue(report.didRun)
-        XCTAssertTrue(requestedPaths.contains { $0.hasPrefix("/api/v1/cars/7/states?") })
+        XCTAssertEqual(queryItems.map(\.name), ["startDate", "endDate"])
+        XCTAssertEqual(queryItems.map(\.value), [formatter.string(from: monthStart), formatter.string(from: now)])
         XCTAssertEqual(records, [
             SleepIntervalRecord(carId: 7, startDate: "2026-07-15T00:00:00Z", endDate: "2026-07-15T02:00:00Z"),
             SleepIntervalRecord(carId: 7, startDate: "2026-07-16T00:00:00Z", endDate: "2026-07-17T12:00:00Z")
         ])
+    }
+
+    func testCancellingStateHistoryResponseDoesNotCountSuccessOrWriteSleepIntervals() async throws {
+        let database = try SQLiteDatabase.inMemory()
+        try await Migrations.applyAll(to: database)
+        let now = try XCTUnwrap(ISO8601DateFormatter().date(from: "2026-07-17T12:00:00Z"))
+        try await saveTask3StateHistoryProfile(in: database, carId: 7, at: now, state: .available)
+        let client = Task3GatedStateHistoryHTTPClient()
+        let store = Task3RecordingSleepIntervalStore()
+        let preloader = AppDataPreloader(
+            settingsStore: Task3PreloadSettingsStore(settings: AppSettings(
+                serverURL: "https://teslamate.example",
+                lastSelectedCarId: 7
+            )),
+            secretStore: Task3PreloadSecretStore(),
+            clientOverride: client,
+            databaseProvider: Task3StaticDatabaseProvider(database: database),
+            sleepIntervalStore: store,
+            now: { now }
+        )
+
+        let task = Task { await preloader.preload(force: true) }
+        await client.waitUntilStateHistoryRequested()
+        task.cancel()
+        await client.releaseStateHistoryResponse()
+        let report = await task.value
+        let savedRecords = await store.savedRecords
+
+        XCTAssertEqual(report.successfulEndpointCount, 1)
+        XCTAssertTrue(savedRecords.isEmpty)
     }
 
     func testDataPreloaderSkipsSleepHistoryWhenCachedProfileDoesNotSupportIt() async throws {
@@ -212,6 +248,18 @@ private struct Task3FailingSleepIntervalStore: SleepIntervalStoring {
     }
 }
 
+private actor Task3RecordingSleepIntervalStore: SleepIntervalStoring {
+    private(set) var savedRecords: [SleepIntervalRecord] = []
+
+    func upsertAll(_ records: [SleepIntervalRecord]) async throws {
+        savedRecords.append(contentsOf: records)
+    }
+
+    func records(carId _: Int, start _: String, end _: String) async throws -> [SleepIntervalRecord] {
+        savedRecords
+    }
+}
+
 private func saveTask3StateHistoryProfile(
     in database: SQLiteDatabase,
     carId: Int,
@@ -267,6 +315,50 @@ private actor Task3StateHistoryHTTPClient: HTTPClient {
                 headerFields: nil
             )!
         )
+    }
+}
+
+private actor Task3GatedStateHistoryHTTPClient: HTTPClient {
+    private var stateHistoryRequested = false
+    private var stateHistoryReleased = false
+    private var requestWaiters: [CheckedContinuation<Void, Never>] = []
+    private var releaseWaiters: [CheckedContinuation<Void, Never>] = []
+
+    func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let url = request.url ?? URL(string: "https://teslamate.example")!
+        let body: String
+        let statusCode: Int
+        if url.path == "/api/v1/cars" {
+            body = #"{"data":{"cars":[{"car_id":7,"name":"Test car 7"}]}}"#
+            statusCode = 200
+        } else if url.path.hasSuffix("/states") {
+            stateHistoryRequested = true
+            requestWaiters.forEach { $0.resume() }
+            requestWaiters.removeAll()
+            if !stateHistoryReleased {
+                await withCheckedContinuation { releaseWaiters.append($0) }
+            }
+            body = #"{"data":{"states":[{"state":"asleep","start_date":"2026-07-15T00:00:00Z","end_date":"2026-07-15T02:00:00Z"}]}}"#
+            statusCode = 200
+        } else {
+            body = #"{}"#
+            statusCode = 500
+        }
+        return (
+            Data(body.utf8),
+            HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: "HTTP/1.1", headerFields: nil)!
+        )
+    }
+
+    func waitUntilStateHistoryRequested() async {
+        guard !stateHistoryRequested else { return }
+        await withCheckedContinuation { requestWaiters.append($0) }
+    }
+
+    func releaseStateHistoryResponse() {
+        stateHistoryReleased = true
+        releaseWaiters.forEach { $0.resume() }
+        releaseWaiters.removeAll()
     }
 }
 

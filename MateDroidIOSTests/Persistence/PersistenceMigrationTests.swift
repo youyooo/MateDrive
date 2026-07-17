@@ -82,6 +82,7 @@ final class PersistenceMigrationTests: XCTestCase {
             );
             """)
         try await database.execute("INSERT INTO drives_summary VALUES (7, 1, 'start', 'end', 12.5, 30, 13);")
+        try await createVersion14ChargeSummaryTable(in: database)
         try await database.setUserVersion(14)
 
         try await Migrations.applyAll(to: database)
@@ -112,6 +113,7 @@ final class PersistenceMigrationTests: XCTestCase {
             );
             """)
         try await database.execute("INSERT INTO drives_summary VALUES (7, 1, 'start', 'end', 12.5, 30, 13);")
+        try await createVersion14ChargeSummaryTable(in: database)
         try await database.setUserVersion(15)
 
         try await Migrations.applyAll(to: database)
@@ -120,5 +122,219 @@ final class PersistenceMigrationTests: XCTestCase {
         XCTAssertEqual(migrated, [[.int(7), .double(12.5), .int(30), .null, .null]])
         let version = try await database.userVersion()
         XCTAssertEqual(version, DatabaseSchemaVersion.current)
+    }
+
+    func testVersion16ChargeSummariesGainOfflinePresentationFieldsWithoutDataLoss() async throws {
+        let database = try SQLiteDatabase.inMemory()
+        try await database.execute("""
+            CREATE TABLE charges_summary (
+              charge_id INTEGER PRIMARY KEY NOT NULL,
+              car_id INTEGER NOT NULL,
+              start_date TEXT NOT NULL,
+              end_date TEXT,
+              charge_energy_added REAL,
+              cost REAL,
+              schema_version INTEGER NOT NULL DEFAULT 13
+            );
+            """)
+        try await createVersion16DriveSummaryTable(in: database)
+        try await database.execute("INSERT INTO charges_summary VALUES (20, 1, 'start', 'end', 12.5, 8.25, 13);")
+        try await database.setUserVersion(16)
+
+        try await Migrations.applyAll(to: database)
+
+        let migrated = try await database.rows(
+            "SELECT charge_id, charge_energy_added, cost, duration_min, address, latitude, longitude FROM charges_summary;"
+        )
+        let version = try await database.userVersion()
+        XCTAssertEqual(migrated, [[.int(20), .double(12.5), .double(8.25), .null, .null, .null, .null]])
+        XCTAssertEqual(version, DatabaseSchemaVersion.current)
+        try await assertTask3CurrentSchema(in: database)
+    }
+
+    func testVersion17SummariesGainEnergyCycleFieldsWithoutDataLoss() async throws {
+        let database = try SQLiteDatabase.inMemory()
+        try await database.execute("""
+            CREATE TABLE charges_summary (
+              charge_id INTEGER PRIMARY KEY NOT NULL,
+              car_id INTEGER NOT NULL,
+              start_date TEXT NOT NULL,
+              end_date TEXT,
+              charge_energy_added REAL,
+              cost REAL,
+              schema_version INTEGER NOT NULL DEFAULT 13,
+              duration_min INTEGER,
+              address TEXT,
+              latitude REAL,
+              longitude REAL
+            );
+            """)
+        try await database.execute("""
+            CREATE TABLE drives_summary (
+              drive_id INTEGER PRIMARY KEY NOT NULL,
+              car_id INTEGER NOT NULL,
+              start_date TEXT NOT NULL,
+              end_date TEXT NOT NULL,
+              distance REAL,
+              duration_min INTEGER,
+              schema_version INTEGER NOT NULL DEFAULT 13,
+              energy_consumed_net REAL,
+              consumption_net REAL,
+              energy_source TEXT
+            );
+            """)
+        try await database.execute("INSERT INTO charges_summary VALUES (20, 1, 'start', 'end', 12.5, 8.25, 13, 60, 'Home', 1, 2);")
+        try await database.execute("INSERT INTO drives_summary VALUES (10, 1, 'start', 'end', 20, 30, 13, 4.2, 210, 'api');")
+        try await database.setUserVersion(17)
+
+        try await Migrations.applyAll(to: database)
+
+        let charge = try await database.rows("SELECT charge_id, charge_energy_used, start_battery_level, end_battery_level, end_rated_range_km FROM charges_summary;")
+        let drive = try await database.rows("SELECT drive_id, energy_consumed_net, start_battery_level, end_battery_level FROM drives_summary;")
+        let version = try await database.userVersion()
+        XCTAssertEqual(charge, [[.int(20), .null, .null, .null, .null]])
+        XCTAssertEqual(drive, [[.int(10), .double(4.2), .null, .null]])
+        XCTAssertEqual(version, DatabaseSchemaVersion.current)
+        try await assertTask3CurrentSchema(in: database)
+    }
+
+    func testVersion18DriveSummaryMissingLegacyEnergySourceColumnIsRepaired() async throws {
+        let database = try SQLiteDatabase.inMemory()
+        try await createVersion18ChargeSummaryTable(in: database)
+        try await database.execute("""
+            CREATE TABLE drives_summary (
+              drive_id INTEGER PRIMARY KEY NOT NULL,
+              car_id INTEGER NOT NULL,
+              start_date TEXT NOT NULL,
+              end_date TEXT NOT NULL,
+              distance REAL,
+              duration_min INTEGER,
+              schema_version INTEGER NOT NULL DEFAULT 13,
+              energy_consumed_net REAL,
+              consumption_net REAL,
+              start_battery_level INTEGER,
+              end_battery_level INTEGER
+            );
+            """)
+        try await database.execute("INSERT INTO drives_summary VALUES (10, 1, 'start', 'end', 20, 30, 13, 4.2, 210, 80, 70);")
+        try await database.setUserVersion(18)
+
+        try await Migrations.applyAll(to: database)
+
+        let rows = try await database.rows("SELECT drive_id, energy_source FROM drives_summary;")
+        let version = try await database.userVersion()
+        XCTAssertEqual(rows, [[.int(10), .null]])
+        XCTAssertEqual(version, DatabaseSchemaVersion.current)
+        try await assertTask3CurrentSchema(in: database)
+    }
+
+    func testVersion19UpgradesToSleepIntervalsWithoutLosingRequiredSummaryColumns() async throws {
+        let database = try SQLiteDatabase.inMemory()
+        try await createVersion18ChargeSummaryTable(in: database)
+        try await createVersion19DriveSummaryTable(in: database)
+        try await database.setUserVersion(19)
+
+        try await Migrations.applyAll(to: database)
+
+        try await assertTask3CurrentSchema(in: database)
+    }
+
+    private func createVersion14ChargeSummaryTable(in database: SQLiteDatabase) async throws {
+        try await database.execute("""
+            CREATE TABLE charges_summary (
+              charge_id INTEGER PRIMARY KEY NOT NULL,
+              car_id INTEGER NOT NULL,
+              start_date TEXT NOT NULL,
+              end_date TEXT,
+              charge_energy_added REAL,
+              cost REAL,
+              schema_version INTEGER NOT NULL DEFAULT 12
+            );
+            """)
+    }
+
+    private func createVersion16DriveSummaryTable(in database: SQLiteDatabase) async throws {
+        try await database.execute("""
+            CREATE TABLE drives_summary (
+              drive_id INTEGER PRIMARY KEY NOT NULL,
+              car_id INTEGER NOT NULL,
+              start_date TEXT NOT NULL,
+              end_date TEXT NOT NULL,
+              distance REAL,
+              duration_min INTEGER,
+              schema_version INTEGER NOT NULL DEFAULT 13,
+              energy_consumed_net REAL,
+              consumption_net REAL,
+              energy_source TEXT
+            );
+            """)
+    }
+
+    private func createVersion18ChargeSummaryTable(in database: SQLiteDatabase) async throws {
+        try await database.execute("""
+            CREATE TABLE charges_summary (
+              charge_id INTEGER PRIMARY KEY NOT NULL,
+              car_id INTEGER NOT NULL,
+              start_date TEXT NOT NULL,
+              end_date TEXT,
+              charge_energy_added REAL,
+              cost REAL,
+              schema_version INTEGER NOT NULL DEFAULT 13,
+              duration_min INTEGER,
+              address TEXT,
+              latitude REAL,
+              longitude REAL,
+              charge_energy_used REAL,
+              start_battery_level INTEGER,
+              end_battery_level INTEGER,
+              start_rated_range_km REAL,
+              end_rated_range_km REAL,
+              odometer_km REAL
+            );
+            """)
+    }
+
+    private func createVersion19DriveSummaryTable(in database: SQLiteDatabase) async throws {
+        try await database.execute("""
+            CREATE TABLE drives_summary (
+              drive_id INTEGER PRIMARY KEY NOT NULL,
+              car_id INTEGER NOT NULL,
+              start_date TEXT NOT NULL,
+              end_date TEXT NOT NULL,
+              distance REAL,
+              duration_min INTEGER,
+              schema_version INTEGER NOT NULL DEFAULT 13,
+              energy_consumed_net REAL,
+              consumption_net REAL,
+              energy_source TEXT,
+              start_battery_level INTEGER,
+              end_battery_level INTEGER
+            );
+            """)
+    }
+
+    private func assertTask3CurrentSchema(
+        in database: SQLiteDatabase,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) async throws {
+        let chargeColumns = Set(try await database.rows("PRAGMA table_info(charges_summary);").compactMap { $0[1].textValue })
+        let driveColumns = Set(try await database.rows("PRAGMA table_info(drives_summary);").compactMap { $0[1].textValue })
+        let tables = try await database.tableNames()
+        let version = try await database.userVersion()
+        let requiredChargeColumns: Set<String> = [
+            "duration_min", "address", "latitude", "longitude", "charge_energy_used",
+            "start_battery_level", "end_battery_level", "start_rated_range_km",
+            "end_rated_range_km", "odometer_km"
+        ]
+        let requiredDriveColumns: Set<String> = [
+            "energy_consumed_net", "consumption_net", "energy_source",
+            "start_battery_level", "end_battery_level"
+        ]
+
+        XCTAssertTrue(requiredChargeColumns.isSubset(of: chargeColumns), file: file, line: line)
+        XCTAssertTrue(requiredDriveColumns.isSubset(of: driveColumns), file: file, line: line)
+        XCTAssertTrue(tables.contains("sleep_intervals"), file: file, line: line)
+        XCTAssertEqual(version, 20, file: file, line: line)
     }
 }
