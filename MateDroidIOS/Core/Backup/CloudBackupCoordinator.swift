@@ -1,6 +1,24 @@
 import Foundation
 
-public actor CloudBackupCoordinator {
+public protocol CloudBackupCoordinating: Sendable {
+    func accountStatus() async throws -> CloudBackupAccountStatus
+    func preferences() async -> CloudBackupPreferences
+    func acceptDisclosure() async
+    func setAutomaticBackupEnabled(_ isEnabled: Bool) async throws
+    func listBackups(forceRefresh: Bool) async throws -> [CloudBackupDescriptor]
+    func createManualBackup() async throws -> CloudBackupDescriptor
+    func createAutomaticBackup(after report: BackgroundRefreshReport) async -> CloudBackupDescriptor?
+    func restore(_ descriptor: CloudBackupDescriptor) async throws
+    func delete(_ descriptor: CloudBackupDescriptor) async throws
+    func deleteAll() async throws
+    func cleanupWarning() async -> CloudBackupError?
+}
+
+public extension CloudBackupCoordinating {
+    func createAutomaticBackup(after _: BackgroundRefreshReport) async -> CloudBackupDescriptor? { nil }
+}
+
+public actor CloudBackupCoordinator: CloudBackupCoordinating {
     public enum Operation: Equatable, Sendable {
         case listing
         case backingUp(CloudBackupKind)
@@ -54,6 +72,14 @@ public actor CloudBackupCoordinator {
 
     public func preferences() async -> CloudBackupPreferences {
         await preferencesStore.load()
+    }
+
+    public func accountStatus() async throws -> CloudBackupAccountStatus {
+        do {
+            return try await service.accountStatus()
+        } catch {
+            throw Self.map(error)
+        }
     }
 
     public func acceptDisclosure() async {
@@ -131,6 +157,40 @@ public actor CloudBackupCoordinator {
             lastOperationError = mapped
             await syncController.resume()
             endOperation()
+            throw mapped
+        }
+    }
+
+    public func delete(_ descriptor: CloudBackupDescriptor) async throws {
+        try begin(.deleting(descriptor.id))
+        defer { endOperation() }
+        do {
+            try await service.delete(descriptor)
+            var preferences = await preferencesStore.load()
+            preferences.cachedBackups.removeAll { $0.id == descriptor.id }
+            await preferencesStore.save(preferences)
+            lastOperationError = nil
+        } catch {
+            let mapped = Self.map(error)
+            lastOperationError = mapped
+            throw mapped
+        }
+    }
+
+    public func deleteAll() async throws {
+        try begin(.deletingAll)
+        defer { endOperation() }
+        do {
+            try await service.deleteAll()
+            var preferences = await preferencesStore.load()
+            preferences.cachedBackups = []
+            preferences.lastSuccessfulBackupAt = nil
+            preferences.lastAutomaticBackupAt = nil
+            await preferencesStore.save(preferences)
+            lastOperationError = nil
+        } catch {
+            let mapped = Self.map(error)
+            lastOperationError = mapped
             throw mapped
         }
     }
