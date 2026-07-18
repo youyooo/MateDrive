@@ -205,6 +205,7 @@ public actor AppDataPreloader {
                     var successful = 0
                     var items = cachedSnapshot?.state.items ?? []
                     var seenIDs = Set(items.map(\.stableID))
+                    var fetchedItems: [TeslaMateActivity] = []
                     var units = cachedSnapshot?.state.units
                     var paginationIsDegraded = cachedSnapshot?.state.paginationIsDegraded ?? false
                     var hasMore = true
@@ -241,6 +242,8 @@ public actor AppDataPreloader {
                         let newItems = response.data.filter { seenIDs.insert($0.stableID).inserted }
                         items.removeAll { pageIDs.contains($0.stableID) }
                         items.append(contentsOf: response.data)
+                        fetchedItems.removeAll { pageIDs.contains($0.stableID) }
+                        fetchedItems.append(contentsOf: response.data)
                         let metadataIsReliable = Self.activityPaginationMetadataIsReliable(
                             response,
                             requestedPage: page
@@ -271,7 +274,10 @@ public actor AppDataPreloader {
                         page += 1
 
                         var state = ActivitiesState()
-                        state.items = items.sorted {
+                        let snapshotItems = reachedServerEnd && !bridgedCachedHistory
+                            ? fetchedItems
+                            : items
+                        state.items = snapshotItems.sorted {
                             let lhs = $0.startDate.flatMap(DomainDateParser.date(from:)) ?? .distantPast
                             let rhs = $1.startDate.flatMap(DomainDateParser.date(from:)) ?? .distantPast
                             return lhs > rhs
