@@ -27,7 +27,7 @@ Task 5: complete (commits 3f7aaf0..0980a25, review clean; regional tariff audits
 Task 6: complete (commits 0980a25..79d6025, review clean; focused generic build-for-testing passed, runtime XCTest blocked by CoreSimulator launchd_sim)
 Task 7: complete (commits 602374a..125782b, review clean; Swift parse and diff checks passed, focused build blocked by local CoreSimulator AssetCatalogSimulatorAgent)
 Task 8: complete (commits 8f5d5b6..24de016, review clean; Swift parse and diff checks passed, generic device test build reached unrelated pre-existing reconstructor test errors)
-Task 9: in progress
-Task 10: pending
+Task 9: complete (commits 163116a..00f786e, review clean; focused generic build-for-testing passed)
+Task 10: in progress
 Task 11: pending
 Task 12: pending
