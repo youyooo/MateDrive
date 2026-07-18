@@ -8,7 +8,7 @@ public enum DisplayUnitSystem: String, CaseIterable, Codable, Equatable, Identif
     public var id: String { rawValue }
 }
 
-public struct UnitPreferences: Equatable, Sendable {
+public struct UnitPreferences: Codable, Equatable, Sendable {
     public let unitOfLength: String?
     public let unitOfTemperature: String?
     public let unitOfPressure: String?

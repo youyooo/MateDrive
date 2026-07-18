@@ -82,10 +82,29 @@ final class SmartActivityStoreTests: XCTestCase {
         XCTAssertEqual(secondCarSessions, [secondCar])
     }
 
+    func testEmptyReplacementPersistsDerivationFingerprintPerCar() async throws {
+        let stores = try await SmartActivityTestStores.make()
+
+        try await stores.sessions.replace(
+            carId: 1,
+            sessions: [],
+            derivationFingerprint: "empty-derived-1"
+        )
+
+        let sessions = try await stores.sessions.sessions(carId: 1)
+        let fingerprint = try await stores.sessions.derivationFingerprint(carId: 1)
+        XCTAssertTrue(sessions.isEmpty)
+        XCTAssertEqual(fingerprint, "empty-derived-1")
+    }
+
     func testFailedReplacementRollsBackDeletionAndPartialInserts() async throws {
         let stores = try await SmartActivityTestStores.make()
         let existing = SmartActivitySession.fixture(id: "existing")
-        try await stores.sessions.replace(carId: 1, sessions: [existing])
+        try await stores.sessions.replace(
+            carId: 1,
+            sessions: [existing],
+            derivationFingerprint: "existing-fingerprint"
+        )
         let firstDuplicate = SmartActivitySession.fixture(
             id: "duplicate",
             startDate: Date(timeIntervalSince1970: 1_720_003_600)
@@ -98,13 +117,30 @@ final class SmartActivityStoreTests: XCTestCase {
         do {
             try await stores.sessions.replace(
                 carId: 1,
-                sessions: [firstDuplicate, secondDuplicate]
+                sessions: [firstDuplicate, secondDuplicate],
+                derivationFingerprint: "replacement-fingerprint"
             )
             XCTFail("Expected duplicate session IDs to fail")
         } catch {
             let sessions = try await stores.sessions.sessions(carId: 1)
+            let fingerprint = try await stores.sessions.derivationFingerprint(carId: 1)
             XCTAssertEqual(sessions, [existing])
+            XCTAssertEqual(fingerprint, "existing-fingerprint")
         }
+    }
+
+    func testRemovingDerivedSessionsAlsoRemovesIndexState() async throws {
+        let stores = try await SmartActivityTestStores.make()
+        try await stores.sessions.replace(
+            carId: 1,
+            sessions: [],
+            derivationFingerprint: "empty-derived-1"
+        )
+
+        try await stores.sessions.removeDerivedSessions()
+
+        let fingerprint = try await stores.sessions.derivationFingerprint(carId: 1)
+        XCTAssertNil(fingerprint)
     }
 
     func testMalformedSessionPayloadIsSkipped() async throws {

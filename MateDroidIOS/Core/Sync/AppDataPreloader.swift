@@ -22,6 +22,7 @@ public actor AppDataPreloader {
     private let settingsStore: any SettingsStoring
     private let secretStore: any SecretStoring
     private let clientOverride: (any HTTPClient)?
+    private let activitiesCache: any ActivitiesStateCaching
     private let sleepIntervalStore: any SleepIntervalStoring
     private let serverProfileStore: any TeslaMateServerProfileStoring
     private let minimumInterval: TimeInterval
@@ -32,6 +33,7 @@ public actor AppDataPreloader {
         settingsStore: any SettingsStoring,
         secretStore: any SecretStoring,
         clientOverride: (any HTTPClient)? = nil,
+        activitiesCache: any ActivitiesStateCaching = EmptyActivitiesStateCache(),
         databaseProvider: any AppDatabaseProviding = LiveAppDatabaseProvider(),
         sleepIntervalStore: (any SleepIntervalStoring)? = nil,
         serverProfileStore: (any TeslaMateServerProfileStoring)? = nil,
@@ -41,6 +43,7 @@ public actor AppDataPreloader {
         self.settingsStore = settingsStore
         self.secretStore = secretStore
         self.clientOverride = clientOverride
+        self.activitiesCache = activitiesCache
         self.sleepIntervalStore = sleepIntervalStore
             ?? DatabaseBackedSleepIntervalStore(databaseProvider: databaseProvider)
         self.serverProfileStore = serverProfileStore
@@ -100,16 +103,22 @@ public actor AppDataPreloader {
         let selected = cars.first(where: { $0.carId == settings.lastSelectedCarId })
         let orderedCars = (selected.map { [$0] } ?? [])
             + cars.filter { $0.carId != selected?.carId }
-        let sleepResult = await loadSleepIntervals(
+        async let sleepTask = loadSleepIntervals(
             cars: orderedCars,
             api: api,
             referenceDate: startedAt
         )
+        async let activitiesTask = loadActivitySnapshots(
+            cars: orderedCars,
+            api: api,
+            settings: settings
+        )
+        let (sleepResult, activitiesResult) = await (sleepTask, activitiesTask)
 
         return AppDataPreloadReport(
             didRun: true,
-            requestedEndpointCount: 1 + sleepResult.requestedCount,
-            successfulEndpointCount: 1 + sleepResult.successfulCount
+            requestedEndpointCount: 1 + sleepResult.requestedCount + activitiesResult.requestedPageCount,
+            successfulEndpointCount: 1 + sleepResult.successfulCount + activitiesResult.successfulPageCount
         )
     }
 
@@ -168,5 +177,109 @@ public actor AppDataPreloader {
         }
 
         return (requestedCount, successfulCount)
+    }
+
+    private func loadActivitySnapshots(
+        cars: [CarData],
+        api: TeslamateAPI,
+        settings: AppSettings
+    ) async -> (requestedPageCount: Int, successfulPageCount: Int) {
+        let cache = activitiesCache
+        let savedAt = now()
+        return await withTaskGroup(of: (requested: Int, successful: Int).self) { group in
+            for car in cars {
+                group.addTask {
+                    let pageSize = 200
+                    let maximumPages = 250
+                    let cachedSnapshot = await cache.load(
+                        serverURL: settings.serverURL,
+                        carId: car.carId,
+                        now: savedAt
+                    )
+                    let cachedHistoryIsComplete = cachedSnapshot?.state.historyFullyLoaded == true
+                    let cachedIDs = Set(cachedSnapshot?.state.items.map(\.stableID) ?? [])
+                    var page = 1
+                    var requested = 0
+                    var successful = 0
+                    var items = cachedSnapshot?.state.items ?? []
+                    var seenIDs = Set(items.map(\.stableID))
+                    var units = cachedSnapshot?.state.units
+                    var paginationIsDegraded = cachedSnapshot?.state.paginationIsDegraded ?? false
+                    var hasMore = true
+
+                    while hasMore, page <= maximumPages, !Task.isCancelled {
+                        requested += 1
+                        guard case let .success(response) = await api.activities(
+                            carId: car.carId,
+                            page: page,
+                            show: pageSize
+                        ) else { break }
+                        successful += 1
+                        if let responseUnits = response.units {
+                            units = UnitPreferences(
+                                unitOfLength: responseUnits.unitOfLength,
+                                unitOfTemperature: responseUnits.unitOfTemperature,
+                                unitOfPressure: responseUnits.unitOfPressure
+                            )
+                        }
+
+                        let pageIDs = Set(response.data.map(\.stableID))
+                        let overlapsCachedHistory = !cachedIDs.isDisjoint(with: pageIDs)
+                        let newItems = response.data.filter { seenIDs.insert($0.stableID).inserted }
+                        items.removeAll { pageIDs.contains($0.stableID) }
+                        items.append(contentsOf: response.data)
+                        let reportedPages = response.pagination?.totalPages
+                        let metadataIsReliable = reportedPages.map { $0 > 0 && $0 < 9_999 } ?? false
+                        paginationIsDegraded = paginationIsDegraded
+                            || (reportedPages ?? 0) >= 9_999
+                            || (!response.data.isEmpty && response.pagination?.totalRecords == 0)
+                        if metadataIsReliable, let reportedPages {
+                            hasMore = page < reportedPages && !newItems.isEmpty
+                        } else {
+                            let serverLimit = max(response.pagination?.limit ?? pageSize, 1)
+                            hasMore = response.data.count >= serverLimit && !newItems.isEmpty
+                        }
+                        if cachedHistoryIsComplete, overlapsCachedHistory {
+                            hasMore = false
+                        }
+                        page += 1
+                    }
+
+                    guard successful > 0, !Task.isCancelled else {
+                        return (requested, successful)
+                    }
+                    var state = ActivitiesState()
+                    state.items = items.sorted {
+                        let lhs = $0.startDate.flatMap(DomainDateParser.date(from:)) ?? .distantPast
+                        let rhs = $1.startDate.flatMap(DomainDateParser.date(from:)) ?? .distantPast
+                        return lhs > rhs
+                    }
+                    state.hasMore = hasMore
+                    state.source = .unifiedAPI
+                    state.paginationIsDegraded = paginationIsDegraded
+                    state.historyFullyLoaded = cachedHistoryIsComplete || !hasMore
+                    state.historyLoadCapped = !cachedHistoryIsComplete && hasMore && page > maximumPages
+                    state.loadedPageCount = cachedHistoryIsComplete
+                        ? max(cachedSnapshot?.state.loadedPageCount ?? 0, successful)
+                        : successful
+                    state.currencyCode = settings.resolvedCurrencyCode()
+                    state.units = units
+                    await cache.save(
+                        ActivitiesCacheSnapshot(state: state, savedAt: savedAt),
+                        serverURL: settings.serverURL,
+                        carId: car.carId
+                    )
+                    return (requested, successful)
+                }
+            }
+
+            var requested = 0
+            var successful = 0
+            for await result in group {
+                requested += result.requested
+                successful += result.successful
+            }
+            return (requested, successful)
+        }
     }
 }

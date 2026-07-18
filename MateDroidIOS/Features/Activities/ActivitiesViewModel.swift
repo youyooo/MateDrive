@@ -1,19 +1,19 @@
 import Combine
 import Foundation
 
-public enum ActivityFilter: String, CaseIterable, Hashable, Sendable {
+public enum ActivityFilter: String, CaseIterable, Codable, Hashable, Sendable {
     case all
     case drive
     case charge
     case park
 }
 
-public enum ActivityDataSource: Equatable, Sendable {
+public enum ActivityDataSource: String, Codable, Equatable, Sendable {
     case unifiedAPI
     case localFallback
 }
 
-public enum ActivityDateFilter: String, CaseIterable, Hashable, Sendable {
+public enum ActivityDateFilter: String, CaseIterable, Codable, Hashable, Sendable {
     case all, sevenDays, thirtyDays, thisYear
 }
 
@@ -38,7 +38,7 @@ public struct ActivityPeriodSummary: Equatable, Sendable {
     public let parkingCost: ParkingCostSummary
 }
 
-public struct ActivitiesState: Equatable, Sendable {
+public struct ActivitiesState: Codable, Equatable, Sendable {
     public var isLoading = false
     public var isLoadingMore = false
     public var errorMessage: String?
@@ -55,6 +55,7 @@ public struct ActivitiesState: Equatable, Sendable {
     public var loadedPageCount = 0
     public var currencyCode = MateDroidCurrencyFormatter.systemCurrencyCode()
     public var units: UnitPreferences?
+    public var isUsingCachedData = false
 
     public init() {}
 }

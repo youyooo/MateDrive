@@ -163,6 +163,35 @@ final class SmartActivityIndexerTests: XCTestCase {
         XCTAssertEqual(notifiedCarIds, [1])
     }
 
+    func testEmptyDerivationPersistsFingerprintAndOnlyRebuildsWhenInputChanges() async throws {
+        let notifications = IndexNotificationCounter()
+        let source = MutableSmartActivitySourceLoader(snapshot: Self.snapshot(activities: []))
+        let store = InMemorySmartActivitySessionStore()
+        let indexer = SmartActivityIndexer(
+            source: source,
+            sessionStore: store,
+            labelStore: InMemoryActivityLabelOverrideStore(),
+            postChange: { carId in await notifications.record(carId) }
+        )
+
+        let first = await indexer.rebuild(carIds: [1])
+        let firstFingerprint = try await store.derivationFingerprint(carId: 1)
+        let second = await indexer.rebuild(carIds: [1])
+        await source.setSnapshot(Self.snapshot(activities: [], pricing: 1.0))
+        let changed = await indexer.rebuild(carIds: [1])
+        let changedFingerprint = try await store.derivationFingerprint(carId: 1)
+        let replaceCount = await store.replaceCount
+        let notifiedCarIds = await notifications.carIds
+
+        XCTAssertEqual(first.completedCarIds, [1])
+        XCTAssertNotNil(firstFingerprint)
+        XCTAssertEqual(second.unchangedCarIds, [1])
+        XCTAssertEqual(changed.completedCarIds, [1])
+        XCTAssertNotEqual(changedFingerprint, firstFingerprint)
+        XCTAssertEqual(replaceCount, 2)
+        XCTAssertEqual(notifiedCarIds, [1, 1])
+    }
+
     func testLabelTimestampChangeRebuildsUnchangedRawEvents() async throws {
         let labels = InMemoryActivityLabelOverrideStore()
         let store = InMemorySmartActivitySessionStore()
@@ -223,12 +252,13 @@ final class SmartActivityIndexerTests: XCTestCase {
     private static func snapshot(
         carId: Int = 1,
         historyFullyLoaded: Bool = true,
+        activities: [TeslaMateActivity] = activityFixture,
         pricing: Double = 0.5,
         overrides: [Int: Double] = [20: 8.5]
     ) -> SmartActivitySourceSnapshot {
         SmartActivitySourceSnapshot(
             carId: carId,
-            activities: activityFixture,
+            activities: activities,
             historyFullyLoaded: historyFullyLoaded,
             sleepIntervals: [],
             geofences: [homeGeofence],
@@ -379,9 +409,13 @@ private actor CancellingSmartActivitySourceLoader: SmartActivitySourceLoading {
 
 private actor InMemorySmartActivitySessionStore: SmartActivitySessionStoring {
     private var values: [Int: [SmartActivitySession]]
+    private var fingerprints: [Int: String]
     private(set) var replaceCount = 0
 
-    init(initial: [Int: [SmartActivitySession]] = [:]) { values = initial }
+    init(initial: [Int: [SmartActivitySession]] = [:]) {
+        values = initial
+        fingerprints = initial.compactMapValues { $0.first?.derivationFingerprint }
+    }
 
     func sessions(carId: Int) async throws -> [SmartActivitySession] { values[carId] ?? [] }
     func session(carId: Int, sessionId: String) async throws -> SmartActivitySession? {
@@ -390,8 +424,22 @@ private actor InMemorySmartActivitySessionStore: SmartActivitySessionStoring {
     func replace(carId: Int, sessions: [SmartActivitySession]) async throws {
         replaceCount += 1
         values[carId] = sessions
+        fingerprints[carId] = sessions.first?.derivationFingerprint
     }
-    func removeDerivedSessions() async throws { values.removeAll() }
+    func derivationFingerprint(carId: Int) async throws -> String? { fingerprints[carId] }
+    func replace(
+        carId: Int,
+        sessions: [SmartActivitySession],
+        derivationFingerprint: String
+    ) async throws {
+        replaceCount += 1
+        values[carId] = sessions
+        fingerprints[carId] = derivationFingerprint
+    }
+    func removeDerivedSessions() async throws {
+        values.removeAll()
+        fingerprints.removeAll()
+    }
 }
 
 private actor InMemoryActivityLabelOverrideStore: ActivityLabelOverrideStoring {

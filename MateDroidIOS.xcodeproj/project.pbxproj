@@ -504,6 +504,7 @@
 		E91FA332FEBA030B3B13BF0E /* RequestAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B91D64B8B250C8DAABBB46 /* RequestAuthenticator.swift */; };
 		E9C14A0D7ACF11DB34EBDCAB /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459B3049AEB1B3D702730E62 /* StatsView.swift */; };
 		EB72F19A0F76A744F96A9469 /* TeslaMateCapability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9847C5EDA844BEA9162A9E44 /* TeslaMateCapability.swift */; };
+		1B9B8CA25B308F83E92D37C4 /* ActivitiesStateCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223FF7D69D50D40F838B7479 /* ActivitiesStateCache.swift */; };
 		ECC0A164C1A9A23FC7EB8625 /* ActivitiesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D18AF76B7DAECFCC22C6822B /* ActivitiesViewModel.swift */; };
 		ED5D13906A860462B5848132 /* AchievementModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69AE48525785E5A65483D8DF /* AchievementModels.swift */; };
 		EDC51BBCD974051673E17A69 /* CarModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5B90D51893805CB91F90E55 /* CarModels.swift */; };
@@ -567,9 +568,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		575850D0D156946C990A5859 /* RegionalChargingTariff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionalChargingTariff.swift; sourceTree = "<group>"; };
-		7AF2DCD008615291AED633A0 /* RegionalChargingTariffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionalChargingTariffTests.swift; sourceTree = "<group>"; };
-		BBFBD364C33CDEC19E0FD219 /* RegionalChargingTariffs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = RegionalChargingTariffs.json; sourceTree = "<group>"; };
+		575850D0D156946C990A5859 /* RegionalChargingTariff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MateDroidIOS/Features/Charges/RegionalChargingTariff.swift; sourceTree = SOURCE_ROOT; };
+		7AF2DCD008615291AED633A0 /* RegionalChargingTariffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MateDroidIOSTests/Features/RegionalChargingTariffTests.swift; sourceTree = SOURCE_ROOT; };
+		BBFBD364C33CDEC19E0FD219 /* RegionalChargingTariffs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MateDroidIOS/Resources/RegionalChargingTariffs.json; sourceTree = SOURCE_ROOT; };
 		011FCD2C379AA4C393BB02B2 /* TeslaMateDiagnosticExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeslaMateDiagnosticExport.swift; sourceTree = "<group>"; };
 		08941F1596F35B88C04D8317 /* SmartActivityRecords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartActivityRecords.swift; sourceTree = "<group>"; };
 		0E1BBF4908E3D3374EEB6DBC /* SmartActivityIndexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartActivityIndexer.swift; sourceTree = "<group>"; };
@@ -906,6 +907,7 @@
 		D0A62F7A4751E04D8DE60998 /* BatteryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryView.swift; sourceTree = "<group>"; };
 		D0C93CD970FEAB1B9A88D95C /* my_PBSB_WY18B.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = my_PBSB_WY18B.png; sourceTree = "<group>"; };
 		D135F34657BFFB57600320A4 /* DashboardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModelTests.swift; sourceTree = "<group>"; };
+		223FF7D69D50D40F838B7479 /* ActivitiesStateCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitiesStateCache.swift; sourceTree = "<group>"; };
 		D18AF76B7DAECFCC22C6822B /* ActivitiesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitiesViewModel.swift; sourceTree = "<group>"; };
 		D29FD409374B824BE0D8B34B /* TeslaMateServerProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeslaMateServerProfileStore.swift; sourceTree = "<group>"; };
 		D2EA6D8696C5CDC9437ABE06 /* m3h_PX02_W38A.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3h_PX02_W38A.png; sourceTree = "<group>"; };
@@ -1005,6 +1007,7 @@
 		03F5A0491671FE56C53590BF /* Activities */ = {
 			isa = PBXGroup;
 			children = (
+				223FF7D69D50D40F838B7479 /* ActivitiesStateCache.swift */,
 				D882EDE00B92188C2D89B899 /* ActivitiesView.swift */,
 				D18AF76B7DAECFCC22C6822B /* ActivitiesViewModel.swift */,
 				DD2C4C9A7B8103760CA5F590 /* ActivityAPIProvider.swift */,
@@ -2161,6 +2164,7 @@
 				ED5D13906A860462B5848132 /* AchievementModels.swift in Sources */,
 				D8B3D2770CE1E1DEA1D6797D /* AchievementsAPIProvider.swift in Sources */,
 				A0626F821FCC132F91A2D1D6 /* AchievementsView.swift in Sources */,
+				1B9B8CA25B308F83E92D37C4 /* ActivitiesStateCache.swift in Sources */,
 				F436977D7CEF57C05438C13E /* AchievementsViewModel.swift in Sources */,
 				476D86E56F5B534393E84AD4 /* ActivitiesView.swift in Sources */,
 				A10000000000000000000001 /* ParkingIntervalAnalyzer.swift in Sources */,

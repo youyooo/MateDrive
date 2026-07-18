@@ -4,7 +4,23 @@ public protocol SmartActivitySessionStoring: Sendable {
     func sessions(carId: Int) async throws -> [SmartActivitySession]
     func session(carId: Int, sessionId: String) async throws -> SmartActivitySession?
     func replace(carId: Int, sessions: [SmartActivitySession]) async throws
+    func derivationFingerprint(carId: Int) async throws -> String?
+    func replace(carId: Int, sessions: [SmartActivitySession], derivationFingerprint: String) async throws
     func removeDerivedSessions() async throws
+}
+
+public extension SmartActivitySessionStoring {
+    func derivationFingerprint(carId: Int) async throws -> String? {
+        try await sessions(carId: carId).first?.derivationFingerprint
+    }
+
+    func replace(
+        carId: Int,
+        sessions: [SmartActivitySession],
+        derivationFingerprint _: String
+    ) async throws {
+        try await replace(carId: carId, sessions: sessions)
+    }
 }
 
 public protocol ActivityLabelOverrideStoring: Sendable {
@@ -48,7 +64,33 @@ public struct SmartActivityStore: SmartActivitySessionStoring {
         return rows.first.flatMap(Self.session)
     }
 
+    public func derivationFingerprint(carId: Int) async throws -> String? {
+        let rows = try await database.rows(
+            """
+            SELECT derivation_fingerprint
+            FROM smart_activity_index_state
+            WHERE car_id = ?
+            LIMIT 1;
+            """,
+            bindings: [.int(carId)]
+        )
+        return rows.first?.first?.textValue
+    }
+
     public func replace(carId: Int, sessions: [SmartActivitySession]) async throws {
+        let fingerprint = sessions.first?.derivationFingerprint ?? ""
+        try await replace(
+            carId: carId,
+            sessions: sessions,
+            derivationFingerprint: fingerprint
+        )
+    }
+
+    public func replace(
+        carId: Int,
+        sessions: [SmartActivitySession],
+        derivationFingerprint: String
+    ) async throws {
         guard sessions.allSatisfy({ $0.carId == carId }) else {
             throw SQLiteError.executionFailed("Smart activity replacement contains a session for another car")
         }
@@ -94,11 +136,24 @@ public struct SmartActivityStore: SmartActivitySessionStoring {
                 ]
             ))
         }
+        commands.append(SQLiteCommand(
+            """
+            INSERT INTO smart_activity_index_state (car_id, derivation_fingerprint, updated_at)
+            VALUES (?, ?, ?)
+            ON CONFLICT(car_id) DO UPDATE SET
+              derivation_fingerprint = excluded.derivation_fingerprint,
+              updated_at = excluded.updated_at;
+            """,
+            bindings: [.int(carId), .text(derivationFingerprint), .text(updatedAt)]
+        ))
         try await database.performTransaction(commands)
     }
 
     public func removeDerivedSessions() async throws {
-        try await database.run("DELETE FROM vehicle_activity_sessions;")
+        try await database.performTransaction([
+            SQLiteCommand("DELETE FROM vehicle_activity_sessions;"),
+            SQLiteCommand("DELETE FROM smart_activity_index_state;")
+        ])
     }
 
     private static func session(_ row: [SQLiteColumnValue]) -> SmartActivitySession? {
@@ -246,8 +301,25 @@ public struct DatabaseBackedSmartActivityStore: SmartActivitySessionStoring {
             .session(carId: carId, sessionId: sessionId)
     }
 
+    public func derivationFingerprint(carId: Int) async throws -> String? {
+        try await SmartActivityStore(database: databaseProvider.database())
+            .derivationFingerprint(carId: carId)
+    }
+
     public func replace(carId: Int, sessions: [SmartActivitySession]) async throws {
         try await SmartActivityStore(database: databaseProvider.database()).replace(carId: carId, sessions: sessions)
+    }
+
+    public func replace(
+        carId: Int,
+        sessions: [SmartActivitySession],
+        derivationFingerprint: String
+    ) async throws {
+        try await SmartActivityStore(database: databaseProvider.database()).replace(
+            carId: carId,
+            sessions: sessions,
+            derivationFingerprint: derivationFingerprint
+        )
     }
 
     public func removeDerivedSessions() async throws {

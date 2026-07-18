@@ -198,13 +198,23 @@ public actor SmartActivityIndexer: SmartActivityIndexing {
                 let overrides = try await labelStore.overrides(carId: carId)
                 let derived = try await deriveOffMain(source: sourceSnapshot, labelOverrides: overrides)
                 let existing = try await sessionStore.sessions(carId: carId)
-                if Self.matchesFingerprint(existing, sessions: derived.sessions, fingerprint: derived.fingerprint) {
+                let storedFingerprint = try await sessionStore.derivationFingerprint(carId: carId)
+                if Self.matchesFingerprint(
+                    existing,
+                    sessions: derived.sessions,
+                    storedFingerprint: storedFingerprint,
+                    fingerprint: derived.fingerprint
+                ) {
                     unchanged.append(carId)
                     continue
                 }
 
                 try Task.checkCancellation()
-                try await sessionStore.replace(carId: carId, sessions: derived.sessions)
+                try await sessionStore.replace(
+                    carId: carId,
+                    sessions: derived.sessions,
+                    derivationFingerprint: derived.fingerprint
+                )
                 completed.append(carId)
                 await postChange(carId)
             } catch {
@@ -460,10 +470,11 @@ public actor SmartActivityIndexer: SmartActivityIndexing {
     nonisolated private static func matchesFingerprint(
         _ existing: [SmartActivitySession],
         sessions: [SmartActivitySession],
+        storedFingerprint: String?,
         fingerprint: String
     ) -> Bool {
         guard existing.count == sessions.count else { return false }
-        return existing.isEmpty || existing.allSatisfy { $0.derivationFingerprint == fingerprint }
+        return storedFingerprint == fingerprint
     }
 
     nonisolated private static func digest<Value: Encodable>(_ value: Value) throws -> String {

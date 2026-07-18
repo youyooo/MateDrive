@@ -29,9 +29,10 @@ final class PersistenceMigrationTests: XCTestCase {
         XCTAssertTrue(tables.contains("vehicle_activity_sessions"))
         XCTAssertTrue(tables.contains("activity_label_overrides"))
         XCTAssertTrue(tables.contains("charge_pricing_observations"))
+        XCTAssertTrue(tables.contains("smart_activity_index_state"))
         let version = try await database.userVersion()
-        XCTAssertEqual(version, 23)
-        XCTAssertEqual(DatabaseSchemaVersion.current, 23)
+        XCTAssertEqual(version, 24)
+        XCTAssertEqual(DatabaseSchemaVersion.current, 24)
         XCTAssertEqual(SchemaVersion.current, 13)
     }
 
@@ -41,7 +42,7 @@ final class PersistenceMigrationTests: XCTestCase {
         try await Migrations.applyAll(to: database)
 
         let version = try await database.userVersion()
-        XCTAssertEqual(version, 23)
+        XCTAssertEqual(version, 24)
         for table in [
             "vehicle_activity_sessions",
             "activity_label_overrides",
@@ -57,6 +58,20 @@ final class PersistenceMigrationTests: XCTestCase {
         let observationIndexes = try await database.rows("PRAGMA index_list(charge_pricing_observations);")
         XCTAssertTrue(sessionIndexes.contains { $0.count >= 2 && $0[1].textValue == "vehicle_activity_sessions_car_date" })
         XCTAssertTrue(observationIndexes.contains { $0.count >= 2 && $0[1].textValue == "charge_pricing_observations_station" })
+    }
+
+    func testMigration24CreatesSmartActivityIndexStateTable() async throws {
+        let database = try SQLiteDatabase.inMemory()
+
+        try await Migrations.applyAll(to: database)
+
+        let columns = try await database.rows("PRAGMA table_info(smart_activity_index_state);")
+        let version = try await database.userVersion()
+        XCTAssertEqual(columns.compactMap { $0[1].textValue }, [
+            "car_id", "derivation_fingerprint", "updated_at"
+        ])
+        XCTAssertEqual(columns.first?[5].intValue, 1)
+        XCTAssertEqual(version, 24)
     }
 
     func testVersion20CreatesSleepIntervalsWithCompositePrimaryKeyAndRangeIndex() async throws {
@@ -77,7 +92,7 @@ final class PersistenceMigrationTests: XCTestCase {
         XCTAssertEqual(columns.map { $0[1].textValue }, ["car_id", "start_date", "end_date"])
         XCTAssertEqual(primaryKeyColumns, ["car_id", "start_date", "end_date"])
         XCTAssertTrue(indexes.contains { $0.count >= 2 && $0[1].textValue == "sleep_intervals_car_range" })
-        XCTAssertEqual(version, 23)
+        XCTAssertEqual(version, 24)
     }
 
     func testVersion20AddsDriveRatedRangeColumnsWithoutLosingExistingRows() async throws {
@@ -95,10 +110,10 @@ final class PersistenceMigrationTests: XCTestCase {
         )
         let version = try await database.userVersion()
         XCTAssertEqual(rows, [[.int(10), .double(20), .null, .null]])
-        XCTAssertEqual(version, 23)
+        XCTAssertEqual(version, 24)
     }
 
-    func testVersion20RawSQLUpgradeAppliesMigrations21Through23WithoutDataLoss() async throws {
+    func testVersion20RawSQLUpgradeAppliesMigrations21Through24WithoutDataLoss() async throws {
         let database = try SQLiteDatabase.inMemory()
         try await database.execute("""
             CREATE TABLE drives_summary (
@@ -139,7 +154,8 @@ final class PersistenceMigrationTests: XCTestCase {
         for table in [
             "vehicle_activity_sessions",
             "activity_label_overrides",
-            "charge_pricing_observations"
+            "charge_pricing_observations",
+            "smart_activity_index_state"
         ] {
             let rows = try await database.rows(
                 "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?;",
@@ -164,7 +180,7 @@ final class PersistenceMigrationTests: XCTestCase {
             .null, .null, .null, .null, .null, .null, .null, .null, .null, .null
         ]])
         let version = try await database.userVersion()
-        XCTAssertEqual(version, 23)
+        XCTAssertEqual(version, 24)
     }
 
     func testDriveSummarySchemaPreservesMissingDistanceAndDuration() async throws {

@@ -357,6 +357,18 @@ public enum Migrations {
                 """,
                 "CREATE INDEX IF NOT EXISTS charge_pricing_observations_station ON charge_pricing_observations(car_id, station_key, confirmed_at DESC);"
             ]
+        ),
+        Migration(
+            version: 24,
+            statements: [
+                """
+                CREATE TABLE IF NOT EXISTS smart_activity_index_state (
+                  car_id INTEGER PRIMARY KEY NOT NULL,
+                  derivation_fingerprint TEXT NOT NULL,
+                  updated_at TEXT NOT NULL
+                );
+                """
+            ]
         )
     ]
 
