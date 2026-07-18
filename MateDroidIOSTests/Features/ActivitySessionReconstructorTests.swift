@@ -52,7 +52,14 @@ final class ActivitySessionReconstructorTests: XCTestCase {
     }
 
     func testLaterDepartureChangesFingerprintWithoutChangingStableID() throws {
-        let parking = TeslaMateActivity(
+        let openParking = TeslaMateActivity(
+            id: 101,
+            type: "park",
+            startDate: "2026-07-18T10:30:00+08:00",
+            endLatitude: 31.2304,
+            endLongitude: 121.4737
+        )
+        let closedParking = TeslaMateActivity(
             id: 101,
             type: "park",
             startDate: "2026-07-18T10:30:00+08:00",
@@ -79,17 +86,19 @@ final class ActivitySessionReconstructorTests: XCTestCase {
 
         let beforeDeparture = try XCTUnwrap(ActivitySessionReconstructor.reconstruct(
             carId: 1,
-            events: [arrival, parking],
+            events: [arrival, openParking],
             sleepIntervals: [],
             geofences: []
         ).first)
         let afterDeparture = try XCTUnwrap(ActivitySessionReconstructor.reconstruct(
             carId: 1,
-            events: [arrival, parking, departure],
+            events: [arrival, closedParking, departure],
             sleepIntervals: [],
             geofences: []
         ).first)
 
+        XCTAssertTrue(beforeDeparture.isOpen)
+        XCTAssertFalse(afterDeparture.isOpen)
         XCTAssertEqual(afterDeparture.id, beforeDeparture.id)
         XCTAssertNotEqual(afterDeparture.sourceFingerprint, beforeDeparture.sourceFingerprint)
         XCTAssertEqual(afterDeparture.eventReferences.map(\.kind), [.drive, .park, .drive])
@@ -125,7 +134,7 @@ final class ActivitySessionReconstructorTests: XCTestCase {
             geofences: [ActivityReconstructionFixtures.chargingFence]
         )
 
-        XCTAssertEqual(sessions.first?.eventReferences.map(\.kind), [.drive, .park, .charge])
+        XCTAssertEqual(sessions.first { $0.id == "1-11" }?.eventReferences.map(\.kind), [.drive, .park, .charge])
     }
 
     func testDoesNotAttachChargeAfterNonHomeSourceGap() throws {
@@ -156,6 +165,149 @@ final class ActivitySessionReconstructorTests: XCTestCase {
         )
 
         XCTAssertEqual(sessions.first?.eventReferences.map(\.kind), [.park])
+    }
+
+    func testCreatesPartialFallbackForDriveWithoutParkingSource() throws {
+        let drive = TeslaMateActivity(
+            id: 300,
+            type: "drive",
+            startDate: "2026-07-18T10:00:00+08:00",
+            endDate: "2026-07-18T10:25:00+08:00",
+            endLatitude: 31.2304,
+            endLongitude: 121.4737
+        )
+
+        let session = try XCTUnwrap(ActivitySessionReconstructor.reconstruct(
+            carId: 1,
+            events: [drive],
+            sleepIntervals: [],
+            geofences: [ActivityReconstructionFixtures.chargingFence]
+        ).first)
+
+        XCTAssertEqual(session.id, "1-300")
+        XCTAssertEqual(session.eventReferences.map(\.sourceID), [300])
+        XCTAssertNil(session.parkingMetrics)
+        XCTAssertNil(session.chargeCost)
+        XCTAssertEqual(session.quality, .partial)
+    }
+
+    func testDepartureSearchSkipsMismatchedDriveWithinGrace() throws {
+        let parking = TeslaMateActivity(
+            id: 400,
+            type: "park",
+            startDate: "2026-07-18T10:00:00+08:00",
+            endDate: "2026-07-18T11:00:00+08:00",
+            endLatitude: 31.2304,
+            endLongitude: 121.4737
+        )
+        let mismatchedDeparture = TeslaMateActivity(
+            id: 401,
+            type: "drive",
+            startDate: "2026-07-18T11:05:00+08:00",
+            endDate: "2026-07-18T11:20:00+08:00",
+            startLatitude: 31.2504,
+            startLongitude: 121.4937
+        )
+        let matchingDeparture = TeslaMateActivity(
+            id: 402,
+            type: "drive",
+            startDate: "2026-07-18T11:10:00+08:00",
+            endDate: "2026-07-18T11:30:00+08:00",
+            startLatitude: 31.2304,
+            startLongitude: 121.4737
+        )
+
+        let sessions = ActivitySessionReconstructor.reconstruct(
+            carId: 1,
+            events: [parking, mismatchedDeparture, matchingDeparture],
+            sleepIntervals: [],
+            geofences: []
+        )
+
+        XCTAssertEqual(sessions.first { $0.id == "1-400" }?.eventReferences.map(\.sourceID), [400, 402])
+        XCTAssertEqual(sessions.first { $0.id == "1-401" }?.eventReferences.map(\.sourceID), [401])
+    }
+
+    func testDoesNotAttachDriveToMoreThanOneParkingSession() throws {
+        let firstParking = TeslaMateActivity(
+            id: 500,
+            type: "park",
+            startDate: "2026-07-18T10:00:00+08:00",
+            endDate: "2026-07-18T10:30:00+08:00",
+            endLatitude: 31.2304,
+            endLongitude: 121.4737
+        )
+        let connectingDrive = TeslaMateActivity(
+            id: 501,
+            type: "drive",
+            startDate: "2026-07-18T10:35:00+08:00",
+            endDate: "2026-07-18T11:00:00+08:00",
+            startLatitude: 31.2304,
+            startLongitude: 121.4737,
+            endLatitude: 31.2304,
+            endLongitude: 121.4737
+        )
+        let secondParking = TeslaMateActivity(
+            id: 502,
+            type: "park",
+            startDate: "2026-07-18T11:00:00+08:00",
+            endDate: "2026-07-18T11:30:00+08:00",
+            endLatitude: 31.2304,
+            endLongitude: 121.4737
+        )
+
+        let sessions = ActivitySessionReconstructor.reconstruct(
+            carId: 1,
+            events: [firstParking, connectingDrive, secondParking],
+            sleepIntervals: [],
+            geofences: []
+        )
+
+        XCTAssertEqual(sessions.flatMap(\.eventReferences).filter { $0.sourceID == 501 }.count, 1)
+        XCTAssertEqual(sessions.first { $0.id == "1-502" }?.eventReferences.map(\.sourceID), [502])
+    }
+
+    func testOnlyAttachesClosedChargeFullyInsideParkingInterval() throws {
+        let parking = TeslaMateActivity(
+            id: 600,
+            type: "park",
+            startDate: "2026-07-18T10:00:00+08:00",
+            endDate: "2026-07-18T11:00:00+08:00",
+            endLatitude: 31.2304,
+            endLongitude: 121.4737
+        )
+        let completeCharge = TeslaMateActivity(
+            id: 601,
+            type: "charge",
+            startDate: "2026-07-18T10:10:00+08:00",
+            endDate: "2026-07-18T10:50:00+08:00",
+            startLatitude: 31.2304,
+            startLongitude: 121.4737
+        )
+        let openCharge = TeslaMateActivity(
+            id: 602,
+            type: "charge",
+            startDate: "2026-07-18T10:20:00+08:00",
+            startLatitude: 31.2304,
+            startLongitude: 121.4737
+        )
+        let overlappingCharge = TeslaMateActivity(
+            id: 603,
+            type: "charge",
+            startDate: "2026-07-18T10:30:00+08:00",
+            endDate: "2026-07-18T11:10:00+08:00",
+            startLatitude: 31.2304,
+            startLongitude: 121.4737
+        )
+
+        let session = try XCTUnwrap(ActivitySessionReconstructor.reconstruct(
+            carId: 1,
+            events: [parking, completeCharge, openCharge, overlappingCharge],
+            sleepIntervals: [],
+            geofences: []
+        ).first { $0.id == "1-600" })
+
+        XCTAssertEqual(session.eventReferences.map(\.sourceID), [600, 601])
     }
 }
 

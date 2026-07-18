@@ -25,17 +25,36 @@ public enum ActivitySessionReconstructor {
         geofences: [GeofenceRule],
         configuration: ActivitySessionReconstructionConfiguration = .init()
     ) -> [SmartActivitySession] {
-        let ordered = deduplicated(events).sorted { eventStart($0) < eventStart($1) }
-        return ordered.filter { $0.kind == .park }.compactMap { parking in
-            buildSession(
+        let ordered = deduplicated(events).sorted(by: orderedBefore)
+        var claimedSourceKeys = Set<String>()
+        var sessions: [SmartActivitySession] = []
+
+        for parking in ordered where parking.kind == .park {
+            guard let session = buildSession(
                 carId: carId,
                 parking: parking,
                 events: ordered,
                 sleepIntervals: sleepIntervals,
                 geofences: geofences,
-                configuration: configuration
-            )
-        }.sorted { $0.startDate > $1.startDate }
+                configuration: configuration,
+                claimedSourceKeys: claimedSourceKeys
+            ) else {
+                continue
+            }
+            sessions.append(session)
+            claimedSourceKeys.formUnion(session.eventReferences.map { sourceKey(for: $0.sourceActivity) })
+        }
+
+        sessions += ordered.compactMap { drive in
+            guard drive.kind == .drive,
+                  !claimedSourceKeys.contains(sourceKey(for: drive))
+            else { return nil }
+            return fallbackSession(carId: carId, drive: drive, geofences: geofences)
+        }
+
+        return sessions.sorted {
+            $0.startDate == $1.startDate ? $0.id < $1.id : $0.startDate > $1.startDate
+        }
     }
 
     private static func buildSession(
@@ -44,7 +63,8 @@ public enum ActivitySessionReconstructor {
         events: [TeslaMateActivity],
         sleepIntervals: [SleepInterval],
         geofences: [GeofenceRule],
-        configuration: ActivitySessionReconstructionConfiguration
+        configuration: ActivitySessionReconstructionConfiguration,
+        claimedSourceKeys: Set<String>
     ) -> SmartActivitySession? {
         guard let parkingStart = parking.startDate.flatMap(DomainDateParser.date(from:)) else {
             return nil
@@ -66,7 +86,8 @@ public enum ActivitySessionReconstructor {
             carId: carId,
             events: events,
             geofences: geofences,
-            configuration: configuration
+            configuration: configuration,
+            claimedSourceKeys: claimedSourceKeys
         )
         let charges = chargesDuringStay(
             from: parkingStart,
@@ -77,7 +98,8 @@ public enum ActivitySessionReconstructor {
             carId: carId,
             events: events,
             geofences: geofences,
-            configuration: configuration
+            configuration: configuration,
+            claimedSourceKeys: claimedSourceKeys
         )
         let departure = parkingEnd.flatMap { end in
             departureDrive(
@@ -88,7 +110,8 @@ public enum ActivitySessionReconstructor {
                 carId: carId,
                 events: events,
                 geofences: geofences,
-                configuration: configuration
+                configuration: configuration,
+                claimedSourceKeys: claimedSourceKeys
             )
         }
 
@@ -138,10 +161,12 @@ public enum ActivitySessionReconstructor {
         carId: Int,
         events: [TeslaMateActivity],
         geofences: [GeofenceRule],
-        configuration: ActivitySessionReconstructionConfiguration
+        configuration: ActivitySessionReconstructionConfiguration,
+        claimedSourceKeys: Set<String>
     ) -> TeslaMateActivity? {
         events.reversed().first { event in
             guard event.kind == .drive,
+                  !claimedSourceKeys.contains(sourceKey(for: event)),
                   let end = event.endDate.flatMap(DomainDateParser.date(from:)),
                   end <= parkingStart
             else { return false }
@@ -167,14 +192,19 @@ public enum ActivitySessionReconstructor {
         carId: Int,
         events: [TeslaMateActivity],
         geofences: [GeofenceRule],
-        configuration: ActivitySessionReconstructionConfiguration
+        configuration: ActivitySessionReconstructionConfiguration,
+        claimedSourceKeys: Set<String>
     ) -> [TeslaMateActivity] {
         let waivesChargeStartGrace = geofence?.kind == .home || geofence?.kind == .work
         return events.filter { event in
             guard event.kind == .charge,
+                  !claimedSourceKeys.contains(sourceKey(for: event)),
                   let start = event.startDate.flatMap(DomainDateParser.date(from:)),
+                  let end = event.endDate.flatMap(DomainDateParser.date(from:)),
+                  let parkingEnd,
                   start >= parkingStart,
-                  parkingEnd.map({ start <= $0 }) ?? true,
+                  start <= end,
+                  end <= parkingEnd,
                   waivesChargeStartGrace || start.timeIntervalSince(parkingStart) <= configuration.chargeStartGrace
             else { return false }
             return sharesPlace(
@@ -198,28 +228,74 @@ public enum ActivitySessionReconstructor {
         carId: Int,
         events: [TeslaMateActivity],
         geofences: [GeofenceRule],
-        configuration: ActivitySessionReconstructionConfiguration
+        configuration: ActivitySessionReconstructionConfiguration,
+        claimedSourceKeys: Set<String>
     ) -> TeslaMateActivity? {
-        guard let candidate = events.first(where: { event in
-            guard event.kind == .drive,
-                  let start = event.startDate.flatMap(DomainDateParser.date(from:))
-            else { return false }
-            return start >= parkingEnd
-        }),
-        let start = candidate.startDate.flatMap(DomainDateParser.date(from:)),
-        start.timeIntervalSince(parkingEnd) <= configuration.departureGrace
-        else { return nil }
+        for candidate in events {
+            guard candidate.kind == .drive,
+                  !claimedSourceKeys.contains(sourceKey(for: candidate)),
+                  let start = candidate.startDate.flatMap(DomainDateParser.date(from:)),
+                  start >= parkingEnd
+            else { continue }
 
-        return sharesPlace(
-            candidate,
-            role: .departure,
-            parking: parking,
-            parkingLocation: location,
-            parkingGeofence: geofence,
+            guard start.timeIntervalSince(parkingEnd) <= configuration.departureGrace else {
+                return nil
+            }
+            if sharesPlace(
+                candidate,
+                role: .departure,
+                parking: parking,
+                parkingLocation: location,
+                parkingGeofence: geofence,
+                carId: carId,
+                geofences: geofences,
+                configuration: configuration
+            ) {
+                return candidate
+            }
+        }
+        return nil
+    }
+
+    private static func fallbackSession(
+        carId: Int,
+        drive: TeslaMateActivity,
+        geofences: [GeofenceRule]
+    ) -> SmartActivitySession? {
+        guard let startDate = drive.startDate.flatMap(DomainDateParser.date(from:)) else {
+            return nil
+        }
+
+        let location = location(for: drive, role: .arrival)
+        let geofence = GeofenceRuleEngine.matchingRule(
+            latitude: location?.latitude,
+            longitude: location?.longitude,
             carId: carId,
-            geofences: geofences,
-            configuration: configuration
-        ) ? candidate : nil
+            rules: geofences
+        )
+        let references = [SmartActivityEventReference(sourceActivity: drive)]
+        let sourceFingerprint = fingerprint(references)
+
+        return SmartActivitySession(
+            id: "\(carId)-\(drive.id)",
+            carId: carId,
+            startDate: startDate,
+            endDate: drive.endDate.flatMap(DomainDateParser.date(from:)),
+            placeKey: placeKey(geofence: geofence, location: location, fallbackPrefix: "drive", fallbackID: drive.id),
+            latitude: location?.latitude,
+            longitude: location?.longitude,
+            geofenceID: geofence?.id,
+            provisionalKind: .unclassified,
+            classification: nil,
+            parkingMetrics: nil,
+            chargeCost: nil,
+            eventReferences: references,
+            isOpen: drive.endDate.flatMap(DomainDateParser.date(from:)) == nil,
+            quality: .partial,
+            derivationVersion: 1,
+            sourceFingerprint: sourceFingerprint,
+            derivationFingerprint: sourceFingerprint
+        )
     }
 
     private static func sharesPlace(
@@ -256,10 +332,15 @@ public enum ActivitySessionReconstructor {
         }
     }
 
-    private static func placeKey(geofence: GeofenceRule?, location: Coordinate?, fallbackID: Int) -> String {
+    private static func placeKey(
+        geofence: GeofenceRule?,
+        location: Coordinate?,
+        fallbackPrefix: String = "parking",
+        fallbackID: Int
+    ) -> String {
         if let geofence { return "geofence:\(geofence.id)" }
         if let location { return "coordinate:\(location.latitude),\(location.longitude)" }
-        return "parking:\(fallbackID)"
+        return "\(fallbackPrefix):\(fallbackID)"
     }
 
     private static func fingerprint(_ references: [SmartActivityEventReference]) -> String {
@@ -276,6 +357,17 @@ public enum ActivitySessionReconstructor {
 
     private static func eventStart(_ event: TeslaMateActivity) -> Date {
         event.startDate.flatMap(DomainDateParser.date(from:)) ?? .distantPast
+    }
+
+    private static func orderedBefore(_ lhs: TeslaMateActivity, _ rhs: TeslaMateActivity) -> Bool {
+        let lhsStart = eventStart(lhs)
+        let rhsStart = eventStart(rhs)
+        if lhsStart != rhsStart { return lhsStart < rhsStart }
+        return sourceKey(for: lhs) < sourceKey(for: rhs)
+    }
+
+    private static func sourceKey(for event: TeslaMateActivity) -> String {
+        "\(event.kind.rawValue)-\(event.id)"
     }
 
     private static func location(for event: TeslaMateActivity, role: EventRole) -> Coordinate? {
