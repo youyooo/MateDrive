@@ -465,6 +465,6 @@ final class PersistenceMigrationTests: XCTestCase {
         XCTAssertTrue(requiredChargeColumns.isSubset(of: chargeColumns), file: file, line: line)
         XCTAssertTrue(requiredDriveColumns.isSubset(of: driveColumns), file: file, line: line)
         XCTAssertTrue(tables.contains("sleep_intervals"), file: file, line: line)
-        XCTAssertEqual(version, 23, file: file, line: line)
+        XCTAssertEqual(version, 24, file: file, line: line)
     }
 }

@@ -214,6 +214,40 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
         XCTAssertTrue(requestedPaths.contains { $0.hasPrefix("/api/v1/cars/7/states?") })
     }
 
+    func testDataPreloaderResumesIncompleteCachePastDuplicatePages() async {
+        let client = PartialActivityRetryHTTPClient()
+        let cache = ActivitiesStateCache(maximumAge: 60)
+        let settings = AppSettings(serverURL: "https://teslamate.example", lastSelectedCarId: 7)
+        let preloader = AppDataPreloader(
+            settingsStore: Task3PreloadSettingsStore(settings: settings),
+            secretStore: Task3PreloadSecretStore(),
+            clientOverride: client,
+            activitiesCache: cache
+        )
+
+        _ = await preloader.preload(force: true)
+        let partial = await cache.load(serverURL: settings.serverURL, carId: 7, now: Date())
+
+        XCTAssertEqual(partial?.state.items.map(\.stableID), ["drive-2"])
+        XCTAssertEqual(partial?.state.loadedPageCount, 1)
+        XCTAssertFalse(partial?.state.historyFullyLoaded == true)
+
+        _ = await preloader.preload(force: true)
+        let complete = await cache.load(serverURL: settings.serverURL, carId: 7, now: Date())
+        let activityRequests = await client.requestedPaths.filter { $0.contains("/activities?") }
+
+        XCTAssertEqual(activityRequests, [
+            "/api/v1/cars/7/activities?page=1&show=200",
+            "/api/v1/cars/7/activities?page=2&show=200",
+            "/api/v1/cars/7/activities?page=1&show=200",
+            "/api/v1/cars/7/activities?page=2&show=200"
+        ])
+        XCTAssertEqual(complete?.state.items.map(\.stableID), ["drive-2", "charge-1"])
+        XCTAssertEqual(complete?.state.loadedPageCount, 2)
+        XCTAssertTrue(complete?.state.historyFullyLoaded == true)
+        XCTAssertFalse(complete?.state.hasMore == true)
+    }
+
     func testBackgroundRunnerIndexesOnlyAfterHistoryAndStatusFinish() async {
         let order = BackgroundIndexCallOrderRecorder()
         let runner = BackgroundRefreshWorkRunner(
@@ -545,6 +579,45 @@ private actor Task3GatedStateHistoryHTTPClient: HTTPClient {
         stateHistoryReleased = true
         releaseWaiters.forEach { $0.resume() }
         releaseWaiters.removeAll()
+    }
+}
+
+private actor PartialActivityRetryHTTPClient: HTTPClient {
+    private(set) var requestedPaths: [String] = []
+    private var secondPageAttemptCount = 0
+
+    func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let url = request.url ?? URL(string: "https://teslamate.example")!
+        requestedPaths.append(url.path + (url.query.map { "?" + $0 } ?? ""))
+        let page = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?
+            .first(where: { $0.name == "page" })?.value.flatMap(Int.init)
+        let body: String
+        let statusCode: Int
+
+        if url.path == "/api/v1/cars" {
+            body = #"{"data":{"cars":[{"car_id":7,"name":"Test car 7"}]}}"#
+            statusCode = 200
+        } else if url.path.hasSuffix("/activities"), page == 1 {
+            body = #"{"data":[{"id":2,"type":"drive","startDate":"2026-07-02T00:00:00Z"}],"pagination":{"page":1,"limit":200,"totalPages":2,"totalRecords":2}}"#
+            statusCode = 200
+        } else if url.path.hasSuffix("/activities"), page == 2 {
+            secondPageAttemptCount += 1
+            if secondPageAttemptCount == 1 {
+                body = #"{"error":"temporary failure"}"#
+                statusCode = 500
+            } else {
+                body = #"{"data":[{"id":1,"type":"charge","startDate":"2026-07-01T00:00:00Z"}],"pagination":{"page":2,"limit":200,"totalPages":2,"totalRecords":2}}"#
+                statusCode = 200
+            }
+        } else {
+            body = #"{}"#
+            statusCode = 200
+        }
+
+        return (
+            Data(body.utf8),
+            HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: "HTTP/1.1", headerFields: nil)!
+        )
     }
 }
 

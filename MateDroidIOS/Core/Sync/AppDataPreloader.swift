@@ -197,6 +197,7 @@ public actor AppDataPreloader {
                         now: savedAt
                     )
                     let cachedHistoryIsComplete = cachedSnapshot?.state.historyFullyLoaded == true
+                    let cachedLoadedPageCount = max(cachedSnapshot?.state.loadedPageCount ?? 0, 0)
                     let cachedIDs = Set(cachedSnapshot?.state.items.map(\.stableID) ?? [])
                     var page = 1
                     var requested = 0
@@ -230,14 +231,16 @@ public actor AppDataPreloader {
                         items.append(contentsOf: response.data)
                         let reportedPages = response.pagination?.totalPages
                         let metadataIsReliable = reportedPages.map { $0 > 0 && $0 < 9_999 } ?? false
+                        let mustResumePastCachedPage = !cachedHistoryIsComplete && page <= cachedLoadedPageCount
                         paginationIsDegraded = paginationIsDegraded
                             || (reportedPages ?? 0) >= 9_999
                             || (!response.data.isEmpty && response.pagination?.totalRecords == 0)
                         if metadataIsReliable, let reportedPages {
-                            hasMore = page < reportedPages && !newItems.isEmpty
+                            hasMore = page < reportedPages
                         } else {
                             let serverLimit = max(response.pagination?.limit ?? pageSize, 1)
-                            hasMore = response.data.count >= serverLimit && !newItems.isEmpty
+                            hasMore = response.data.count >= serverLimit
+                                && (!newItems.isEmpty || mustResumePastCachedPage)
                         }
                         if cachedHistoryIsComplete, overlapsCachedHistory {
                             hasMore = false
@@ -259,9 +262,7 @@ public actor AppDataPreloader {
                     state.paginationIsDegraded = paginationIsDegraded
                     state.historyFullyLoaded = cachedHistoryIsComplete || !hasMore
                     state.historyLoadCapped = !cachedHistoryIsComplete && hasMore && page > maximumPages
-                    state.loadedPageCount = cachedHistoryIsComplete
-                        ? max(cachedSnapshot?.state.loadedPageCount ?? 0, successful)
-                        : successful
+                    state.loadedPageCount = max(cachedLoadedPageCount, successful)
                     state.currencyCode = settings.resolvedCurrencyCode()
                     state.units = units
                     await cache.save(
