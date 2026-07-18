@@ -416,6 +416,7 @@
 		BFACDF43CC38F553AB1F288A /* m3h_PN00_W38A.png in Resources */ = {isa = PBXBuildFile; fileRef = B474230F9DDEB7FD307A8CF8 /* m3h_PN00_W38A.png */; };
 		C039B0A5BDAE4335493C9920 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41A86CB5BA0F8FEEC8DC5544 /* DashboardViewModel.swift */; };
 		C0DF1E0F1BE9E0D28EA7AC87 /* ActivitiesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2738AC7A628E528EC30C3131 /* ActivitiesViewModelTests.swift */; };
+		A80000000000000000000002 /* ActivityTimelineViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A80000000000000000000004 /* ActivityTimelineViewModelTests.swift */; };
 		C0FEC0A999578E07D354D9EC /* m3_PMSS_W38B.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A53E5AD477CE081D073E31F /* m3_PMSS_W38B.png */; };
 		C10582FA7DB39A1039AEF049 /* vehicle_model-x-legacy_standard_pearl-white_slipstream-20.png in Resources */ = {isa = PBXBuildFile; fileRef = 45474AA78AD95B6D871B3119 /* vehicle_model-x-legacy_standard_pearl-white_slipstream-20.png */; };
 		C2C100B019D4A1C259556A72 /* CommuteRoutesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96490AFD08A4C22A750E4C4E /* CommuteRoutesViewModelTests.swift */; };
@@ -505,6 +506,7 @@
 		E9C14A0D7ACF11DB34EBDCAB /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459B3049AEB1B3D702730E62 /* StatsView.swift */; };
 		EB72F19A0F76A744F96A9469 /* TeslaMateCapability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9847C5EDA844BEA9162A9E44 /* TeslaMateCapability.swift */; };
 		1B9B8CA25B308F83E92D37C4 /* ActivitiesStateCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223FF7D69D50D40F838B7479 /* ActivitiesStateCache.swift */; };
+		A80000000000000000000001 /* ActivityTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A80000000000000000000003 /* ActivityTimelineViewModel.swift */; };
 		ECC0A164C1A9A23FC7EB8625 /* ActivitiesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D18AF76B7DAECFCC22C6822B /* ActivitiesViewModel.swift */; };
 		ED5D13906A860462B5848132 /* AchievementModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69AE48525785E5A65483D8DF /* AchievementModels.swift */; };
 		EDC51BBCD974051673E17A69 /* CarModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5B90D51893805CB91F90E55 /* CarModels.swift */; };
@@ -639,6 +641,7 @@
 		26EF361DEB0744B28D87064D /* SQLiteDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLiteDatabase.swift; sourceTree = "<group>"; };
 		271B79211949CDDE735BDEEA /* VehicleImageResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleImageResolver.swift; sourceTree = "<group>"; };
 		2738AC7A628E528EC30C3131 /* ActivitiesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitiesViewModelTests.swift; sourceTree = "<group>"; };
+		A80000000000000000000004 /* ActivityTimelineViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityTimelineViewModelTests.swift; sourceTree = "<group>"; };
 		2795FDD7E1BBE81540D679DB /* AggregateStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AggregateStoreTests.swift; sourceTree = "<group>"; };
 		287A7F2262FEF6A1C4B2922A /* TripMembershipServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripMembershipServiceTests.swift; sourceTree = "<group>"; };
 		2992361FF49BF3A4F8971812 /* TeslaMateConnectionDiagnostic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeslaMateConnectionDiagnostic.swift; sourceTree = "<group>"; };
@@ -909,6 +912,7 @@
 		D135F34657BFFB57600320A4 /* DashboardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModelTests.swift; sourceTree = "<group>"; };
 		223FF7D69D50D40F838B7479 /* ActivitiesStateCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitiesStateCache.swift; sourceTree = "<group>"; };
 		D18AF76B7DAECFCC22C6822B /* ActivitiesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitiesViewModel.swift; sourceTree = "<group>"; };
+		A80000000000000000000003 /* ActivityTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityTimelineViewModel.swift; sourceTree = "<group>"; };
 		D29FD409374B824BE0D8B34B /* TeslaMateServerProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeslaMateServerProfileStore.swift; sourceTree = "<group>"; };
 		D2EA6D8696C5CDC9437ABE06 /* m3h_PX02_W38A.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3h_PX02_W38A.png; sourceTree = "<group>"; };
 		D320495059EDC212F505CF78 /* SettingsBackedTeslamateAPIFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBackedTeslamateAPIFactory.swift; sourceTree = "<group>"; };
@@ -1010,6 +1014,7 @@
 				223FF7D69D50D40F838B7479 /* ActivitiesStateCache.swift */,
 				D882EDE00B92188C2D89B899 /* ActivitiesView.swift */,
 				D18AF76B7DAECFCC22C6822B /* ActivitiesViewModel.swift */,
+				A80000000000000000000003 /* ActivityTimelineViewModel.swift */,
 				DD2C4C9A7B8103760CA5F590 /* ActivityAPIProvider.swift */,
 				5B3BF352769788551AC0E504 /* StandbyDrainView.swift */,
 				D781AAD83CB102188F9F10E1 /* StandbyDrainViewModel.swift */,
@@ -1659,6 +1664,7 @@
 			children = (
 				35599BEE2270B1E80A3F0B8C /* AchievementsViewModelTests.swift */,
 				2738AC7A628E528EC30C3131 /* ActivitiesViewModelTests.swift */,
+				A80000000000000000000004 /* ActivityTimelineViewModelTests.swift */,
 				9DE4347EA7C872BBE88A7DCD /* AnalyticalViewModelTests.swift */,
 				D6BF4550A0C735D0F8A133B1 /* CarImagePickerViewModelTests.swift */,
 				90AF52654BD2F30C966759CF /* ChargeCostResolverTests.swift */,
@@ -2172,6 +2178,7 @@
 				A20000000000000000000001 /* ActivitySessionReconstructor.swift in Sources */,
 				A30000000000000000000001 /* ActivityPurposeClassifier.swift in Sources */,
 				ECC0A164C1A9A23FC7EB8625 /* ActivitiesViewModel.swift in Sources */,
+				A80000000000000000000001 /* ActivityTimelineViewModel.swift in Sources */,
 				CC547413D2C7D9972A60EA35 /* ActivityAPIProvider.swift in Sources */,
 				386A351CE0634DDA2B9CA94F /* ActivityModels.swift in Sources */,
 				8CA1F7A24136EAABC25299A8 /* AggregateRecords.swift in Sources */,
@@ -2375,6 +2382,7 @@
 				370790B0F7EBEF15DB4993C8 /* APIDecodingTests.swift in Sources */,
 				A816A1BE30B5B36A44D80A02 /* AchievementsViewModelTests.swift in Sources */,
 				C0DF1E0F1BE9E0D28EA7AC87 /* ActivitiesViewModelTests.swift in Sources */,
+				A80000000000000000000002 /* ActivityTimelineViewModelTests.swift in Sources */,
 				0773B6E82D638D6A78CE3E64 /* AggregateStoreTests.swift in Sources */,
 				293BB9735F3B47AEFC071E4F /* AnalyticalViewModelTests.swift in Sources */,
 				6E15E1F9D75887F6E62FF985 /* AppDatabaseProviderTests.swift in Sources */,
