@@ -138,6 +138,8 @@
 		46AA2156FB4F14966CE0CE03 /* ms_PMNG_WT19.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F80F00CFEE36A446D906A68 /* ms_PMNG_WT19.png */; };
 		4717B842AADCF641342B3E60 /* myj_PX02_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = A5278CCD9BF32784EAFD9D17 /* myj_PX02_WY19P.png */; };
 		476D86E56F5B534393E84AD4 /* ActivitiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D882EDE00B92188C2D89B899 /* ActivitiesView.swift */; };
+		A10000000000000000000001 /* ParkingIntervalAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000003 /* ParkingIntervalAnalyzer.swift */; };
+		A10000000000000000000002 /* SmartActivityModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000004 /* SmartActivityModels.swift */; };
 		4A55E748C75BF0D12D8DF2E4 /* m3_PMBL_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = 5C6FC0F0445E89A8021EFF79 /* m3_PMBL_W39B.png */; };
 		4A7A9CD0F6A238998768E342 /* TyrePressureNotificationContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A44D7D40C8371F6612991FB /* TyrePressureNotificationContent.swift */; };
 		4A82FEF2097F40E29D2BE6C4 /* OpenMeteoAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AE0C2C5B733F1674CD13D4 /* OpenMeteoAPI.swift */; };
@@ -852,6 +854,9 @@
 		C6AAFD36C34E542C2FA3F1F9 /* SyncCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncCoordinatorTests.swift; sourceTree = "<group>"; };
 		C6B435DB386DD8FC5EAD76F7 /* ParkingFeeRuleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingFeeRuleTests.swift; sourceTree = "<group>"; };
 		C7EA891C282826AF374EDF8F /* DebugLocalTeslamateSeeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLocalTeslamateSeeder.swift; sourceTree = "<group>"; };
+		C982618C1C9F63081D1B5043 /* ParkingIntervalAnalyzerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingIntervalAnalyzerTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000003 /* ParkingIntervalAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingIntervalAnalyzer.swift; sourceTree = "<group>"; };
+		A10000000000000000000004 /* SmartActivityModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartActivityModels.swift; sourceTree = "<group>"; };
 		C91ACFE0BCC2AC11FD63DBA9 /* m3hp_PN01_W30P.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3hp_PN01_W30P.png; sourceTree = "<group>"; };
 		CA3786B98B74FD96D3746ADE /* TripDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDataProvider.swift; sourceTree = "<group>"; };
 		CA728256DE808FF49962B145 /* DriveSummaryRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveSummaryRecord.swift; sourceTree = "<group>"; };
@@ -970,6 +975,8 @@
 				DD2C4C9A7B8103760CA5F590 /* ActivityAPIProvider.swift */,
 				5B3BF352769788551AC0E504 /* StandbyDrainView.swift */,
 				D781AAD83CB102188F9F10E1 /* StandbyDrainViewModel.swift */,
+				A10000000000000000000003 /* ParkingIntervalAnalyzer.swift */,
+				A10000000000000000000004 /* SmartActivityModels.swift */,
 				1634D94032DB1A6A0C21B383 /* TopDrainLocationsView.swift */,
 				A2DFE99FE979016BD32AE322 /* TopDrainLocationsViewModel.swift */,
 			);
@@ -1623,6 +1630,7 @@
 				B93A472FC50C06BC99FC4C5D /* EnvironmentHistoryViewModelTests.swift */,
 				1AC917A30BED5257A9FF3639 /* GeographyStatsTests.swift */,
 				C6B435DB386DD8FC5EAD76F7 /* ParkingFeeRuleTests.swift */,
+				C982618C1C9F63081D1B5043 /* ParkingIntervalAnalyzerTests.swift */,
 				3C6AF070F62DDB45FA7ECBC9 /* PlaceInsightsViewModelTests.swift */,
 				34C7260B66BF10560FA0568B /* RecentDrivingMapViewModelTests.swift */,
 				FEC7956DD0C114E56D02D9BA /* SentryHistoryViewModelTests.swift */,
@@ -2104,6 +2112,8 @@
 				A0626F821FCC132F91A2D1D6 /* AchievementsView.swift in Sources */,
 				F436977D7CEF57C05438C13E /* AchievementsViewModel.swift in Sources */,
 				476D86E56F5B534393E84AD4 /* ActivitiesView.swift in Sources */,
+				A10000000000000000000001 /* ParkingIntervalAnalyzer.swift in Sources */,
+				A10000000000000000000002 /* SmartActivityModels.swift in Sources */,
 				ECC0A164C1A9A23FC7EB8625 /* ActivitiesViewModel.swift in Sources */,
 				CC547413D2C7D9972A60EA35 /* ActivityAPIProvider.swift in Sources */,
 				386A351CE0634DDA2B9CA94F /* ActivityModels.swift in Sources */,
@@ -2334,6 +2344,7 @@
 				D0E7527DBE831FD5F3269966 /* LocalizationCoverageTests.swift in Sources */,
 				FC8EBAA99906F060BEFE014A /* NotificationContentTests.swift in Sources */,
 				4503698C28F3857FAEC0167B /* ParkingFeeRuleTests.swift in Sources */,
+				CD350E3513044E797FE71EDC /* ParkingIntervalAnalyzerTests.swift in Sources */,
 				803634E960660D8A303BAEC3 /* PersistenceMigrationTests.swift in Sources */,
 				F75DF227E4A3C6490D0E6DFF /* SleepIntervalStoreTests.swift in Sources */,
 				9924C70CE099C09171076C6D /* PlaceInsightsViewModelTests.swift in Sources */,
