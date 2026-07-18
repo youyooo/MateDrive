@@ -88,6 +88,10 @@ public final class ActivityTimelineViewModel: ObservableObject {
     }
 
     public func load(carId: Int) async {
+        if let currentCarId, currentCarId != carId {
+            state.sessions = []
+            state.errorMessage = nil
+        }
         currentCarId = carId
         let task = enqueueReload(carId: carId)
         await task.value
@@ -155,6 +159,7 @@ public final class ActivitySessionDetailViewModel: ObservableObject {
 
     private let sessionStore: any SmartActivitySessionStoring
     private let labelStore: (any ActivityLabelOverrideStoring)?
+    private var loadGeneration = 0
 
     public init(
         sessionStore: any SmartActivitySessionStoring,
@@ -165,31 +170,43 @@ public final class ActivitySessionDetailViewModel: ObservableObject {
     }
 
     public func load(carId: Int, sessionId: String) async {
+        loadGeneration += 1
+        let generation = loadGeneration
+
         do {
             guard let loadedSession = try await sessionStore.session(
                 carId: carId,
                 sessionId: sessionId
             ) else {
+                guard generation == loadGeneration else { return }
                 session = nil
                 labelOverride = nil
                 errorMessage = "activity_session_missing"
                 return
             }
 
+            let loadedLabelOverride = try await loadLabelOverride(
+                carId: carId,
+                sessionId: sessionId
+            )
+            guard generation == loadGeneration else { return }
             session = loadedSession
+            labelOverride = loadedLabelOverride
             errorMessage = nil
-            labelOverride = await loadLabelOverride(carId: carId, sessionId: sessionId)
         } catch {
+            guard generation == loadGeneration else { return }
             session = nil
             labelOverride = nil
             errorMessage = "activity_session_local_error"
         }
     }
 
-    private func loadLabelOverride(carId: Int, sessionId: String) async -> ActivityLabelOverride? {
-        guard let labelStore,
-              let overrides = try? await labelStore.overrides(carId: carId)
-        else { return nil }
+    private func loadLabelOverride(
+        carId: Int,
+        sessionId: String
+    ) async throws -> ActivityLabelOverride? {
+        guard let labelStore else { return nil }
+        let overrides = try await labelStore.overrides(carId: carId)
 
         return overrides
             .filter { $0.sessionId == sessionId }

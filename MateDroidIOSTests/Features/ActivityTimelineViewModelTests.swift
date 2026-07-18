@@ -98,9 +98,14 @@ final class ActivityTimelineViewModelTests: XCTestCase {
         let initial = makeSession(id: "initial", startDate: date(1_000), kinds: [.drive])
         let interim = makeSession(id: "interim", startDate: date(2_000), kinds: [.drive])
         let final = makeSession(id: "final", startDate: date(3_000), kinds: [.drive])
+        let secondReadStarted = expectation(description: "second timeline read started")
+        let secondReadFulfiller = ExpectationFulfiller(secondReadStarted)
         let store = TimelineSessionStoreSpy(
             listResponses: [[initial], [interim], [final]],
-            gatedListCalls: [2]
+            gatedListCalls: [2],
+            listCallObserver: { call in
+                if call == 2 { secondReadFulfiller.fulfill() }
+            }
         )
         let center = NotificationCenter()
         let viewModel = ActivityTimelineViewModel(sessionStore: store, notificationCenter: center)
@@ -111,7 +116,7 @@ final class ActivityTimelineViewModelTests: XCTestCase {
             object: nil,
             userInfo: ["carId": 1]
         )
-        await store.waitUntilListCallCount(2)
+        await fulfillment(of: [secondReadStarted], timeout: 1)
 
         for _ in 0..<4 {
             center.post(
@@ -153,6 +158,52 @@ final class ActivityTimelineViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.state.sessions.map(\.id), ["cached"])
         XCTAssertEqual(viewModel.state.errorMessage, "activity_timeline_local_error")
         XCTAssertFalse(viewModel.state.isLoading)
+    }
+
+    func testCarSwitchClearsOldSessionsAndRejectsInFlightOldCarResult() async {
+        let cached = makeSession(id: "car-1-cached", carId: 1, startDate: date(1_000), kinds: [.drive])
+        let stale = makeSession(id: "car-1-stale", carId: 1, startDate: date(2_000), kinds: [.drive])
+        let oldReadStarted = expectation(description: "old car refresh started")
+        let oldReadFulfiller = ExpectationFulfiller(oldReadStarted)
+        let switchStarted = expectation(description: "car switch started")
+        let store = TimelineSessionStoreSpy(
+            listResponses: [[cached], [stale]],
+            gatedListCalls: [2],
+            failingListCalls: [3],
+            listCallObserver: { call in
+                if call == 2 { oldReadFulfiller.fulfill() }
+            }
+        )
+        let viewModel = ActivityTimelineViewModel(
+            sessionStore: store,
+            notificationCenter: NotificationCenter()
+        )
+        await viewModel.load(carId: 1)
+
+        let oldRefresh = Task { @MainActor in
+            await viewModel.load(carId: 1)
+        }
+        await fulfillment(of: [oldReadStarted], timeout: 1)
+
+        let switchTask = Task { @MainActor in
+            switchStarted.fulfill()
+            await viewModel.load(carId: 2)
+        }
+        await fulfillment(of: [switchStarted], timeout: 1)
+
+        XCTAssertTrue(viewModel.state.sessions.isEmpty)
+        XCTAssertNil(viewModel.state.errorMessage)
+        XCTAssertFalse(viewModel.state.isLoading)
+
+        await store.releaseListCall(2)
+        await oldRefresh.value
+        await switchTask.value
+
+        XCTAssertTrue(viewModel.state.sessions.isEmpty)
+        XCTAssertEqual(viewModel.state.errorMessage, "activity_timeline_local_error")
+        XCTAssertFalse(viewModel.state.isLoading)
+        let requestedCarIds = await store.requestedCarIdsValue()
+        XCTAssertEqual(requestedCarIds, [1, 1, 2])
     }
 
     func testDetailReadsExactSessionAndCachedLabelOverride() async {
@@ -207,6 +258,76 @@ final class ActivityTimelineViewModelTests: XCTestCase {
         XCTAssertEqual(failingViewModel.errorMessage, "activity_session_local_error")
     }
 
+    func testDetailOlderRequestFinishingLastCannotOverwriteNewerAtomicResult() async {
+        let oldSession = makeSession(id: "old", carId: 1, startDate: date(1_000), kinds: [.drive])
+        let newSession = makeSession(id: "new", carId: 2, startDate: date(2_000), kinds: [.charge])
+        let oldLabel = makeLabel(id: "old-label", carId: 1, sessionId: "old", name: "Old")
+        let newLabel = makeLabel(id: "new-label", carId: 2, sessionId: "new", name: "New")
+        let oldLabelReadStarted = expectation(description: "old label read started")
+        let oldLabelReadFulfiller = ExpectationFulfiller(oldLabelReadStarted)
+        let sessionStore = TimelineSessionStoreSpy(
+            detailSessions: ["old": oldSession, "new": newSession]
+        )
+        let labelStore = TimelineLabelStoreStub(
+            values: [oldLabel, newLabel],
+            gatedCarIds: [1],
+            callObserver: { carId in
+                if carId == 1 { oldLabelReadFulfiller.fulfill() }
+            }
+        )
+        let viewModel = ActivitySessionDetailViewModel(
+            sessionStore: sessionStore,
+            labelStore: labelStore
+        )
+
+        let oldLoad = Task { @MainActor in
+            await viewModel.load(carId: 1, sessionId: "old")
+        }
+        await fulfillment(of: [oldLabelReadStarted], timeout: 1)
+        XCTAssertNil(viewModel.session)
+        XCTAssertNil(viewModel.labelOverride)
+
+        await viewModel.load(carId: 2, sessionId: "new")
+        XCTAssertEqual(viewModel.session, newSession)
+        XCTAssertEqual(viewModel.labelOverride, newLabel)
+        XCTAssertNil(viewModel.errorMessage)
+
+        await labelStore.release(carId: 1)
+        await oldLoad.value
+
+        XCTAssertEqual(viewModel.session, newSession)
+        XCTAssertEqual(viewModel.labelOverride, newLabel)
+        XCTAssertNil(viewModel.errorMessage)
+    }
+
+    func testDetailLabelStoreFailurePublishesLocalErrorAndMissingSkipsLabelRead() async {
+        let expected = makeSession(id: "session", carId: 1, startDate: date(1_000), kinds: [.drive])
+        let failingLabels = TimelineLabelStoreStub(values: [], failingCarIds: [1])
+        let failingViewModel = ActivitySessionDetailViewModel(
+            sessionStore: TimelineSessionStoreSpy(detailSession: expected),
+            labelStore: failingLabels
+        )
+
+        await failingViewModel.load(carId: 1, sessionId: "session")
+
+        XCTAssertNil(failingViewModel.session)
+        XCTAssertNil(failingViewModel.labelOverride)
+        XCTAssertEqual(failingViewModel.errorMessage, "activity_session_local_error")
+        let failingLabelReads = await failingLabels.callCountValue()
+        XCTAssertEqual(failingLabelReads, 1)
+
+        let unusedLabels = TimelineLabelStoreStub(values: [], failingCarIds: [2])
+        let missingViewModel = ActivitySessionDetailViewModel(
+            sessionStore: TimelineSessionStoreSpy(detailSession: nil),
+            labelStore: unusedLabels
+        )
+        await missingViewModel.load(carId: 2, sessionId: "missing")
+
+        XCTAssertEqual(missingViewModel.errorMessage, "activity_session_missing")
+        let missingLabelReads = await unusedLabels.callCountValue()
+        XCTAssertEqual(missingLabelReads, 0)
+    }
+
     private func makeSession(
         id: String,
         carId: Int = 1,
@@ -245,6 +366,28 @@ final class ActivityTimelineViewModelTests: XCTestCase {
     private func date(_ seconds: TimeInterval) -> Date {
         Date(timeIntervalSince1970: seconds)
     }
+
+    private func makeLabel(
+        id: String,
+        carId: Int,
+        sessionId: String,
+        name: String
+    ) -> ActivityLabelOverride {
+        ActivityLabelOverride(
+            id: id,
+            carId: carId,
+            sessionId: sessionId,
+            placeKey: nil,
+            scope: .sessionOnly,
+            purpose: .custom,
+            customName: name,
+            icon: nil,
+            colorHex: nil,
+            startMinute: nil,
+            endMinute: nil,
+            updatedAt: date(3_000)
+        )
+    }
 }
 
 private enum TimelineStoreError: Error {
@@ -256,7 +399,9 @@ private actor TimelineSessionStoreSpy: SmartActivitySessionStoring {
     private let gatedListCalls: Set<Int>
     private let failingListCalls: Set<Int>
     private let detailSession: SmartActivitySession?
+    private let detailSessions: [String: SmartActivitySession]
     private let detailShouldFail: Bool
+    private let listCallObserver: (@Sendable (Int) -> Void)?
     private var listCallCount = 0
     private var requestedCarIds: [Int] = []
     private var detailRequest: (carId: Int, sessionId: String)?
@@ -264,20 +409,23 @@ private actor TimelineSessionStoreSpy: SmartActivitySessionStoring {
     private var maximumConcurrentListReads = 0
     private var releasedListCalls: Set<Int> = []
     private var listReleaseWaiters: [Int: CheckedContinuation<Void, Never>] = [:]
-    private var listCountWaiters: [(Int, CheckedContinuation<Void, Never>)] = []
 
     init(
         listResponses: [[SmartActivitySession]] = [],
         gatedListCalls: Set<Int> = [],
         failingListCalls: Set<Int> = [],
         detailSession: SmartActivitySession? = nil,
-        detailShouldFail: Bool = false
+        detailSessions: [String: SmartActivitySession] = [:],
+        detailShouldFail: Bool = false,
+        listCallObserver: (@Sendable (Int) -> Void)? = nil
     ) {
         self.listResponses = listResponses
         self.gatedListCalls = gatedListCalls
         self.failingListCalls = failingListCalls
         self.detailSession = detailSession
+        self.detailSessions = detailSessions
         self.detailShouldFail = detailShouldFail
+        self.listCallObserver = listCallObserver
     }
 
     func sessions(carId: Int) async throws -> [SmartActivitySession] {
@@ -286,7 +434,7 @@ private actor TimelineSessionStoreSpy: SmartActivitySessionStoring {
         requestedCarIds.append(carId)
         activeListReads += 1
         maximumConcurrentListReads = max(maximumConcurrentListReads, activeListReads)
-        resumeListCountWaiters()
+        listCallObserver?(call)
 
         if gatedListCalls.contains(call), !releasedListCalls.contains(call) {
             await withCheckedContinuation { listReleaseWaiters[call] = $0 }
@@ -303,6 +451,9 @@ private actor TimelineSessionStoreSpy: SmartActivitySessionStoring {
     func session(carId: Int, sessionId: String) async throws -> SmartActivitySession? {
         detailRequest = (carId, sessionId)
         if detailShouldFail { throw TimelineStoreError.failed }
+        if let response = detailSessions[sessionId], response.carId == carId {
+            return response
+        }
         guard detailSession?.carId == carId, detailSession?.id == sessionId else { return nil }
         return detailSession
     }
@@ -310,11 +461,6 @@ private actor TimelineSessionStoreSpy: SmartActivitySessionStoring {
     func replace(carId: Int, sessions: [SmartActivitySession]) async throws {}
 
     func removeDerivedSessions() async throws {}
-
-    func waitUntilListCallCount(_ target: Int) async {
-        guard listCallCount < target else { return }
-        await withCheckedContinuation { listCountWaiters.append((target, $0)) }
-    }
 
     func releaseListCall(_ call: Int) {
         releasedListCalls.insert(call)
@@ -329,29 +475,45 @@ private actor TimelineSessionStoreSpy: SmartActivitySessionStoring {
 
     func maximumConcurrentListReadsValue() -> Int { maximumConcurrentListReads }
 
-    private func resumeListCountWaiters() {
-        var remaining: [(Int, CheckedContinuation<Void, Never>)] = []
-        for waiter in listCountWaiters {
-            if listCallCount >= waiter.0 {
-                waiter.1.resume()
-            } else {
-                remaining.append(waiter)
-            }
-        }
-        listCountWaiters = remaining
-    }
 }
 
 private actor TimelineLabelStoreStub: ActivityLabelOverrideStoring {
     private let values: [ActivityLabelOverride]
+    private let gatedCarIds: Set<Int>
+    private let failingCarIds: Set<Int>
+    private let callObserver: (@Sendable (Int) -> Void)?
+    private var callCount = 0
+    private var releasedCarIds: Set<Int> = []
+    private var releaseWaiters: [Int: CheckedContinuation<Void, Never>] = [:]
 
-    init(values: [ActivityLabelOverride]) {
+    init(
+        values: [ActivityLabelOverride],
+        gatedCarIds: Set<Int> = [],
+        failingCarIds: Set<Int> = [],
+        callObserver: (@Sendable (Int) -> Void)? = nil
+    ) {
         self.values = values
+        self.gatedCarIds = gatedCarIds
+        self.failingCarIds = failingCarIds
+        self.callObserver = callObserver
     }
 
     func overrides(carId: Int) async throws -> [ActivityLabelOverride] {
-        values.filter { $0.carId == carId }
+        callCount += 1
+        callObserver?(carId)
+        if gatedCarIds.contains(carId), !releasedCarIds.contains(carId) {
+            await withCheckedContinuation { releaseWaiters[carId] = $0 }
+        }
+        if failingCarIds.contains(carId) { throw TimelineStoreError.failed }
+        return values.filter { $0.carId == carId }
     }
+
+    func release(carId: Int) {
+        releasedCarIds.insert(carId)
+        releaseWaiters.removeValue(forKey: carId)?.resume()
+    }
+
+    func callCountValue() -> Int { callCount }
 
     func override(id: String) async throws -> ActivityLabelOverride? {
         values.first { $0.id == id }
@@ -362,4 +524,16 @@ private actor TimelineLabelStoreStub: ActivityLabelOverrideStoring {
     func delete(id: String) async throws {}
 
     func removeAll() async throws {}
+}
+
+private final class ExpectationFulfiller: @unchecked Sendable {
+    private let expectation: XCTestExpectation
+
+    init(_ expectation: XCTestExpectation) {
+        self.expectation = expectation
+    }
+
+    func fulfill() {
+        expectation.fulfill()
+    }
 }
