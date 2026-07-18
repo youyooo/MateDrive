@@ -384,7 +384,14 @@ private struct ChargePricingRuleEditorView: View {
             pricePerKWh: parsedPricePerKWh ?? 0,
             timeSegments: parsedTimeSegments,
             sessionFee: Self.double(from: sessionFee) ?? 0,
-            priority: Int(priority.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
+            priority: Int(priority.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0,
+            origin: originalRule.origin,
+            regionCode: originalRule.regionCode,
+            sourceURL: originalRule.sourceURL,
+            verifiedAt: originalRule.verifiedAt,
+            serviceFeePerKWh: originalRule.serviceFeePerKWh,
+            applicableWeekdays: originalRule.applicableWeekdays,
+            applicableMonths: originalRule.applicableMonths
         )
     }
 
@@ -449,6 +456,12 @@ private struct ChargePricingRuleEditorView: View {
             return t("Enter a valid non-negative default price.", "请输入有效且不小于零的默认电价。")
         case .invalidSessionFee:
             return t("Session fee must be a non-negative number.", "单次服务费必须是有效且不小于零的数字。")
+        case .invalidServiceFee:
+            return t("Service fee must be a non-negative number.", "服务费必须是有效且不小于零的数字。")
+        case .invalidApplicableWeekdays:
+            return t("Applicable weekdays must use valid, unique calendar days.", "适用星期必须使用有效且不重复的日历值。")
+        case .invalidApplicableMonths:
+            return t("Applicable months must use valid, unique calendar months.", "适用月份必须使用有效且不重复的日历月份。")
         case .incompleteLocation:
             return t("Latitude, longitude, and radius must be entered together.", "纬度、经度和半径必须同时填写。")
         case .invalidLocation:

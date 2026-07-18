@@ -32,7 +32,20 @@ class RegionalTariffAuditTests(unittest.TestCase):
                 check=False,
             )
 
+    def assert_audit_fails(self, catalog: dict, message: str) -> None:
+        result = self.run_audit(catalog)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(message, result.stderr)
+
+    def hunan_tariff(self, catalog: dict) -> dict:
+        region = next(region for region in catalog["regions"] if region["regionCode"] == "CN-43")
+        return region["tariffs"][0]
+
     def test_checked_in_catalog_passes(self) -> None:
+        self.assertEqual(
+            self.hunan_tariff(self.catalog)["sourceURL"],
+            "https://fgw.hunan.gov.cn/fgw/xxgk_70899/zcfg/dfxfg/202407/t20240708_33349442.html",
+        )
         result = self.run_audit(self.catalog)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("31 region records (1 verified, 30 no verified dedicated tariff)", result.stdout)
@@ -44,25 +57,67 @@ class RegionalTariffAuditTests(unittest.TestCase):
 
     def test_non_https_numeric_tariff_source_fails(self) -> None:
         catalog = deepcopy(self.catalog)
-        catalog["regions"][17]["tariffs"][0]["sourceURL"] = "http://fgw.hunan.gov.cn/document"
-        self.assertNotEqual(self.run_audit(catalog).returncode, 0)
+        self.hunan_tariff(catalog)["sourceURL"] = "http://fgw.hunan.gov.cn/document"
+        self.assert_audit_fails(catalog, "sourceURL must use an audited official government host")
+
+    def test_arbitrary_https_tariff_source_fails(self) -> None:
+        catalog = deepcopy(self.catalog)
+        self.hunan_tariff(catalog)["sourceURL"] = "https://example.com/document"
+        self.assert_audit_fails(catalog, "sourceURL must use an audited official government host")
 
     def test_expired_active_tariff_fails(self) -> None:
         catalog = deepcopy(self.catalog)
-        catalog["regions"][17]["tariffs"][0]["status"] = "active"
-        self.assertNotEqual(self.run_audit(catalog).returncode, 0)
+        self.hunan_tariff(catalog)["status"] = "active"
+        self.assert_audit_fails(catalog, "is expired but marked active")
 
     def test_uncovered_minutes_fail(self) -> None:
         catalog = deepcopy(self.catalog)
-        catalog["regions"][17]["tariffs"][0]["timeSegments"] = [
-            { "id": "partial", "startMinuteOfDay": 0, "endMinuteOfDay": 100, "pricePerKWh": 0.5 }
-        ]
-        self.assertNotEqual(self.run_audit(catalog).returncode, 0)
+        self.hunan_tariff(catalog)["timeSegments"][0]["endMinuteOfDay"] = 418
+        self.assert_audit_fails(catalog, "timeSegments do not cover every minute of the day")
+
+    def test_overlapping_minutes_fail(self) -> None:
+        catalog = deepcopy(self.catalog)
+        self.hunan_tariff(catalog)["timeSegments"][0]["endMinuteOfDay"] = 420
+        self.assert_audit_fails(catalog, "timeSegments overlap at minute 420")
 
     def test_invalid_weekday_fails(self) -> None:
         catalog = deepcopy(self.catalog)
-        catalog["regions"][17]["tariffs"][0]["applicableWeekdays"] = [0]
-        self.assertNotEqual(self.run_audit(catalog).returncode, 0)
+        self.hunan_tariff(catalog)["applicableWeekdays"] = [0]
+        self.assert_audit_fails(catalog, "applicableWeekdays contains an invalid value")
+
+    def test_invalid_month_fails(self) -> None:
+        catalog = deepcopy(self.catalog)
+        self.hunan_tariff(catalog)["applicableMonths"] = [13]
+        self.assert_audit_fails(catalog, "applicableMonths contains an invalid value")
+
+    def test_negative_fees_fail(self) -> None:
+        for field in ("basePricePerKWh", "serviceFeePerKWh", "sessionFee"):
+            with self.subTest(field=field):
+                catalog = deepcopy(self.catalog)
+                self.hunan_tariff(catalog)[field] = -0.01
+                self.assert_audit_fails(catalog, f".{field} must be a finite nonnegative number")
+
+    def test_invalid_catalog_classifications_fail(self) -> None:
+        cases = (
+            ("currencyCode", "USD", "currencyCode must be CNY"),
+            ("customerClass", "commercial", "customerClass must be residential-ev"),
+            ("chargeType", "wireless", "chargeType is invalid"),
+        )
+        for field, value, message in cases:
+            with self.subTest(field=field):
+                catalog = deepcopy(self.catalog)
+                self.hunan_tariff(catalog)[field] = value
+                self.assert_audit_fails(catalog, message)
+
+    def test_malformed_effective_date_fails(self) -> None:
+        catalog = deepcopy(self.catalog)
+        self.hunan_tariff(catalog)["effectiveFromDate"] = "2024-02-30"
+        self.assert_audit_fails(catalog, "effectiveFromDate is not a valid YYYY-MM-DD date")
+
+    def test_inverted_effective_dates_fail(self) -> None:
+        catalog = deepcopy(self.catalog)
+        self.hunan_tariff(catalog)["effectiveFromDate"] = "2025-07-01"
+        self.assert_audit_fails(catalog, "effective date range is inverted")
 
 
 if __name__ == "__main__":

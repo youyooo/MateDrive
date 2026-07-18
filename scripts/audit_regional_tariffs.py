@@ -23,6 +23,9 @@ VALID_AVAILABILITY = {"verified", "noVerifiedDedicatedTariff"}
 VALID_STATUS = {"active", "historical", "superseded"}
 VALID_CHARGE_TYPES = {"ac", "dc", "teslaSupercharger", "otherDC"}
 
+# Hosts outside the government namespace require an explicit, reviewed addition here.
+AUDITED_OFFICIAL_SOURCE_HOST_ALLOWLIST: frozenset[str] = frozenset()
+
 
 def parse_date(value: object, label: str) -> dt.date:
     if not isinstance(value, str):
@@ -43,6 +46,17 @@ def require_nonnegative_number(value: object, label: str) -> None:
 
 def fail(message: str) -> None:
     raise ValueError(message)
+
+
+def is_audited_official_source(value: object) -> bool:
+    if not isinstance(value, str):
+        return False
+    parsed = urlparse(value)
+    host = parsed.hostname.lower().rstrip(".") if parsed.hostname else ""
+    is_government_host = host == "gov.cn" or host.endswith(".gov.cn")
+    return parsed.scheme == "https" and bool(host) and (
+        is_government_host or host in AUDITED_OFFICIAL_SOURCE_HOST_ALLOWLIST
+    )
 
 
 def minutes_in_segment(segment: dict[str, object], label: str) -> list[int]:
@@ -116,9 +130,8 @@ def audit_region_tariffs(code: str, tariffs: list[object], seen_tariff_ids: set[
         if not isinstance(document_id, str) or not document_id.strip():
             fail(f"{label}.documentID is required")
         source_url = tariff.get("sourceURL")
-        parsed_url = urlparse(source_url) if isinstance(source_url, str) else None
-        if not parsed_url or parsed_url.scheme != "https" or not parsed_url.netloc:
-            fail(f"{label}.sourceURL must be an official HTTPS URL")
+        if not is_audited_official_source(source_url):
+            fail(f"{label}.sourceURL must use an audited official government host")
 
         effective_from = parse_date(tariff.get("effectiveFromDate"), f"{label}.effectiveFromDate")
         raw_effective_to = tariff.get("effectiveToDate")

@@ -23,6 +23,12 @@ public enum ChargePricingChargeType: String, Codable, Equatable, Sendable {
     }
 }
 
+public enum ChargePricingRuleOrigin: String, Codable, Equatable, Sendable {
+    case user
+    case stationLearned
+    case regionalOfficial
+}
+
 public enum ChargePricingChargerIdentity: Equatable, Sendable {
     case ac
     case teslaSupercharger
@@ -86,6 +92,13 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
     public var timeSegments: [ChargePricingTimeSegment]
     public var sessionFee: Double
     public var priority: Int
+    public var origin: ChargePricingRuleOrigin
+    public var regionCode: String?
+    public var sourceURL: String?
+    public var verifiedAt: String?
+    public var serviceFeePerKWh: Double
+    public var applicableWeekdays: [Int]?
+    public var applicableMonths: [Int]?
 
     public init(
         id: String = UUID().uuidString,
@@ -103,7 +116,14 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
         pricePerKWh: Double,
         timeSegments: [ChargePricingTimeSegment] = [],
         sessionFee: Double = 0,
-        priority: Int = 0
+        priority: Int = 0,
+        origin: ChargePricingRuleOrigin = .user,
+        regionCode: String? = nil,
+        sourceURL: String? = nil,
+        verifiedAt: String? = nil,
+        serviceFeePerKWh: Double = 0,
+        applicableWeekdays: [Int]? = nil,
+        applicableMonths: [Int]? = nil
     ) {
         self.id = id
         self.name = name
@@ -121,6 +141,13 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
         self.timeSegments = timeSegments
         self.sessionFee = sessionFee
         self.priority = priority
+        self.origin = origin
+        self.regionCode = regionCode
+        self.sourceURL = sourceURL
+        self.verifiedAt = verifiedAt
+        self.serviceFeePerKWh = serviceFeePerKWh
+        self.applicableWeekdays = applicableWeekdays
+        self.applicableMonths = applicableMonths
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -140,6 +167,13 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
         case timeSegments
         case sessionFee
         case priority
+        case origin
+        case regionCode
+        case sourceURL
+        case verifiedAt
+        case serviceFeePerKWh
+        case applicableWeekdays
+        case applicableMonths
     }
 
     public init(from decoder: Decoder) throws {
@@ -160,6 +194,13 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
         timeSegments = try container.decodeIfPresent([ChargePricingTimeSegment].self, forKey: .timeSegments) ?? []
         sessionFee = try container.decodeIfPresent(Double.self, forKey: .sessionFee) ?? 0
         priority = try container.decodeIfPresent(Int.self, forKey: .priority) ?? 0
+        origin = try container.decodeIfPresent(ChargePricingRuleOrigin.self, forKey: .origin) ?? .user
+        regionCode = try container.decodeIfPresent(String.self, forKey: .regionCode)
+        sourceURL = try container.decodeIfPresent(String.self, forKey: .sourceURL)
+        verifiedAt = try container.decodeIfPresent(String.self, forKey: .verifiedAt)
+        serviceFeePerKWh = try container.decodeIfPresent(Double.self, forKey: .serviceFeePerKWh) ?? 0
+        applicableWeekdays = try container.decodeIfPresent([Int].self, forKey: .applicableWeekdays)
+        applicableMonths = try container.decodeIfPresent([Int].self, forKey: .applicableMonths)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -180,12 +221,22 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
         try container.encode(timeSegments, forKey: .timeSegments)
         try container.encode(sessionFee, forKey: .sessionFee)
         try container.encode(priority, forKey: .priority)
+        try container.encode(origin, forKey: .origin)
+        try container.encodeIfPresent(regionCode, forKey: .regionCode)
+        try container.encodeIfPresent(sourceURL, forKey: .sourceURL)
+        try container.encodeIfPresent(verifiedAt, forKey: .verifiedAt)
+        try container.encode(serviceFeePerKWh, forKey: .serviceFeePerKWh)
+        try container.encodeIfPresent(applicableWeekdays, forKey: .applicableWeekdays)
+        try container.encodeIfPresent(applicableMonths, forKey: .applicableMonths)
     }
 }
 
 public enum ChargePricingValidationIssue: Equatable, Sendable {
     case invalidPrice
     case invalidSessionFee
+    case invalidServiceFee
+    case invalidApplicableWeekdays
+    case invalidApplicableMonths
     case incompleteLocation
     case invalidLocation
     case incompleteTimeWindow
@@ -203,6 +254,15 @@ public enum ChargePricingRuleValidator {
         }
         if !rule.sessionFee.isFinite || rule.sessionFee < 0 {
             issues.append(.invalidSessionFee)
+        }
+        if !rule.serviceFeePerKWh.isFinite || rule.serviceFeePerKWh < 0 {
+            issues.append(.invalidServiceFee)
+        }
+        if !isValidApplicability(rule.applicableWeekdays, allowed: 1...7) {
+            issues.append(.invalidApplicableWeekdays)
+        }
+        if !isValidApplicability(rule.applicableMonths, allowed: 1...12) {
+            issues.append(.invalidApplicableMonths)
         }
 
         let locationValuesPresent = [rule.latitude != nil, rule.longitude != nil, rule.radiusMeters != nil]
@@ -255,6 +315,11 @@ public enum ChargePricingRuleValidator {
             }
         }
         return false
+    }
+
+    private static func isValidApplicability(_ values: [Int]?, allowed: ClosedRange<Int>) -> Bool {
+        guard let values else { return true }
+        return !values.isEmpty && values.allSatisfy(allowed.contains) && Set(values).count == values.count
     }
 }
 
@@ -376,12 +441,26 @@ public enum ChargePricingRuleEngine {
         }
 
 
-        if rule.effectiveFromDate != nil || rule.effectiveToDate != nil {
-            guard let chargeDate = input.startDate.flatMap(ChargePricingDate.localDate(from:)) else {
+        if rule.effectiveFromDate != nil || rule.effectiveToDate != nil ||
+            rule.applicableWeekdays != nil || rule.applicableMonths != nil
+        {
+            guard let components = input.startDate.flatMap(ChargePricingDate.mainlandComponents(from:)),
+                  let chargeDate = ChargePricingDate.dateString(from: components)
+            else {
                 return false
             }
             if let from = rule.effectiveFromDate, chargeDate < from { return false }
             if let to = rule.effectiveToDate, chargeDate > to { return false }
+            if let weekdays = rule.applicableWeekdays,
+               !weekdays.contains(components.weekday ?? 0)
+            {
+                return false
+            }
+            if let months = rule.applicableMonths,
+               !months.contains(components.month ?? 0)
+            {
+                return false
+            }
         }
 
         if let ruleLatitude = rule.latitude,
@@ -676,8 +755,31 @@ public enum ChargePricingDate {
     }
 
     public static func localDate(from timestamp: String) -> String? {
-        guard timestamp.count >= 10 else { return nil }
-        let value = String(timestamp.prefix(10))
-        return isValid(value) ? value : nil
+        mainlandComponents(from: timestamp).flatMap(dateString(from:))
+    }
+
+    static func localDate(from date: Date) -> String? {
+        dateString(from: mainlandCalendar.dateComponents([.year, .month, .day], from: date))
+    }
+
+    static func mainlandComponents(from timestamp: String) -> DateComponents? {
+        guard let date = DomainDateParser.date(from: timestamp) else { return nil }
+        return mainlandCalendar.dateComponents([.year, .month, .day, .weekday], from: date)
+    }
+
+    static func dateString(from components: DateComponents) -> String? {
+        guard let year = components.year,
+              let month = components.month,
+              let day = components.day
+        else {
+            return nil
+        }
+        return String(format: "%04d-%02d-%02d", year, month, day)
+    }
+
+    private static var mainlandCalendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Asia/Shanghai") ?? TimeZone(secondsFromGMT: 8 * 60 * 60) ?? .gmt
+        return calendar
     }
 }

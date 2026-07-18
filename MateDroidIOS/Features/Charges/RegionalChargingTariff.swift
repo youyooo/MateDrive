@@ -65,7 +65,9 @@ public struct RegionalChargingTariffCatalog: Codable, Equatable, Sendable {
             return nil
         }
 
-        let localDate = Self.localDateString(from: date)
+        guard let localDate = ChargePricingDate.localDate(from: date) else {
+            return nil
+        }
         return region.tariffs
             .filter { tariff in
                 tariff.effectiveFromDate <= localDate &&
@@ -81,24 +83,31 @@ public struct RegionalChargingTariffCatalog: Codable, Equatable, Sendable {
     }
 
     public func makePricingRule(regionCode: String, from entry: RegionalChargingTariff) -> ChargePricingRule {
-        let regionalName = regions.first(where: { $0.regionCode == regionCode })?.names["en"] ?? regionCode
-        let unitPrice = entry.basePricePerKWh + entry.serviceFeePerKWh
+        let region = regions.first(where: { $0.regionCode == regionCode })
+        let regionalName = region?.names["en"] ?? regionCode
         return ChargePricingRule(
             id: entry.id,
             name: "\(regionalName) residential EV",
             chargeType: entry.chargeType,
             effectiveFromDate: entry.effectiveFromDate,
             effectiveToDate: entry.effectiveToDate,
-            pricePerKWh: unitPrice,
+            pricePerKWh: entry.basePricePerKWh,
             timeSegments: entry.timeSegments.map {
                 ChargePricingTimeSegment(
                     id: $0.id,
                     startMinuteOfDay: $0.startMinuteOfDay,
                     endMinuteOfDay: $0.endMinuteOfDay,
-                    pricePerKWh: $0.pricePerKWh + entry.serviceFeePerKWh
+                    pricePerKWh: $0.pricePerKWh
                 )
             },
-            sessionFee: entry.sessionFee
+            sessionFee: entry.sessionFee,
+            origin: .regionalOfficial,
+            regionCode: regionCode,
+            sourceURL: entry.sourceURL.absoluteString,
+            verifiedAt: region?.verifiedAt,
+            serviceFeePerKWh: entry.serviceFeePerKWh,
+            applicableWeekdays: entry.applicableWeekdays,
+            applicableMonths: entry.applicableMonths
         )
     }
 
@@ -129,13 +138,6 @@ public struct RegionalChargingTariffCatalog: Codable, Equatable, Sendable {
                 }
             }
         }
-    }
-
-    private static func localDateString(from date: Date) -> String {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "Asia/Shanghai") ?? .current
-        let components = calendar.dateComponents([.year, .month, .day], from: date)
-        return String(format: "%04d-%02d-%02d", components.year ?? 0, components.month ?? 0, components.day ?? 0)
     }
 
     private static func isStrictDate(_ value: String) -> Bool {
