@@ -23,7 +23,8 @@ final class ChargeCostResolverTests: XCTestCase {
                     id: "station",
                     name: "Station",
                     pricePerKWh: 1,
-                    origin: .stationLearned
+                    origin: .stationLearned,
+                    currencyCode: "CNY"
                 )
             ],
             regionalRule: ChargePricingRule(
@@ -89,7 +90,8 @@ final class ChargeCostResolverTests: XCTestCase {
             sessionFee: 1,
             origin: .stationLearned,
             serviceFeePerKWh: 0.2,
-            parkingFeeRuleID: "parking-1"
+            parkingFeeRuleID: "parking-1",
+            currencyCode: "CNY"
         )
 
         let result = ChargeCostResolver.resolve(makeInput(rules: [rule]))
@@ -138,7 +140,8 @@ final class ChargeCostResolverTests: XCTestCase {
             origin: .stationLearned,
             serviceFeePerKWh: 0.1,
             applicableWeekdays: [4],
-            applicableMonths: [7]
+            applicableMonths: [7],
+            currencyCode: "CNY"
         )
         let pricingInput = ChargePricingInput(
             startDate: "2026-07-01T23:00:00+08:00",
@@ -659,7 +662,8 @@ final class ChargeCostResolverTests: XCTestCase {
             name: "Station",
             pricePerKWh: price,
             priority: priority,
-            origin: .stationLearned
+            origin: .stationLearned,
+            currencyCode: "CNY"
         )
     }
 
