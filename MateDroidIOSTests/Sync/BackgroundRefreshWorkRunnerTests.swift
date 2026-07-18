@@ -484,6 +484,39 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
         XCTAssertEqual(snapshot?.state.historyContinuityAnchorID, "drive-3")
     }
 
+    func testDataPreloaderRemovesDeletedCachedActivityWhenReliableLastPageContainsAnchor() async {
+        let client = AnchoredAuthoritativeActivityHistoryHTTPClient()
+        let cache = ActivitiesStateCache(maximumAge: 60)
+        let settings = AppSettings(serverURL: "https://teslamate.example", lastSelectedCarId: 7)
+        var completeState = ActivitiesState()
+        completeState.items = [
+            TeslaMateActivity(id: 2, type: "drive", startDate: "2026-07-02T00:00:00Z"),
+            TeslaMateActivity(id: 1, type: "charge", startDate: "2026-07-01T00:00:00Z")
+        ]
+        completeState.loadedPageCount = 1
+        completeState.historyFullyLoaded = true
+        completeState.historyContinuityAnchorID = "drive-2"
+        await cache.save(
+            ActivitiesCacheSnapshot(state: completeState),
+            serverURL: settings.serverURL,
+            carId: 7
+        )
+        let preloader = AppDataPreloader(
+            settingsStore: Task3PreloadSettingsStore(settings: settings),
+            secretStore: Task3PreloadSecretStore(),
+            clientOverride: client,
+            activitiesCache: cache
+        )
+
+        _ = await preloader.preload(force: true)
+        let snapshot = await cache.load(serverURL: settings.serverURL, carId: 7, now: Date())
+
+        XCTAssertEqual(snapshot?.state.items.map(\.stableID), ["drive-2"])
+        XCTAssertTrue(snapshot?.state.historyFullyLoaded == true)
+        XCTAssertFalse(snapshot?.state.hasMore == true)
+        XCTAssertEqual(snapshot?.state.historyContinuityAnchorID, "drive-2")
+    }
+
     func testActivitiesCacheOnlyAllowsStrictMergedPartialToDowngradeCompleteHistory() async {
         let cache = ActivitiesStateCache(maximumAge: 60)
         let serverURL = "https://teslamate.example"
@@ -1031,6 +1064,24 @@ private actor ChangedActivityHistoryHTTPClient: HTTPClient {
             body = #"{"data":{"cars":[{"car_id":7,"name":"Test car 7"}]}}"#
         } else if url.path.hasSuffix("/activities") {
             body = #"{"data":[{"id":3,"type":"drive","startDate":"2026-07-03T00:00:00Z"}],"pagination":{"page":1,"limit":200,"totalPages":1,"totalRecords":1}}"#
+        } else {
+            body = #"{}"#
+        }
+        return (
+            Data(body.utf8),
+            HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!
+        )
+    }
+}
+
+private actor AnchoredAuthoritativeActivityHistoryHTTPClient: HTTPClient {
+    func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let url = request.url ?? URL(string: "https://teslamate.example")!
+        let body: String
+        if url.path == "/api/v1/cars" {
+            body = #"{"data":{"cars":[{"car_id":7,"name":"Test car 7"}]}}"#
+        } else if url.path.hasSuffix("/activities") {
+            body = #"{"data":[{"id":2,"type":"drive","startDate":"2026-07-02T00:00:00Z"}],"pagination":{"page":1,"limit":200,"totalPages":1,"totalRecords":1}}"#
         } else {
             body = #"{}"#
         }

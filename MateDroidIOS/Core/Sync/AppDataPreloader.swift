@@ -251,14 +251,18 @@ public actor AppDataPreloader {
                         let responseMetadataIsDegraded = !metadataIsReliable || repeatsPreviousFullPage
                         let bridgesCachedHistory = cachedContinuityAnchorID.map(pageIDs.contains) == true
                         paginationIsDegraded = paginationIsDegraded || responseMetadataIsDegraded
-                        if bridgesCachedHistory {
+                        if metadataIsReliable,
+                           let reportedPages = response.pagination?.totalPages,
+                           page >= reportedPages {
+                            hasMore = false
+                            reachedServerEnd = true
+                        } else if bridgesCachedHistory {
                             bridgedCachedHistory = true
                             hasMore = false
                         } else if repeatsPreviousFullPage, !traversesCachedPage {
                             hasMore = false
                         } else if metadataIsReliable, let reportedPages = response.pagination?.totalPages {
                             hasMore = page < reportedPages
-                            reachedServerEnd = !hasMore
                         } else {
                             let serverLimit = max(response.pagination?.limit ?? pageSize, 1)
                             let isConfirmedServerEnd = response.data.isEmpty
