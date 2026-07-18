@@ -46,15 +46,9 @@ public struct BackgroundRefreshWorkRunner: BackgroundRefreshWorkRunning {
         guard !Task.isCancelled else {
             return cancelledReport()
         }
-        let historyReport = await historySyncRunner.run()
-        guard !Task.isCancelled else {
-            return BackgroundRefreshReport(
-                historySyncReport: historyReport,
-                vehicleStatusRefreshed: false,
-                wasCancelled: true
-            )
-        }
-        let statusRefreshed = await refreshVehicleStatus()
+        async let historySync = historySyncRunner.run()
+        async let statusRefresh = refreshVehicleStatus()
+        let (statusRefreshed, historyReport) = await (statusRefresh, historySync)
         guard !Task.isCancelled else {
             return BackgroundRefreshReport(
                 historySyncReport: historyReport,
@@ -64,6 +58,14 @@ public struct BackgroundRefreshWorkRunner: BackgroundRefreshWorkRunning {
             )
         }
         let smartActivitiesIndexed = await rebuildSmartActivities(historyReport.completedCarIDs)
+        guard !Task.isCancelled else {
+            return BackgroundRefreshReport(
+                historySyncReport: historyReport,
+                vehicleStatusRefreshed: statusRefreshed,
+                smartActivitiesIndexed: false,
+                wasCancelled: true
+            )
+        }
         return BackgroundRefreshReport(
             historySyncReport: historyReport,
             vehicleStatusRefreshed: statusRefreshed,

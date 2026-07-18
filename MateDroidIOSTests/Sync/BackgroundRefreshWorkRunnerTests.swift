@@ -236,6 +236,63 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
         XCTAssertTrue(report.isSuccessful)
     }
 
+    func testBackgroundRunnerStartsHistoryAndStatusInParallelBeforeIndexing() async {
+        let gate = ParallelBackgroundWorkGate()
+        let order = BackgroundIndexCallOrderRecorder()
+        let runner = BackgroundRefreshWorkRunner(
+            historySyncRunner: ParallelBackgroundHistoryRunner(gate: gate, order: order),
+            refreshVehicleStatus: {
+                await gate.markStarted("status")
+                await gate.waitForRelease()
+                await order.append("status-finished")
+                return true
+            },
+            rebuildSmartActivities: { carIds in
+                await order.append("index-\(carIds)")
+                return true
+            }
+        )
+
+        let task = Task { await runner.run() }
+        await gate.waitUntilBothStarted()
+        let started = await gate.startedNames
+        XCTAssertEqual(started, Set(["history", "status"]))
+
+        await gate.release()
+        let report = await task.value
+        let lastCall = await order.last
+        XCTAssertEqual(lastCall, "index-[1]")
+        XCTAssertTrue(report.smartActivitiesIndexed)
+    }
+
+    func testCancellationAfterHistoryFinishesSkipsIndexAndReportsFalse() async {
+        let history = CancellationAfterHistoryRunner()
+        let statusGate = CancellationStatusGate()
+        let indexCounter = BackgroundRefreshCounter()
+        let runner = BackgroundRefreshWorkRunner(
+            historySyncRunner: history,
+            refreshVehicleStatus: {
+                await statusGate.waitForRelease()
+                return true
+            },
+            rebuildSmartActivities: { _ in
+                await indexCounter.increment()
+                return true
+            }
+        )
+
+        let task = Task { await runner.run() }
+        await history.waitUntilFinished()
+        task.cancel()
+        await statusGate.release()
+        let report = await task.value
+        let indexCount = await indexCounter.value
+
+        XCTAssertTrue(report.wasCancelled)
+        XCTAssertFalse(report.smartActivitiesIndexed)
+        XCTAssertEqual(indexCount, 0)
+    }
+
     func testIndexingFailureMakesBackgroundRefreshFail() async {
         let runner = BackgroundRefreshWorkRunner(
             historySyncRunner: StubBackgroundHistoryRunner(
@@ -264,6 +321,83 @@ private struct OrderedBackgroundHistoryRunner: HistorySyncRunning {
     func run() async -> HistorySyncReport {
         await order.append("history")
         return HistorySyncReport(attemptedCarIDs: [1], completedCarIDs: [1], failedCarIDs: [])
+    }
+}
+
+private struct ParallelBackgroundHistoryRunner: HistorySyncRunning {
+    let gate: ParallelBackgroundWorkGate
+    let order: BackgroundIndexCallOrderRecorder
+
+    func run() async -> HistorySyncReport {
+        await gate.markStarted("history")
+        await gate.waitForRelease()
+        await order.append("history-finished")
+        return HistorySyncReport(attemptedCarIDs: [1], completedCarIDs: [1], failedCarIDs: [])
+    }
+}
+
+private actor CancellationAfterHistoryRunner: HistorySyncRunning {
+    private var finished = false
+    private var waiters: [CheckedContinuation<Void, Never>] = []
+
+    func run() async -> HistorySyncReport {
+        finished = true
+        waiters.forEach { $0.resume() }
+        waiters.removeAll()
+        return HistorySyncReport(attemptedCarIDs: [1], completedCarIDs: [1], failedCarIDs: [])
+    }
+
+    func waitUntilFinished() async {
+        guard !finished else { return }
+        await withCheckedContinuation { waiters.append($0) }
+    }
+}
+
+private actor CancellationStatusGate {
+    private var released = false
+    private var waiters: [CheckedContinuation<Void, Never>] = []
+
+    func waitForRelease() async {
+        guard !released else { return }
+        await withCheckedContinuation { waiters.append($0) }
+    }
+
+    func release() {
+        released = true
+        waiters.forEach { $0.resume() }
+        waiters.removeAll()
+    }
+}
+
+private actor ParallelBackgroundWorkGate {
+    private(set) var startedNames: Set<String> = []
+    private var released = false
+    private var startedWaiters: [CheckedContinuation<Void, Never>] = []
+    private var releaseWaiters: [CheckedContinuation<Void, Never>] = []
+
+    func markStarted(_ name: String) {
+        startedNames.insert(name)
+        guard startedNames.count >= 2 else { return }
+        startedWaiters.forEach { $0.resume() }
+        startedWaiters.removeAll()
+    }
+
+    func waitUntilBothStarted() async {
+        guard startedNames.count >= 2 else {
+            await withCheckedContinuation { startedWaiters.append($0) }
+            return
+        }
+    }
+
+    func waitForRelease() async {
+        guard !released else { return }
+        await withCheckedContinuation { releaseWaiters.append($0) }
+    }
+
+    func release() {
+        released = true
+        releaseWaiters.forEach { $0.resume() }
+        releaseWaiters.removeAll()
     }
 }
 

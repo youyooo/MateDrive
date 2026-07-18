@@ -6,6 +6,7 @@ public protocol SmartActivitySessionStoring: Sendable {
     func replace(carId: Int, sessions: [SmartActivitySession]) async throws
     func derivationFingerprint(carId: Int) async throws -> String?
     func replace(carId: Int, sessions: [SmartActivitySession], derivationFingerprint: String) async throws
+    func removeDerivedSessions(carId: Int) async throws
     func removeDerivedSessions() async throws
 }
 
@@ -20,6 +21,10 @@ public extension SmartActivitySessionStoring {
         derivationFingerprint _: String
     ) async throws {
         try await replace(carId: carId, sessions: sessions)
+    }
+
+    func removeDerivedSessions(carId: Int) async throws {
+        try await replace(carId: carId, sessions: [])
     }
 }
 
@@ -153,6 +158,19 @@ public struct SmartActivityStore: SmartActivitySessionStoring {
         try await database.performTransaction([
             SQLiteCommand("DELETE FROM vehicle_activity_sessions;"),
             SQLiteCommand("DELETE FROM smart_activity_index_state;")
+        ])
+    }
+
+    public func removeDerivedSessions(carId: Int) async throws {
+        try await database.performTransaction([
+            SQLiteCommand(
+                "DELETE FROM vehicle_activity_sessions WHERE car_id = ?;",
+                bindings: [.int(carId)]
+            ),
+            SQLiteCommand(
+                "DELETE FROM smart_activity_index_state WHERE car_id = ?;",
+                bindings: [.int(carId)]
+            )
         ])
     }
 
@@ -324,6 +342,11 @@ public struct DatabaseBackedSmartActivityStore: SmartActivitySessionStoring {
 
     public func removeDerivedSessions() async throws {
         try await SmartActivityStore(database: databaseProvider.database()).removeDerivedSessions()
+    }
+
+    public func removeDerivedSessions(carId: Int) async throws {
+        try await SmartActivityStore(database: databaseProvider.database())
+            .removeDerivedSessions(carId: carId)
     }
 }
 

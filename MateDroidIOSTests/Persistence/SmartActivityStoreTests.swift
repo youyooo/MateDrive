@@ -143,6 +143,33 @@ final class SmartActivityStoreTests: XCTestCase {
         XCTAssertNil(fingerprint)
     }
 
+    func testRemovingOneCarsDerivedSessionsAtomicallyPreservesOtherCarsIndex() async throws {
+        let stores = try await SmartActivityTestStores.make()
+        let firstCar = SmartActivitySession.fixture(id: "car-1", carId: 1)
+        let secondCar = SmartActivitySession.fixture(id: "car-2", carId: 2)
+        try await stores.sessions.replace(
+            carId: 1,
+            sessions: [firstCar],
+            derivationFingerprint: "fingerprint-1"
+        )
+        try await stores.sessions.replace(
+            carId: 2,
+            sessions: [secondCar],
+            derivationFingerprint: "fingerprint-2"
+        )
+
+        try await stores.sessions.removeDerivedSessions(carId: 1)
+
+        let firstSessions = try await stores.sessions.sessions(carId: 1)
+        let firstFingerprint = try await stores.sessions.derivationFingerprint(carId: 1)
+        let secondSessions = try await stores.sessions.sessions(carId: 2)
+        let secondFingerprint = try await stores.sessions.derivationFingerprint(carId: 2)
+        XCTAssertTrue(firstSessions.isEmpty)
+        XCTAssertNil(firstFingerprint)
+        XCTAssertEqual(secondSessions, [secondCar])
+        XCTAssertEqual(secondFingerprint, "fingerprint-2")
+    }
+
     func testMalformedSessionPayloadIsSkipped() async throws {
         let stores = try await SmartActivityTestStores.make()
         let valid = SmartActivitySession.fixture()

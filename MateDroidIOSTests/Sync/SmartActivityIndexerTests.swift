@@ -25,11 +25,19 @@ final class SmartActivityIndexerTests: XCTestCase {
             )
         ])
         let costStore = RecordingCostOverrideStore(values: [20: 8.5])
+        let aggregateStore = RecordingChargePricingAggregateStore(values: [
+            20: ChargeDetailPricingAggregate(
+                chargeId: 20,
+                isDc: true,
+                chargerIdentity: .teslaSupercharger
+            )
+        ])
         let loader = CachedSmartActivitySourceLoader(
             activitiesCache: cache,
             sleepIntervalStore: sleepStore,
             settingsStore: MutableIndexerSettingsStore(settings),
             chargeCostOverrideStore: costStore,
+            chargePricingAggregateStore: aggregateStore,
             tariffCatalog: { Self.tariffCatalog }
         )
 
@@ -38,11 +46,14 @@ final class SmartActivityIndexerTests: XCTestCase {
         XCTAssertEqual(snapshot?.activities, Self.activityFixture)
         XCTAssertEqual(snapshot?.sleepIntervals.count, 1)
         XCTAssertEqual(snapshot?.chargeCostOverrides, [20: 8.5])
+        XCTAssertEqual(snapshot?.chargePricingAggregates[20]?.isDc, true)
         XCTAssertEqual(snapshot?.tariffCatalog.version, 7)
         let sleepReadCount = await sleepStore.readCount
         let costReadCount = await costStore.readCount
+        let aggregateReadCount = await aggregateStore.readCount
         XCTAssertEqual(sleepReadCount, 1)
         XCTAssertEqual(costReadCount, 1)
+        XCTAssertEqual(aggregateReadCount, 1)
     }
 
     func testIndexerBuildsFromCacheAndPersistsCodableChargeCost() async throws {
@@ -249,12 +260,220 @@ final class SmartActivityIndexerTests: XCTestCase {
         XCTAssertEqual(secondCost, firstCost * 2, accuracy: 0.001)
     }
 
+    func testOverlappingRebuildsAreSerializedAndNewestSnapshotWins() async throws {
+        let source = SequencedGatedSmartActivitySourceLoader(
+            first: Self.snapshot(overrides: [20: 1]),
+            latest: Self.snapshot(overrides: [20: 2])
+        )
+        let store = InMemorySmartActivitySessionStore()
+        let indexer = SmartActivityIndexer(
+            source: source,
+            sessionStore: store,
+            labelStore: InMemoryActivityLabelOverrideStore()
+        )
+
+        let first = Task { await indexer.rebuild(carIds: [1]) }
+        await source.waitUntilFirstRequest()
+        let second = Task { await indexer.rebuild(carIds: [1]) }
+        try await Task.sleep(for: .milliseconds(20))
+        let requestCountBeforeRelease = await source.requestCount
+        XCTAssertEqual(requestCountBeforeRelease, 1)
+
+        await source.releaseFirstRequest()
+        _ = await first.value
+        _ = await second.value
+
+        let sessions = try await store.sessions(carId: 1)
+        let replaceCount = await store.replaceCount
+        XCTAssertEqual(sessions.first?.chargeCost?.amount, 2)
+        XCTAssertEqual(replaceCount, 2)
+    }
+
+    func testRemoveWaitsForRebuildAndCannotBeRepopulatedByStaleWork() async throws {
+        let source = SequencedGatedSmartActivitySourceLoader(
+            first: Self.snapshot(),
+            latest: Self.snapshot()
+        )
+        let store = InMemorySmartActivitySessionStore()
+        let indexer = SmartActivityIndexer(
+            source: source,
+            sessionStore: store,
+            labelStore: InMemoryActivityLabelOverrideStore()
+        )
+
+        let rebuild = Task { await indexer.rebuild(carIds: [1]) }
+        await source.waitUntilFirstRequest()
+        let removal = Task { try await indexer.removeDerivedData() }
+        try await Task.sleep(for: .milliseconds(20))
+        let removeCountBeforeRelease = await store.removeAllCount
+        XCTAssertEqual(removeCountBeforeRelease, 0)
+
+        await source.releaseFirstRequest()
+        _ = await rebuild.value
+        try await removal.value
+
+        let sessions = try await store.sessions(carId: 1)
+        let fingerprint = try await store.derivationFingerprint(carId: 1)
+        XCTAssertTrue(sessions.isEmpty)
+        XCTAssertNil(fingerprint)
+    }
+
+    func testCancellationAfterCommittedReplaceRestoresOriginalSnapshotAndFingerprint() async throws {
+        let previous = Self.previousSession(carId: 1)
+        let store = PostCommitGatedSmartActivitySessionStore(
+            sessions: [previous],
+            fingerprint: "original"
+        )
+        let indexer = SmartActivityIndexer(
+            source: MutableSmartActivitySourceLoader(snapshot: Self.snapshot()),
+            sessionStore: store,
+            labelStore: InMemoryActivityLabelOverrideStore()
+        )
+
+        let task = Task { await indexer.rebuild(carIds: [1]) }
+        await store.waitUntilFirstReplaceCommitted()
+        task.cancel()
+        await store.releaseFirstReplace()
+        _ = await task.value
+
+        let sessions = try await store.sessions(carId: 1)
+        let fingerprint = try await store.derivationFingerprint(carId: 1)
+        XCTAssertEqual(sessions, [previous])
+        XCTAssertEqual(fingerprint, "original")
+    }
+
+    func testCancellationAfterCommittedReplaceWithoutOriginalFingerprintClearsCarState() async throws {
+        let store = PostCommitGatedSmartActivitySessionStore(
+            sessions: [Self.previousSession(carId: 1)],
+            fingerprint: nil
+        )
+        let indexer = SmartActivityIndexer(
+            source: MutableSmartActivitySourceLoader(snapshot: Self.snapshot()),
+            sessionStore: store,
+            labelStore: InMemoryActivityLabelOverrideStore()
+        )
+
+        let task = Task { await indexer.rebuild(carIds: [1]) }
+        await store.waitUntilFirstReplaceCommitted()
+        task.cancel()
+        await store.releaseFirstReplace()
+        _ = await task.value
+
+        let sessions = try await store.sessions(carId: 1)
+        let fingerprint = try await store.derivationFingerprint(carId: 1)
+        let removeCarCount = await store.removeCarCount
+        XCTAssertTrue(sessions.isEmpty)
+        XCTAssertNil(fingerprint)
+        XCTAssertEqual(removeCarCount, 1)
+    }
+
+    func testKnownDcChargeUsesDcRuleAndDoesNotUseResidentialTariff() async throws {
+        let dcRule = ChargePricingRule(
+            id: "tesla-dc",
+            name: "Tesla DC",
+            chargeType: .teslaSupercharger,
+            pricePerKWh: 2,
+            currencyCode: "CNY"
+        )
+        let aggregate = ChargeDetailPricingAggregate(
+            chargeId: 20,
+            isDc: true,
+            chargerIdentity: .teslaSupercharger
+        )
+        let dcStore = InMemorySmartActivitySessionStore()
+        let dcIndexer = SmartActivityIndexer(
+            source: MutableSmartActivitySourceLoader(snapshot: Self.snapshot(
+                overrides: [:],
+                pricingRules: [dcRule],
+                aggregates: [20: aggregate]
+            )),
+            sessionStore: dcStore,
+            labelStore: InMemoryActivityLabelOverrideStore()
+        )
+
+        _ = await dcIndexer.rebuild(carIds: [1])
+        let dcSessions = try await dcStore.sessions(carId: 1)
+        let dcCost = try XCTUnwrap(dcSessions.first?.chargeCost)
+        XCTAssertEqual(dcCost.amount, 20)
+        XCTAssertEqual(dcCost.ruleID, "tesla-dc")
+
+        let regionalStore = InMemorySmartActivitySessionStore()
+        let regionalIndexer = SmartActivityIndexer(
+            source: MutableSmartActivitySourceLoader(snapshot: Self.snapshot(
+                overrides: [:],
+                pricingRules: [],
+                aggregates: [20: aggregate],
+                residentialTariffRegionCode: "CN-43",
+                tariffCatalog: Self.regionalTariffCatalog
+            )),
+            sessionStore: regionalStore,
+            labelStore: InMemoryActivityLabelOverrideStore()
+        )
+
+        _ = await regionalIndexer.rebuild(carIds: [1])
+        let regionalSessions = try await regionalStore.sessions(carId: 1)
+        XCTAssertNil(regionalSessions.first?.chargeCost)
+    }
+
+    func testPricingRuleOrderParticipatesInFingerprint() async {
+        let firstRule = ChargePricingRule(id: "first", name: "Tied", pricePerKWh: 1, currencyCode: "CNY")
+        let secondRule = ChargePricingRule(id: "second", name: "Tied", pricePerKWh: 2, currencyCode: "CNY")
+        let source = MutableSmartActivitySourceLoader(snapshot: Self.snapshot(
+            overrides: [:],
+            pricingRules: [firstRule, secondRule]
+        ))
+        let store = InMemorySmartActivitySessionStore()
+        let indexer = SmartActivityIndexer(
+            source: source,
+            sessionStore: store,
+            labelStore: InMemoryActivityLabelOverrideStore()
+        )
+
+        _ = await indexer.rebuild(carIds: [1])
+        await source.setSnapshot(Self.snapshot(overrides: [:], pricingRules: [secondRule, firstRule]))
+        let reordered = await indexer.rebuild(carIds: [1])
+        let replaceCount = await store.replaceCount
+
+        XCTAssertEqual(reordered.completedCarIds, [1])
+        XCTAssertEqual(replaceCount, 2)
+    }
+
+    func testOverflowingChargeAggregationDoesNotPersistNonfiniteCostOrComponents() async throws {
+        let secondCharge = TeslaMateActivity(
+            id: 21,
+            type: "charge",
+            startDate: "2026-07-18T03:00:00Z",
+            endDate: "2026-07-18T03:30:00Z",
+            startAddress: "Home",
+            startLatitude: 31.2304,
+            startLongitude: 121.4737,
+            kwh: 1
+        )
+        let store = InMemorySmartActivitySessionStore()
+        let indexer = SmartActivityIndexer(
+            source: MutableSmartActivitySourceLoader(snapshot: Self.snapshot(
+                activities: Self.activityFixture + [secondCharge],
+                overrides: [20: .greatestFiniteMagnitude, 21: .greatestFiniteMagnitude]
+            )),
+            sessionStore: store,
+            labelStore: InMemoryActivityLabelOverrideStore()
+        )
+
+        _ = await indexer.rebuild(carIds: [1])
+        let sessions = try await store.sessions(carId: 1)
+        XCTAssertNil(sessions.first?.chargeCost)
+    }
+
     private static func snapshot(
         carId: Int = 1,
         historyFullyLoaded: Bool = true,
         activities: [TeslaMateActivity] = activityFixture,
         pricing: Double = 0.5,
-        overrides: [Int: Double] = [20: 8.5]
+        overrides: [Int: Double] = [20: 8.5],
+        pricingRules: [ChargePricingRule]? = nil,
+        aggregates: [Int: ChargeDetailPricingAggregate] = [:],
+        residentialTariffRegionCode: String? = nil,
+        tariffCatalog: RegionalChargingTariffCatalog = tariffCatalog
     ) -> SmartActivitySourceSnapshot {
         SmartActivitySourceSnapshot(
             carId: carId,
@@ -265,7 +484,8 @@ final class SmartActivityIndexerTests: XCTestCase {
             settings: AppSettings(
                 serverURL: "https://teslamate.example",
                 currencyCode: "CNY",
-                chargePricingRules: [ChargePricingRule(
+                residentialTariffRegionCode: residentialTariffRegionCode,
+                chargePricingRules: pricingRules ?? [ChargePricingRule(
                     id: "home",
                     name: "Home",
                     pricePerKWh: pricing,
@@ -274,7 +494,8 @@ final class SmartActivityIndexerTests: XCTestCase {
                 geofenceRules: [homeGeofence]
             ),
             chargeCostOverrides: overrides,
-            tariffCatalog: tariffCatalog
+            tariffCatalog: tariffCatalog,
+            chargePricingAggregates: aggregates
         )
     }
 
@@ -321,6 +542,34 @@ final class SmartActivityIndexerTests: XCTestCase {
         version: 7,
         generatedAt: "2026-07-18T00:00:00Z",
         regions: []
+    )
+
+    private static let regionalTariffCatalog = RegionalChargingTariffCatalog(
+        version: 8,
+        generatedAt: "2026-07-18T00:00:00Z",
+        regions: [RegionalChargingTariffRegion(
+            regionCode: "CN-43",
+            names: ["en": "Hunan"],
+            availability: .verified,
+            verifiedAt: "2026-07-01",
+            tariffs: [RegionalChargingTariff(
+                id: "cn-43-home",
+                status: .active,
+                customerClass: "residential-ev",
+                chargeType: .ac,
+                currencyCode: "CNY",
+                effectiveFromDate: "2026-01-01",
+                effectiveToDate: nil,
+                documentID: "fixture",
+                sourceURL: URL(string: "https://example.com/tariff")!,
+                basePricePerKWh: 0.5,
+                timeSegments: [],
+                serviceFeePerKWh: 0,
+                sessionFee: 0,
+                applicableWeekdays: nil,
+                applicableMonths: nil
+            )]
+        )]
     )
 
     private static func previousSession(carId: Int) -> SmartActivitySession {
@@ -407,10 +656,49 @@ private actor CancellingSmartActivitySourceLoader: SmartActivitySourceLoading {
     }
 }
 
+private actor SequencedGatedSmartActivitySourceLoader: SmartActivitySourceLoading {
+    private let first: SmartActivitySourceSnapshot
+    private var latest: SmartActivitySourceSnapshot
+    private var firstRequested = false
+    private var firstReleased = false
+    private var firstRequestWaiters: [CheckedContinuation<Void, Never>] = []
+    private var firstReleaseWaiters: [CheckedContinuation<Void, Never>] = []
+    private(set) var requestCount = 0
+
+    init(first: SmartActivitySourceSnapshot, latest: SmartActivitySourceSnapshot) {
+        self.first = first
+        self.latest = latest
+    }
+
+    func snapshot(carId _: Int) async throws -> SmartActivitySourceSnapshot? {
+        requestCount += 1
+        guard requestCount == 1 else { return latest }
+        firstRequested = true
+        firstRequestWaiters.forEach { $0.resume() }
+        firstRequestWaiters.removeAll()
+        if !firstReleased {
+            await withCheckedContinuation { firstReleaseWaiters.append($0) }
+        }
+        return first
+    }
+
+    func waitUntilFirstRequest() async {
+        guard !firstRequested else { return }
+        await withCheckedContinuation { firstRequestWaiters.append($0) }
+    }
+
+    func releaseFirstRequest() {
+        firstReleased = true
+        firstReleaseWaiters.forEach { $0.resume() }
+        firstReleaseWaiters.removeAll()
+    }
+}
+
 private actor InMemorySmartActivitySessionStore: SmartActivitySessionStoring {
     private var values: [Int: [SmartActivitySession]]
     private var fingerprints: [Int: String]
     private(set) var replaceCount = 0
+    private(set) var removeAllCount = 0
 
     init(initial: [Int: [SmartActivitySession]] = [:]) {
         values = initial
@@ -437,8 +725,79 @@ private actor InMemorySmartActivitySessionStore: SmartActivitySessionStoring {
         fingerprints[carId] = derivationFingerprint
     }
     func removeDerivedSessions() async throws {
+        removeAllCount += 1
         values.removeAll()
         fingerprints.removeAll()
+    }
+
+    func removeDerivedSessions(carId: Int) async throws {
+        values[carId] = nil
+        fingerprints[carId] = nil
+    }
+}
+
+private actor PostCommitGatedSmartActivitySessionStore: SmartActivitySessionStoring {
+    private var storedSessions: [SmartActivitySession]
+    private var storedFingerprint: String?
+    private var shouldGateNextReplace = true
+    private var firstReplaceCommitted = false
+    private var firstReplaceReleased = false
+    private var commitWaiters: [CheckedContinuation<Void, Never>] = []
+    private var releaseWaiters: [CheckedContinuation<Void, Never>] = []
+    private(set) var removeCarCount = 0
+
+    init(sessions: [SmartActivitySession], fingerprint: String?) {
+        storedSessions = sessions
+        storedFingerprint = fingerprint
+    }
+
+    func sessions(carId _: Int) async throws -> [SmartActivitySession] { storedSessions }
+    func session(carId _: Int, sessionId: String) async throws -> SmartActivitySession? {
+        storedSessions.first { $0.id == sessionId }
+    }
+    func derivationFingerprint(carId _: Int) async throws -> String? { storedFingerprint }
+    func replace(carId: Int, sessions: [SmartActivitySession]) async throws {
+        try await replace(
+            carId: carId,
+            sessions: sessions,
+            derivationFingerprint: sessions.first?.derivationFingerprint ?? ""
+        )
+    }
+    func replace(
+        carId _: Int,
+        sessions: [SmartActivitySession],
+        derivationFingerprint: String
+    ) async throws {
+        storedSessions = sessions
+        storedFingerprint = derivationFingerprint
+        guard shouldGateNextReplace else { return }
+        shouldGateNextReplace = false
+        firstReplaceCommitted = true
+        commitWaiters.forEach { $0.resume() }
+        commitWaiters.removeAll()
+        if !firstReplaceReleased {
+            await withCheckedContinuation { releaseWaiters.append($0) }
+        }
+    }
+    func removeDerivedSessions(carId _: Int) async throws {
+        removeCarCount += 1
+        storedSessions = []
+        storedFingerprint = nil
+    }
+    func removeDerivedSessions() async throws {
+        storedSessions = []
+        storedFingerprint = nil
+    }
+
+    func waitUntilFirstReplaceCommitted() async {
+        guard !firstReplaceCommitted else { return }
+        await withCheckedContinuation { commitWaiters.append($0) }
+    }
+
+    func releaseFirstReplace() {
+        firstReplaceReleased = true
+        releaseWaiters.forEach { $0.resume() }
+        releaseWaiters.removeAll()
     }
 }
 
@@ -482,6 +841,18 @@ private actor RecordingCostOverrideStore: ChargeCostOverriding {
     }
     func costOverride(carId _: Int, chargeId: Int) async throws -> Double? { values[chargeId] }
     func saveCostOverride(carId _: Int, chargeId _: Int, cost _: Double?) async throws {}
+}
+
+private actor RecordingChargePricingAggregateStore: ChargePricingAggregateProviding {
+    private let values: [Int: ChargeDetailPricingAggregate]
+    private(set) var readCount = 0
+
+    init(values: [Int: ChargeDetailPricingAggregate]) { self.values = values }
+
+    func chargePricingAggregates(carId _: Int) async throws -> [Int: ChargeDetailPricingAggregate] {
+        readCount += 1
+        return values
+    }
 }
 
 private actor IndexNotificationCounter {

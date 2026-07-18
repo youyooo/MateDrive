@@ -23,6 +23,9 @@ struct MateDroidApp: App {
                 settingsStore: environment.settingsStore,
                 chargeCostOverrideStore: DatabaseBackedChargeCostOverrideStore(
                     databaseProvider: environment.databaseProvider
+                ),
+                chargePricingAggregateStore: DatabaseBackedChargePricingAggregateStore(
+                    databaseProvider: environment.databaseProvider
                 )
             ),
             sessionStore: DatabaseBackedSmartActivityStore(databaseProvider: environment.databaseProvider),
