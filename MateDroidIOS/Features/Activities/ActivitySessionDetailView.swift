@@ -194,7 +194,7 @@ public struct ActivitySessionDetailView: View {
                     if !isLast {
                         Rectangle()
                             .fill(Color.secondary.opacity(0.25))
-                            .frame(width: 2, minHeight: 46)
+                            .frame(width: 2, height: 46)
                     }
                 }
 
