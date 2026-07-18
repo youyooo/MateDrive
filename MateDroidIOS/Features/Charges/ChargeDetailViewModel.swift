@@ -68,6 +68,28 @@ public struct ChargeDetailState: Equatable, Sendable {
     }
 }
 
+private struct ChargeCostResolutionContext {
+    let currencyCode: String
+    let isAC: Bool
+    let geofenceKind: GeofenceKind?
+    let pricingInput: ChargePricingInput
+    let rules: [ChargePricingRule]
+    let regionalRule: ChargePricingRule?
+
+    func input(manualCost: Double?, apiCost: Double?) -> ChargeCostResolutionInput {
+        ChargeCostResolutionInput(
+            manualCost: manualCost,
+            apiCost: apiCost,
+            currencyCode: currencyCode,
+            isAC: isAC,
+            geofenceKind: geofenceKind,
+            pricingInput: pricingInput,
+            rules: rules,
+            regionalRule: regionalRule
+        )
+    }
+}
+
 @MainActor
 public final class ChargeDetailViewModel: ObservableObject {
     @Published public private(set) var state: ChargeDetailState
@@ -76,6 +98,7 @@ public final class ChargeDetailViewModel: ObservableObject {
     private let settingsStore: (any SettingsStoring)?
     private let costOverrideStore: any ChargeCostOverriding
     private let tripMembershipManager: (any TripMembershipManaging)?
+    private var costResolutionContext: ChargeCostResolutionContext?
 
     public init(
         api: any ChargeAPIProviding,
@@ -100,6 +123,7 @@ public final class ChargeDetailViewModel: ObservableObject {
         async let membershipResult = loadMembership(carId: carId, chargeId: chargeId)
         let statusResult = await api.carStatus(carId: carId)
         var pricingRules: [ChargePricingRule] = []
+        var loadedSettings: AppSettings?
         if case let .success(payload) = statusResult {
             state.units = UnitPreferences(
                 unitOfLength: payload.units?.unitOfLength,
@@ -109,6 +133,7 @@ public final class ChargeDetailViewModel: ObservableObject {
         }
         if let settingsStore {
             let settings = await settingsStore.load()
+            loadedSettings = settings
             state.currencySymbol = MateDroidCurrencyFormatter.symbol(for: settings.resolvedCurrencyCode())
             pricingRules = settings.chargePricingRules
             state.hasPricingRules = !pricingRules.isEmpty
@@ -136,22 +161,56 @@ public final class ChargeDetailViewModel: ObservableObject {
             let pricingIdentity: ChargePricingChargerIdentity = state.isDcCharge && measuredIdentity == .ac
                 ? .unknownDC
                 : measuredIdentity
-            let pricingEstimate = ChargePricingRuleEngine.estimateCost(
-                for: ChargePricingInput(
-                    startDate: detail.startDate,
-                    endDate: detail.endDate,
-                    address: detail.address,
+            let pricingInput = ChargePricingInput(
+                startDate: detail.startDate,
+                endDate: detail.endDate,
+                address: detail.address,
+                latitude: detail.latitude,
+                longitude: detail.longitude,
+                energyAddedKWh: detail.chargeEnergyAdded ?? state.stats?.energyAdded,
+                energySamples: (detail.chargePoints ?? []).map {
+                    ChargePricingEnergySample(date: $0.date, cumulativeEnergyAddedKWh: $0.chargeEnergyAdded)
+                },
+                isDc: state.isDcCharge,
+                chargerIdentity: pricingIdentity
+            )
+            let currencyCode = loadedSettings?.resolvedCurrencyCode()
+                ?? MateDroidCurrencyFormatter.systemCurrencyCode()
+            let geofenceKind = loadedSettings.flatMap {
+                GeofenceRuleEngine.matchingRule(
                     latitude: detail.latitude,
                     longitude: detail.longitude,
-                    energyAddedKWh: detail.chargeEnergyAdded ?? state.stats?.energyAdded,
-                    energySamples: (detail.chargePoints ?? []).map {
-                        ChargePricingEnergySample(date: $0.date, cumulativeEnergyAddedKWh: $0.chargeEnergyAdded)
-                    },
-                    isDc: state.isDcCharge,
-                    chargerIdentity: pricingIdentity
-                ),
-                rules: pricingRules
+                    carId: carId,
+                    rules: $0.geofenceRules
+                )?.kind
+            }
+            let regionalRule = ChargePricingRuleEngine.estimateCost(
+                for: pricingInput,
+                rules: pricingRules.filter { $0.origin == .regionalOfficial }
+            )?.rule
+            costResolutionContext = ChargeCostResolutionContext(
+                currencyCode: currencyCode,
+                isAC: !state.isDcCharge,
+                geofenceKind: geofenceKind,
+                pricingInput: pricingInput,
+                rules: pricingRules,
+                regionalRule: regionalRule
             )
+            let ruleResolution = ChargeCostResolver.resolve(ChargeCostResolutionInput(
+                manualCost: nil,
+                apiCost: nil,
+                currencyCode: currencyCode,
+                isAC: !state.isDcCharge,
+                geofenceKind: geofenceKind,
+                pricingInput: pricingInput,
+                rules: pricingRules,
+                regionalRule: nil
+            ))
+            let pricingEstimate = ruleResolution?.ruleID.flatMap { ruleID in
+                pricingRules.first(where: { $0.id == ruleID }).flatMap {
+                    ChargePricingRuleEngine.estimateCost(for: pricingInput, rules: [$0])
+                }
+            }
             state.apiCost = detail.cost
             state.manualCost = manualCost
             state.costSyncState = Self.costSyncState(manualCost: manualCost, apiCost: detail.cost)
@@ -234,18 +293,25 @@ public final class ChargeDetailViewModel: ObservableObject {
     }
 
     private func applyEffectiveCost() {
-        if let manualCost = state.manualCost {
-            state.effectiveCost = manualCost
-            state.costSource = .manual
-        } else if let pricingRuleCost = state.pricingRuleCost {
-            state.effectiveCost = pricingRuleCost
-            state.costSource = .pricingRule
-        } else if let apiCost = state.apiCost {
-            state.effectiveCost = apiCost
-            state.costSource = .api
-        } else {
+        guard let resolution = costResolutionContext.flatMap({ context in
+            ChargeCostResolver.resolve(context.input(
+                manualCost: state.manualCost,
+                apiCost: state.apiCost
+            ))
+        }) else {
             state.effectiveCost = nil
             state.costSource = .none
+            return
+        }
+
+        state.effectiveCost = resolution.amount
+        switch resolution.source {
+        case .manual:
+            state.costSource = .manual
+        case .api:
+            state.costSource = .api
+        case .stationRule, .homeRule, .regionalTariff:
+            state.costSource = .pricingRule
         }
     }
 

@@ -2,6 +2,35 @@ import XCTest
 @testable import MateDroidIOS
 
 final class ChargePricingRuleTests: XCTestCase {
+    func testEstimateAddsServiceFeeAndKeepsParkingAsReference() {
+        let rule = ChargePricingRule(
+            id: "fees",
+            name: "Fees",
+            pricePerKWh: 0.5,
+            sessionFee: 1,
+            serviceFeePerKWh: 0.2,
+            parkingFeeRuleID: "parking-1"
+        )
+
+        let estimate = ChargePricingRuleEngine.estimateCost(
+            for: ChargePricingInput(
+                startDate: "2026-07-01T09:00:00+08:00",
+                address: nil,
+                latitude: nil,
+                longitude: nil,
+                energyAddedKWh: 10,
+                isDc: false
+            ),
+            rules: [rule]
+        )
+
+        XCTAssertEqual(estimate?.energyCost, 5)
+        XCTAssertEqual(estimate?.serviceFee, 2)
+        XCTAssertEqual(estimate?.sessionFee, 1)
+        XCTAssertEqual(estimate?.cost, 8)
+        XCTAssertEqual(estimate?.rule.parkingFeeRuleID, "parking-1")
+    }
+
     func testRuleValidatorRejectsIncompleteAndInvalidLocation() {
         let incomplete = ChargePricingRule(name: "Incomplete", latitude: SyntheticCoordinates.point().latitude, pricePerKWh: 1)
         let invalid = ChargePricingRule(name: "Invalid", latitude: SyntheticCoordinates.invalidLatitude, longitude: SyntheticCoordinates.point().longitude, radiusMeters: -1, pricePerKWh: 1)

@@ -97,6 +97,7 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
     public var sourceURL: String?
     public var verifiedAt: String?
     public var serviceFeePerKWh: Double
+    public var parkingFeeRuleID: String?
     public var applicableWeekdays: [Int]?
     public var applicableMonths: [Int]?
 
@@ -122,6 +123,7 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
         sourceURL: String? = nil,
         verifiedAt: String? = nil,
         serviceFeePerKWh: Double = 0,
+        parkingFeeRuleID: String? = nil,
         applicableWeekdays: [Int]? = nil,
         applicableMonths: [Int]? = nil
     ) {
@@ -146,6 +148,7 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
         self.sourceURL = sourceURL
         self.verifiedAt = verifiedAt
         self.serviceFeePerKWh = serviceFeePerKWh
+        self.parkingFeeRuleID = parkingFeeRuleID
         self.applicableWeekdays = applicableWeekdays
         self.applicableMonths = applicableMonths
     }
@@ -172,6 +175,7 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
         case sourceURL
         case verifiedAt
         case serviceFeePerKWh
+        case parkingFeeRuleID
         case applicableWeekdays
         case applicableMonths
     }
@@ -199,6 +203,7 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
         sourceURL = try container.decodeIfPresent(String.self, forKey: .sourceURL)
         verifiedAt = try container.decodeIfPresent(String.self, forKey: .verifiedAt)
         serviceFeePerKWh = try container.decodeIfPresent(Double.self, forKey: .serviceFeePerKWh) ?? 0
+        parkingFeeRuleID = try container.decodeIfPresent(String.self, forKey: .parkingFeeRuleID)
         applicableWeekdays = try container.decodeIfPresent([Int].self, forKey: .applicableWeekdays)
         applicableMonths = try container.decodeIfPresent([Int].self, forKey: .applicableMonths)
     }
@@ -226,6 +231,7 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
         try container.encodeIfPresent(sourceURL, forKey: .sourceURL)
         try container.encodeIfPresent(verifiedAt, forKey: .verifiedAt)
         try container.encode(serviceFeePerKWh, forKey: .serviceFeePerKWh)
+        try container.encodeIfPresent(parkingFeeRuleID, forKey: .parkingFeeRuleID)
         try container.encodeIfPresent(applicableWeekdays, forKey: .applicableWeekdays)
         try container.encodeIfPresent(applicableMonths, forKey: .applicableMonths)
     }
@@ -371,13 +377,22 @@ public struct ChargePricingEstimate: Equatable, Sendable {
     public let rule: ChargePricingRule
     public let cost: Double
     public let energyCost: Double
+    public let serviceFee: Double
     public let sessionFee: Double
     public let components: [ChargePricingCostComponent]
 
-    public init(rule: ChargePricingRule, cost: Double, energyCost: Double, sessionFee: Double, components: [ChargePricingCostComponent]) {
+    public init(
+        rule: ChargePricingRule,
+        cost: Double,
+        energyCost: Double,
+        sessionFee: Double,
+        serviceFee: Double = 0,
+        components: [ChargePricingCostComponent]
+    ) {
         self.rule = rule
         self.cost = cost
         self.energyCost = energyCost
+        self.serviceFee = serviceFee
         self.sessionFee = sessionFee
         self.components = components
     }
@@ -417,11 +432,13 @@ public enum ChargePricingRuleEngine {
                     )
                 ]
                 let energyCost = allocation.reduce(0) { $0 + $1.cost }
+                let serviceFee = energy * rule.serviceFeePerKWh
                 return ChargePricingEstimate(
                     rule: rule,
-                    cost: max(0, rule.sessionFee + energyCost),
+                    cost: max(0, energyCost + serviceFee + rule.sessionFee),
                     energyCost: energyCost,
                     sessionFee: rule.sessionFee,
+                    serviceFee: serviceFee,
                     components: allocation
                 )
             }

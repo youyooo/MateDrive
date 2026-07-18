@@ -212,7 +212,7 @@ final class ChargeDetailViewModelTests: XCTestCase {
         XCTAssertEqual(savedAfterNegativeCost, 6.5)
     }
 
-    func testChargeDetailUsesPricingRuleWhenManualCostIsMissing() async throws {
+    func testChargeDetailUsesPositiveAPICostBeforePricingRuleAndKeepsRuleBreakdown() async throws {
         let api = FakeChargeDetailAPI(
             detail: ChargeDetail(
                 chargeId: 12,
@@ -239,12 +239,62 @@ final class ChargeDetailViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.state.pricingRuleCost, 50)
         XCTAssertEqual(viewModel.state.pricingRuleName, "Supercharger")
         XCTAssertTrue(viewModel.state.hasPricingRules)
-        XCTAssertEqual(viewModel.state.effectiveCost, 50)
-        XCTAssertEqual(viewModel.state.costSource, .pricingRule)
+        XCTAssertEqual(viewModel.state.effectiveCost, 4)
+        XCTAssertEqual(viewModel.state.costSource, .api)
 
         await viewModel.saveCostOverride(carId: 1, chargeId: 12, cost: 12)
 
         XCTAssertEqual(viewModel.state.effectiveCost, 12)
+        XCTAssertEqual(viewModel.state.costSource, .manual)
+    }
+
+    func testChargeDetailIgnoresZeroAPICostAndFallsBackToPricingRule() async {
+        let api = FakeChargeDetailAPI(
+            detail: ChargeDetail(
+                chargeId: 12,
+                startDate: "2026-07-01T09:00:00Z",
+                address: "Mall Supercharger",
+                chargeEnergyAdded: 25,
+                cost: 0,
+                durationMin: 30
+            )
+        )
+        let settingsStore = StaticChargeDetailSettingsStore(settings: AppSettings(chargePricingRules: [
+            ChargePricingRule(
+                id: "supercharger",
+                name: "Supercharger",
+                chargeType: .dc,
+                addressKeyword: "Supercharger",
+                pricePerKWh: 2
+            )
+        ]))
+        let viewModel = ChargeDetailViewModel(api: api, settingsStore: settingsStore)
+
+        await viewModel.load(carId: 1, chargeId: 12)
+
+        XCTAssertEqual(viewModel.state.apiCost, 0)
+        XCTAssertEqual(viewModel.state.pricingRuleCost, 50)
+        XCTAssertEqual(viewModel.state.effectiveCost, 50)
+        XCTAssertEqual(viewModel.state.costSource, .pricingRule)
+    }
+
+    func testChargeDetailManualZeroMeansExplicitFreeAndWinsPositiveAPI() async {
+        let api = FakeChargeDetailAPI(
+            detail: ChargeDetail(
+                chargeId: 12,
+                startDate: "2026-07-01T09:00:00Z",
+                chargeEnergyAdded: 25,
+                cost: 4
+            )
+        )
+        let viewModel = ChargeDetailViewModel(
+            api: api,
+            costOverrideStore: InMemoryChargeCostOverrideStore(overrides: [12: 0])
+        )
+
+        await viewModel.load(carId: 1, chargeId: 12)
+
+        XCTAssertEqual(viewModel.state.effectiveCost, 0)
         XCTAssertEqual(viewModel.state.costSource, .manual)
     }
 

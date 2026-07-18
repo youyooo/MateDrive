@@ -175,6 +175,7 @@
 		53FD3619D8620FFC900A230B /* myjs_PX02_WY18P.png in Resources */ = {isa = PBXBuildFile; fileRef = C2F2A824491C8705D87ABDEE /* myjs_PX02_WY18P.png */; };
 		540B6B6912E4C9C2C6415B55 /* CurrentChargeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58529BF1D6D81F635985E6D2 /* CurrentChargeView.swift */; };
 		541EB3EA16B7D65C3C4F217C /* ChargePricingRuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048E9E50B6CC16106AAC98C7 /* ChargePricingRuleTests.swift */; };
+		484F6F924F330E1223875FAF /* ChargeCostResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90AF52654BD2F30C966759CF /* ChargeCostResolverTests.swift */; };
 		544C35CBBF8F73C5DAE67A82 /* mx_PPMR_WT20.png in Resources */ = {isa = PBXBuildFile; fileRef = A96DC4E9511CF7BF0BFD0630 /* mx_PPMR_WT20.png */; };
 		5457C72901BB92835E69A1E0 /* SyncCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AAFD36C34E542C2FA3F1F9 /* SyncCoordinatorTests.swift */; };
 		546F41E982657CCBBADDDB20 /* TripsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F745E6D3F0627B4D8D745178 /* TripsView.swift */; };
@@ -433,6 +434,8 @@
 		C798BA302CD0BADB2C4A95EE /* ServerStatsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B77B356BEC99DDAAA3831861 /* ServerStatsModels.swift */; };
 		C7A596170221492142D78914 /* CostReviewViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B4FB5936A048496B89A65A /* CostReviewViewModelTests.swift */; };
 		C8F118E7334C0CC7BCE96EBD /* ChargeDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A3035BBD261D6512A563E3 /* ChargeDetailViewModel.swift */; };
+		4D4F70649A2262BFEEC107E8 /* ChargePricingObservationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60757C4AC7C5AEE6EBD9648A /* ChargePricingObservationService.swift */; };
+		8361340C77F99D3C756AFBBA /* ChargeCostResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33DB80FA24BE4AF7F9333A30 /* ChargeCostResolver.swift */; };
 		C8F521AB4B04F98C40AB4A3D /* myjs_PN01_WY18P.png in Resources */ = {isa = PBXBuildFile; fileRef = 44CECB76296DFC515B8E2E0B /* myjs_PN01_WY18P.png */; };
 		C928FCCE85FF85EA817D2E07 /* SettingsBackedTeslamateAPIFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D320495059EDC212F505CF78 /* SettingsBackedTeslamateAPIFactory.swift */; };
 		C9E2380C8EB52E2EBAF7D758 /* AggregateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3B8CAAF3D7561DA77F406EB /* AggregateStore.swift */; };
@@ -714,6 +717,8 @@
 		608672828845DD9CB0230901 /* DriveSummaryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveSummaryStore.swift; sourceTree = "<group>"; };
 		6135F6F500CEF5C4F00F31C9 /* VehicleImageCatalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = VehicleImageCatalog.json; sourceTree = "<group>"; };
 		61A3035BBD261D6512A563E3 /* ChargeDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeDetailViewModel.swift; sourceTree = "<group>"; };
+		33DB80FA24BE4AF7F9333A30 /* ChargeCostResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeCostResolver.swift; sourceTree = "<group>"; };
+		60757C4AC7C5AEE6EBD9648A /* ChargePricingObservationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargePricingObservationService.swift; sourceTree = "<group>"; };
 		625FD75C5A64BBF29D6CCB09 /* ms_PBSB_WT19.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ms_PBSB_WT19.png; sourceTree = "<group>"; };
 		62C4A3C4E51DC546EAC634CD /* myj_PN01_WY20A.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myj_PN01_WY20A.png; sourceTree = "<group>"; };
 		633920743339692D7B380583 /* ChargePricingAuditStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargePricingAuditStore.swift; sourceTree = "<group>"; };
@@ -928,6 +933,7 @@
 		E3880EA8D934C5A891970D57 /* DriveDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveDetailViewModel.swift; sourceTree = "<group>"; };
 		E4658ABCB2DEEC7213AAF268 /* TripMembershipService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripMembershipService.swift; sourceTree = "<group>"; };
 		E50DC939747434D841252A30 /* ChargeDetailViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeDetailViewModelTests.swift; sourceTree = "<group>"; };
+		90AF52654BD2F30C966759CF /* ChargeCostResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeCostResolverTests.swift; sourceTree = "<group>"; };
 		E5895473A2FDC0F43D1C50CA /* CostReviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CostReviewViewModel.swift; sourceTree = "<group>"; };
 		E5B90D51893805CB91F90E55 /* CarModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarModels.swift; sourceTree = "<group>"; };
 		E5BAA2539E47909226430F61 /* WeatherAlongTheWayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherAlongTheWayView.swift; sourceTree = "<group>"; };
@@ -1600,10 +1606,12 @@
 			isa = PBXGroup;
 			children = (
 				0EEB807C7E713A38A3777291 /* ChargeAPIProvider.swift */,
+				33DB80FA24BE4AF7F9333A30 /* ChargeCostResolver.swift */,
 				C383C4184C8DA9740AB7E9D6 /* ChargeDetailView.swift */,
 				61A3035BBD261D6512A563E3 /* ChargeDetailViewModel.swift */,
 				0EDB202E42E175EA2947DBAC /* ChargePricingBatch.swift */,
 				7B85207FD3020CF25376C94A /* ChargePricingBatchView.swift */,
+				60757C4AC7C5AEE6EBD9648A /* ChargePricingObservationService.swift */,
 				65D0C6E4F55E370BE63F44F6 /* ChargePricingRule.swift */,
 				E11DC0A5EE81007C56EBF0B2 /* ChargeStatsCalculator.swift */,
 				ABF331F72AC6C03F8AD7E687 /* ChargesView.swift */,
@@ -1644,6 +1652,7 @@
 				2738AC7A628E528EC30C3131 /* ActivitiesViewModelTests.swift */,
 				9DE4347EA7C872BBE88A7DCD /* AnalyticalViewModelTests.swift */,
 				D6BF4550A0C735D0F8A133B1 /* CarImagePickerViewModelTests.swift */,
+				90AF52654BD2F30C966759CF /* ChargeCostResolverTests.swift */,
 				E50DC939747434D841252A30 /* ChargeDetailViewModelTests.swift */,
 				048E9E50B6CC16106AAC98C7 /* ChargePricingRuleTests.swift */,
 				CFCCD5E7F7C55D364BE56D93 /* ChargesViewModelTests.swift */,
@@ -2179,6 +2188,7 @@
 				EDC51BBCD974051673E17A69 /* CarModels.swift in Sources */,
 				4F7CAB4AA7CCDB265C63ED72 /* CarStatusModels.swift in Sources */,
 				FB944F04A7982CF4E37EC9D0 /* ChargeAPIProvider.swift in Sources */,
+				8361340C77F99D3C756AFBBA /* ChargeCostResolver.swift in Sources */,
 				BD7C4B4646BDAD7A33B2DB4C /* ChargeCostOverrideRecord.swift in Sources */,
 				9390AB32D1A786F6D078EC7D /* ChargeCostOverrideStore.swift in Sources */,
 				16947438B3DE33A028705B28 /* ChargeDetailView.swift in Sources */,
@@ -2188,6 +2198,7 @@
 				788F0F4FE24C1A112C4282A2 /* ChargePricingBatch.swift in Sources */,
 				8498474BFCD43E4BB703BDCA /* ChargePricingBatchView.swift in Sources */,
 				B9C6F3CCA5AED0C480902F99 /* ChargePricingObservationStore.swift in Sources */,
+				4D4F70649A2262BFEEC107E8 /* ChargePricingObservationService.swift in Sources */,
 				6962561FD83D91AE5D1D9E23 /* ChargePricingRule.swift in Sources */,
 				FEFED4A7889210AC432FEBDC /* ChargePricingRulesView.swift in Sources */,
 				9201C98590F0C3B2A7DABAB9 /* ChargeStatsCalculator.swift in Sources */,
@@ -2363,6 +2374,7 @@
 				6A6F09A16D07CF77B1E344CF /* CarImagePickerViewModelTests.swift in Sources */,
 				28C18ABEC95C0F2DFF27F946 /* CarImageResolverTests.swift in Sources */,
 				6D887335E1799350FDA68F1A /* ChargeCostOverrideStoreTests.swift in Sources */,
+				484F6F924F330E1223875FAF /* ChargeCostResolverTests.swift in Sources */,
 				C5ADC0CE21C05B81837AFB53 /* ChargeDetailViewModelTests.swift in Sources */,
 				022473DA4E6A59F0A676A11F /* ChargePricingAuditStoreTests.swift in Sources */,
 				541EB3EA16B7D65C3C4F217C /* ChargePricingRuleTests.swift in Sources */,
