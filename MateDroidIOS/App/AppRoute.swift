@@ -79,6 +79,7 @@ public enum AppRoute: Hashable, Sendable {
     case compareCharges(carId: Int, baseChargeId: Int, exteriorColor: String?)
     case currentCharge(carId: Int, exteriorColor: String?)
     case activities(carId: Int, exteriorColor: String?)
+    case activitySession(carId: Int, sessionId: String)
     case places(carId: Int)
     case achievements(carId: Int, exteriorColor: String?)
     case drives(carId: Int, exteriorColor: String?)
@@ -124,6 +125,8 @@ public extension AppRoute {
             return "Current Charge"
         case .activities:
             return "Activities"
+        case .activitySession:
+            return "Activity Detail"
         case .places:
             return "Place Insights"
         case .achievements:
@@ -197,6 +200,8 @@ public extension AppRoute {
             return "当前充电"
         case .activities:
             return "活动"
+        case .activitySession:
+            return "活动详情"
         case .places:
             return "地点洞察"
         case .achievements:

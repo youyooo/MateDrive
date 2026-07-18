@@ -2,6 +2,7 @@ import Foundation
 
 public enum RootTab: Hashable, Sendable {
     case home
+    case activity
     case features
     case settings
 }
@@ -9,17 +10,20 @@ public enum RootTab: Hashable, Sendable {
 public struct RootNavigationState: Equatable, Sendable {
     public var selectedTab: RootTab
     public var homePath: [AppRoute]
+    public var activityPath: [AppRoute]
     public var featuresPath: [AppRoute]
     public var settingsPath: [AppRoute]
 
     public init(
         selectedTab: RootTab = .home,
         homePath: [AppRoute] = [],
+        activityPath: [AppRoute] = [],
         featuresPath: [AppRoute] = [],
         settingsPath: [AppRoute] = []
     ) {
         self.selectedTab = selectedTab
         self.homePath = homePath
+        self.activityPath = activityPath
         self.featuresPath = featuresPath
         self.settingsPath = settingsPath
     }
@@ -37,11 +41,20 @@ public struct RootNavigationState: Equatable, Sendable {
             switch source {
             case .home:
                 homePath.append(route)
+            case .activity:
+                activityPath.append(route)
             case .features:
                 featuresPath.append(route)
             case .settings:
                 settingsPath.append(route)
             }
+        }
+    }
+
+    public mutating func selectTab(_ tab: RootTab) {
+        selectedTab = tab
+        if tab == .settings {
+            settingsPath.removeAll()
         }
     }
 

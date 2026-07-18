@@ -44,6 +44,7 @@ public enum RouteCoverage {
              .compareCharges,
              .currentCharge,
              .activities,
+             .activitySession,
              .places,
              .achievements,
              .drives,
