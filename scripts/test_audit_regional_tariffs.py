@@ -55,6 +55,14 @@ class RegionalTariffAuditTests(unittest.TestCase):
         catalog["regions"][1]["regionCode"] = "CN-11"
         self.assertNotEqual(self.run_audit(catalog).returncode, 0)
 
+    def test_required_region_missing_fails(self) -> None:
+        catalog = deepcopy(self.catalog)
+        catalog["regions"] = [region for region in catalog["regions"] if region["regionCode"] != "CN-65"]
+        self.assert_audit_fails(
+            catalog,
+            "catalog must contain exactly the 31 required mainland ISO 3166-2 region codes",
+        )
+
     def test_non_https_numeric_tariff_source_fails(self) -> None:
         catalog = deepcopy(self.catalog)
         self.hunan_tariff(catalog)["sourceURL"] = "http://fgw.hunan.gov.cn/document"
@@ -114,10 +122,34 @@ class RegionalTariffAuditTests(unittest.TestCase):
         self.hunan_tariff(catalog)["effectiveFromDate"] = "2024-02-30"
         self.assert_audit_fails(catalog, "effectiveFromDate is not a valid YYYY-MM-DD date")
 
+    def test_numeric_tariff_missing_effective_from_date_fails(self) -> None:
+        catalog = deepcopy(self.catalog)
+        del self.hunan_tariff(catalog)["effectiveFromDate"]
+        self.assert_audit_fails(catalog, "effectiveFromDate must be a YYYY-MM-DD string")
+
+    def test_malformed_effective_to_date_fails(self) -> None:
+        catalog = deepcopy(self.catalog)
+        self.hunan_tariff(catalog)["effectiveToDate"] = "2025-02-30"
+        self.assert_audit_fails(catalog, "effectiveToDate is not a valid YYYY-MM-DD date")
+
     def test_inverted_effective_dates_fail(self) -> None:
         catalog = deepcopy(self.catalog)
         self.hunan_tariff(catalog)["effectiveFromDate"] = "2025-07-01"
         self.assert_audit_fails(catalog, "effective date range is inverted")
+
+    def test_overlapping_tariff_date_ranges_fail(self) -> None:
+        catalog = deepcopy(self.catalog)
+        overlapping_tariff = deepcopy(self.hunan_tariff(catalog))
+        overlapping_tariff["id"] = "cn43-overlapping-residential-ev"
+        overlapping_tariff["effectiveFromDate"] = "2025-01-01"
+        overlapping_tariff["effectiveToDate"] = "2025-12-31"
+        next(region for region in catalog["regions"] if region["regionCode"] == "CN-43")["tariffs"].append(
+            overlapping_tariff
+        )
+        self.assert_audit_fails(
+            catalog,
+            "CN-43 tariff date ranges overlap: cn43-2024-residential-ev and cn43-overlapping-residential-ev",
+        )
 
 
 if __name__ == "__main__":
