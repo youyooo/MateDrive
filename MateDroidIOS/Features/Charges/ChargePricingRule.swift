@@ -300,7 +300,7 @@ public enum ChargePricingRuleValidator {
         if !isValidApplicability(rule.applicableMonths, allowed: 1...12) {
             issues.append(.invalidApplicableMonths)
         }
-        if let currencyCode = rule.currencyCode,
+        if let currencyCode = ChargePricingCurrencyCode.normalized(rule.currencyCode),
            !ChargePricingCurrencyCode.isValid(currencyCode) {
             issues.append(.invalidCurrency)
         }
@@ -448,7 +448,7 @@ public enum ChargePricingRuleEngine {
             return nil
         }
 
-        return rules
+        let matchingRule = rules
             .filter { matches(rule: $0, input: input) }
             .sorted { lhs, rhs in
                 if lhs.priority != rhs.priority {
@@ -457,32 +457,51 @@ public enum ChargePricingRuleEngine {
                 return lhs.name.localizedStandardCompare(rhs.name) == .orderedAscending
             }
             .first
-            .map { rule in
-                let allocation: [ChargePricingCostComponent]
-                if energy == 0 {
-                    allocation = []
-                } else {
-                    allocation = segmentedEnergyAllocation(for: rule, input: input) ?? [
-                        ChargePricingCostComponent(
-                            startMinuteOfDay: nil,
-                            endMinuteOfDay: nil,
-                            energyKWh: energy,
-                            pricePerKWh: pricePerKWh(for: rule, input: input),
-                            cost: energy * pricePerKWh(for: rule, input: input)
-                        )
-                    ]
-                }
-                let energyCost = allocation.reduce(0) { $0 + $1.cost }
-                let serviceFee = energy * rule.serviceFeePerKWh
-                return ChargePricingEstimate(
-                    rule: rule,
-                    cost: max(0, energyCost + serviceFee + rule.sessionFee),
-                    energyCost: energyCost,
-                    sessionFee: rule.sessionFee,
-                    serviceFee: serviceFee,
-                    components: allocation
+        guard let rule = matchingRule else {
+            return nil
+        }
+        let allocation: [ChargePricingCostComponent]
+        if energy == 0 {
+            allocation = []
+        } else {
+            allocation = segmentedEnergyAllocation(for: rule, input: input) ?? [
+                ChargePricingCostComponent(
+                    startMinuteOfDay: nil,
+                    endMinuteOfDay: nil,
+                    energyKWh: energy,
+                    pricePerKWh: pricePerKWh(for: rule, input: input),
+                    cost: energy * pricePerKWh(for: rule, input: input)
                 )
-            }
+            ]
+        }
+        guard allocation.allSatisfy({ $0.cost.isFinite }) else {
+            return nil
+        }
+        let energyCost = allocation.reduce(0) { $0 + $1.cost }
+        guard energyCost.isFinite else {
+            return nil
+        }
+        let serviceFee = energy * rule.serviceFeePerKWh
+        guard serviceFee.isFinite,
+              rule.sessionFee.isFinite else {
+            return nil
+        }
+        let subtotal = energyCost + serviceFee
+        guard subtotal.isFinite else {
+            return nil
+        }
+        let cost = subtotal + rule.sessionFee
+        guard cost.isFinite else {
+            return nil
+        }
+        return ChargePricingEstimate(
+            rule: rule,
+            cost: cost,
+            energyCost: energyCost,
+            sessionFee: rule.sessionFee,
+            serviceFee: serviceFee,
+            components: allocation
+        )
     }
 
     private static func matches(rule: ChargePricingRule, input: ChargePricingInput) -> Bool {

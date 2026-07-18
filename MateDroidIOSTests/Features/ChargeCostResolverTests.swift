@@ -215,6 +215,24 @@ final class ChargeCostResolverTests: XCTestCase {
         )))
     }
 
+    func testLegacyCurrencyOnlyMatchesUserRules() {
+        let legacyUser = ChargePricingRule(
+            id: "legacy-user",
+            name: "Legacy User",
+            pricePerKWh: 0.5
+        )
+        let legacyStation = stationRule(id: "legacy-station", price: 0.8)
+        var blankLegacyStation = stationRule(id: "blank-legacy-station", price: 0.9)
+        blankLegacyStation.currencyCode = "   "
+
+        XCTAssertEqual(
+            ChargeCostResolver.resolve(makeInput(rules: [legacyUser]))?.ruleID,
+            legacyUser.id
+        )
+        XCTAssertNil(ChargeCostResolver.resolve(makeInput(rules: [legacyStation])))
+        XCTAssertNil(ChargeCostResolver.resolve(makeInput(rules: [blankLegacyStation])))
+    }
+
     func testRegionalFallbackRequiresCompleteCatalogProvenance() {
         var forged = regionalRule(price: 0.5)
         forged.sourceURL = nil
@@ -369,6 +387,69 @@ final class ChargeCostResolverTests: XCTestCase {
         let result = ChargeCostResolver.resolve(makeInput(rules: learned))
         XCTAssertEqual(result?.unitPricePerKWh, 2)
         XCTAssertEqual(result?.amount, 20)
+    }
+
+    func testStationConfirmationReplacesMatchingAndLegacyCurrencyLearnedRules() async throws {
+        let matchingCurrency = ChargePricingRule(
+            id: "matching-currency",
+            name: "Matching currency",
+            chargeType: .ac,
+            pricePerKWh: 1,
+            origin: .stationLearned,
+            currencyCode: "CNY",
+            stationKey: "station-a"
+        )
+        let nilCurrency = ChargePricingRule(
+            id: "nil-currency",
+            name: "Nil currency",
+            chargeType: .ac,
+            pricePerKWh: 2,
+            origin: .stationLearned,
+            stationKey: "station-a"
+        )
+        var blankCurrency = ChargePricingRule(
+            id: "blank-currency",
+            name: "Blank currency",
+            chargeType: .ac,
+            pricePerKWh: 3,
+            origin: .stationLearned,
+            stationKey: "station-a"
+        )
+        blankCurrency.currencyCode = "  "
+        let otherCurrency = ChargePricingRule(
+            id: "other-currency",
+            name: "Other currency",
+            chargeType: .ac,
+            pricePerKWh: 4,
+            origin: .stationLearned,
+            currencyCode: "USD",
+            stationKey: "station-a"
+        )
+        let userRule = ChargePricingRule(id: "user", name: "User", pricePerKWh: 5)
+        let observations = ResolverTestObservationStore()
+        let overrides = ResolverTestCostOverrideStore()
+        let settings = ResolverTestSettingsStore(AppSettings(chargePricingRules: [
+            matchingCurrency,
+            nilCurrency,
+            blankCurrency,
+            otherCurrency,
+            userRule
+        ]))
+        let service = ChargePricingObservationService(
+            observationStore: observations,
+            costOverrideStore: overrides,
+            settingsStore: settings
+        )
+
+        try await service.confirm(futureConfirmation(chargeId: 23, stationKey: "station-a", unitPrice: 6))
+
+        let rules = await settings.load().chargePricingRules
+        XCTAssertTrue(rules.contains(otherCurrency))
+        XCTAssertTrue(rules.contains(userRule))
+        XCTAssertFalse(rules.contains { [matchingCurrency, nilCurrency, blankCurrency].contains($0) })
+        let learnedRules = rules.filter { $0.origin == .stationLearned }
+        XCTAssertEqual(learnedRules.count, 2)
+        XCTAssertEqual(learnedRules.first { $0.currencyCode == "CNY" }?.pricePerKWh, 6)
     }
 
     func testObservationFailureRemovesPartialObservationAndLeavesOtherStoresUnchanged() async {

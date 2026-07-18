@@ -658,6 +658,46 @@ final class ChargePricingRuleTests: XCTestCase {
         XCTAssertEqual(zero?.components, [])
     }
 
+    func testPricingReturnsNilWhenFiniteArithmeticOverflows() {
+        let energy = Double.greatestFiniteMagnitude
+        let input = ChargePricingInput(
+            startDate: "2026-07-01T10:00:00+08:00",
+            address: nil,
+            latitude: nil,
+            longitude: nil,
+            energyAddedKWh: energy,
+            isDc: false
+        )
+        let overflowingComponent = ChargePricingRule(
+            name: "Component overflow",
+            pricePerKWh: 2
+        )
+        let overflowingServiceFee = ChargePricingRule(
+            name: "Service fee overflow",
+            pricePerKWh: 0,
+            serviceFeePerKWh: 2
+        )
+        let overflowingSubtotal = ChargePricingRule(
+            name: "Subtotal overflow",
+            pricePerKWh: 1,
+            serviceFeePerKWh: 1
+        )
+        let overflowingFinalCost = ChargePricingRule(
+            name: "Final cost overflow",
+            pricePerKWh: 1,
+            sessionFee: .greatestFiniteMagnitude
+        )
+
+        for rule in [
+            overflowingComponent,
+            overflowingServiceFee,
+            overflowingSubtotal,
+            overflowingFinalCost
+        ] {
+            XCTAssertNil(ChargePricingRuleEngine.estimateCost(for: input, rules: [rule]), rule.name)
+        }
+    }
+
     func testEnergySamplesStayWithinSessionAndNeverExceedBilledEnergy() {
         let rule = ChargePricingRule(
             name: "Bounded samples",

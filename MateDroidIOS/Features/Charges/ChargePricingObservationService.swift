@@ -322,7 +322,8 @@ public actor ChargePricingObservationService: ChargePricingObservationServicing 
             existing.origin == .stationLearned &&
                 existing.stationKey == learnedRule.stationKey &&
                 existing.chargeType == learnedRule.chargeType &&
-                existing.currencyCode == learnedRule.currencyCode
+                (ChargePricingCurrencyCode.normalized(existing.currencyCode) == learnedRule.currencyCode ||
+                    ChargePricingCurrencyCode.normalized(existing.currencyCode) == nil)
         }
         updated.chargePricingRules.append(learnedRule)
         return updated

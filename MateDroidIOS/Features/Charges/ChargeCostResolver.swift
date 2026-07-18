@@ -161,7 +161,9 @@ public enum ChargeCostResolver {
         rule: ChargePricingRule,
         selectedCurrency: String
     ) -> Bool {
-        guard let ruleCurrency = rule.currencyCode else { return true }
+        guard let ruleCurrency = ChargePricingCurrencyCode.normalized(rule.currencyCode) else {
+            return rule.origin == .user
+        }
         return ruleCurrency == selectedCurrency
     }
 

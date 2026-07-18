@@ -1,6 +1,7 @@
 .matedrive-integration.env
 .matedroid-integration.env
 *.xcresult
+.superpowers/
 DerivedData/
 build/
 __pycache__/
