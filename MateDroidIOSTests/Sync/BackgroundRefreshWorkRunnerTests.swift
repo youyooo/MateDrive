@@ -274,6 +274,33 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
         XCTAssertFalse(snapshot?.state.historyFullyLoaded == true)
     }
 
+    func testDataPreloaderKeepsStalledDegradedFullPagePartial() async {
+        let client = RepeatingDegradedActivityHTTPClient()
+        let cache = ActivitiesStateCache(maximumAge: 60)
+        let settings = AppSettings(serverURL: "https://teslamate.example", lastSelectedCarId: 7)
+        let preloader = AppDataPreloader(
+            settingsStore: Task3PreloadSettingsStore(settings: settings),
+            secretStore: Task3PreloadSecretStore(),
+            clientOverride: client,
+            activitiesCache: cache
+        )
+
+        _ = await preloader.preload(force: true)
+        let snapshot = await cache.load(serverURL: settings.serverURL, carId: 7, now: Date())
+        let activityRequests = await client.requestedPaths.filter { $0.contains("/activities?") }
+
+        XCTAssertEqual(activityRequests, [
+            "/api/v1/cars/7/activities?page=1&show=200",
+            "/api/v1/cars/7/activities?page=2&show=200"
+        ])
+        XCTAssertEqual(snapshot?.state.items.count, 200)
+        XCTAssertEqual(snapshot?.state.loadedPageCount, 2)
+        XCTAssertTrue(snapshot?.state.paginationIsDegraded == true)
+        XCTAssertFalse(snapshot?.state.hasMore == true)
+        XCTAssertFalse(snapshot?.state.historyFullyLoaded == true)
+        XCTAssertFalse(snapshot?.state.historyLoadCapped == true)
+    }
+
     func testDataPreloaderKeepsIncrementalHistoryPartialUntilItBridgesCompleteCache() async {
         let client = IncrementalActivityContinuityHTTPClient()
         let cache = ActivitiesStateCache(maximumAge: 60)
@@ -776,6 +803,30 @@ private actor DegradedSinglePageActivityHTTPClient: HTTPClient {
         return (
             Data(body.utf8),
             HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: "HTTP/1.1", headerFields: nil)!
+        )
+    }
+}
+
+private actor RepeatingDegradedActivityHTTPClient: HTTPClient {
+    private(set) var requestedPaths: [String] = []
+
+    func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let url = request.url ?? URL(string: "https://teslamate.example")!
+        requestedPaths.append(url.path + (url.query.map { "?" + $0 } ?? ""))
+        let body: String
+        if url.path == "/api/v1/cars" {
+            body = #"{"data":{"cars":[{"car_id":7,"name":"Test car 7"}]}}"#
+        } else if url.path.hasSuffix("/activities") {
+            let activities = (1 ... 200)
+                .map { #"{"id":\#($0),"type":"drive"}"# }
+                .joined(separator: ",")
+            body = #"{"data":[\#(activities)],"pagination":{"page":1,"limit":200,"totalPages":9999,"totalRecords":0}}"#
+        } else {
+            body = #"{}"#
+        }
+        return (
+            Data(body.utf8),
+            HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!
         )
     }
 }

@@ -246,13 +246,17 @@ public actor AppDataPreloader {
                             hasMore = false
                         } else if metadataIsReliable, let reportedPages {
                             hasMore = page < reportedPages
+                            reachedServerEnd = !hasMore
                         } else {
                             let serverLimit = max(response.pagination?.limit ?? pageSize, 1)
-                            hasMore = response.data.count >= serverLimit
-                                && (!newItems.isEmpty || mustResumePastCachedPage)
-                        }
-                        if !hasMore, !bridgedCachedHistory {
-                            reachedServerEnd = true
+                            let isConfirmedServerEnd = response.data.isEmpty
+                                || response.data.count < serverLimit
+                            if isConfirmedServerEnd {
+                                hasMore = false
+                                reachedServerEnd = true
+                            } else {
+                                hasMore = !newItems.isEmpty || mustResumePastCachedPage
+                            }
                         }
                         page += 1
 
