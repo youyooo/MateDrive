@@ -37,6 +37,10 @@ public final class ActivityTimelineViewModel: ObservableObject {
     private let calendar: Calendar
     private var currentCarId: Int?
     private var pendingReloadCarId: Int?
+    private var pendingReloadIncludesIndexChange = false
+    private var indexReloadInFlightOrPending = false
+    private var indexReloadSucceededSinceCacheRevision = false
+    private var lastConsumedCacheRevision: Int?
     private var reloadTask: Task<Void, Never>?
     private var indexObservation: ActivityTimelineNotificationObservation?
 
@@ -87,14 +91,41 @@ public final class ActivityTimelineViewModel: ObservableObject {
         }
     }
 
-    public func load(carId: Int) async {
-        if let currentCarId, currentCarId != carId {
+    public func load(carId: Int, cacheRevision: Int? = nil) async {
+        let carChanged = currentCarId != nil && currentCarId != carId
+        if carChanged {
             state.sessions = []
             state.errorMessage = nil
+            lastConsumedCacheRevision = nil
+            indexReloadSucceededSinceCacheRevision = false
         }
         currentCarId = carId
+
+        if let cacheRevision, !carChanged {
+            if indexReloadInFlightOrPending, let reloadTask {
+                await reloadTask.value
+                if currentCarId == carId, state.errorMessage == nil {
+                    lastConsumedCacheRevision = cacheRevision
+                    indexReloadSucceededSinceCacheRevision = false
+                    return
+                }
+            }
+            if indexReloadSucceededSinceCacheRevision {
+                lastConsumedCacheRevision = cacheRevision
+                indexReloadSucceededSinceCacheRevision = false
+                return
+            }
+            if lastConsumedCacheRevision == cacheRevision {
+                return
+            }
+        }
+
         let task = enqueueReload(carId: carId)
         await task.value
+        if currentCarId == carId, state.errorMessage == nil, let cacheRevision {
+            lastConsumedCacheRevision = cacheRevision
+            indexReloadSucceededSinceCacheRevision = false
+        }
     }
 
     public func setFilter(_ filter: ActivityTimelineFilter) {
@@ -110,11 +141,16 @@ public final class ActivityTimelineViewModel: ObservableObject {
     private func activityIndexDidChange(carId changedCarId: Int?) {
         guard let currentCarId else { return }
         if let changedCarId, changedCarId != currentCarId { return }
-        _ = enqueueReload(carId: currentCarId)
+        _ = enqueueReload(carId: currentCarId, includesIndexChange: true)
     }
 
-    private func enqueueReload(carId: Int) -> Task<Void, Never> {
+    private func enqueueReload(
+        carId: Int,
+        includesIndexChange: Bool = false
+    ) -> Task<Void, Never> {
         pendingReloadCarId = carId
+        pendingReloadIncludesIndexChange = pendingReloadIncludesIndexChange || includesIndexChange
+        indexReloadInFlightOrPending = indexReloadInFlightOrPending || includesIndexChange
         if let reloadTask { return reloadTask }
 
         let task = Task { @MainActor [weak self] in
@@ -128,16 +164,22 @@ public final class ActivityTimelineViewModel: ObservableObject {
     private func drainReloads() async {
         while let carId = pendingReloadCarId {
             pendingReloadCarId = nil
+            let includesIndexChange = pendingReloadIncludesIndexChange
+            pendingReloadIncludesIndexChange = false
             do {
                 let sessions = try await sessionStore.sessions(carId: carId)
                 guard currentCarId == carId else { continue }
                 state.sessions = Self.newestFirst(sessions)
                 state.errorMessage = nil
+                if includesIndexChange {
+                    indexReloadSucceededSinceCacheRevision = true
+                }
             } catch {
                 guard currentCarId == carId else { continue }
                 state.errorMessage = "activity_timeline_local_error"
             }
         }
+        indexReloadInFlightOrPending = false
         reloadTask = nil
     }
 

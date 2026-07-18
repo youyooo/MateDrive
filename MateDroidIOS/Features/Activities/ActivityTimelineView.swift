@@ -55,7 +55,10 @@ public struct ActivityTimelineView: View {
             }
         }
         .task(id: ActivityTimelineLoadKey(carId: carId, cacheRevision: cacheRevision)) {
-            await viewModel.load(carId: carId)
+            await viewModel.load(carId: carId, cacheRevision: cacheRevision)
+        }
+        .onChange(of: carId) {
+            resetMapPosition()
         }
     }
 
@@ -115,28 +118,33 @@ public struct ActivityTimelineView: View {
     }
 
     private var sessionMap: some View {
-        Map(position: $mapPosition) {
-            ForEach(mappableSessions) { item in
-                Annotation(item.presentation.title, coordinate: item.coordinate) {
-                    Button {
-                        open(item.session)
-                    } label: {
-                        Image(systemName: item.presentation.systemImage)
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.white)
-                            .frame(width: 38, height: 38)
-                            .background(markerColor(item.presentation.semanticColor), in: Circle())
-                            .overlay(Circle().stroke(.white.opacity(0.9), lineWidth: 2))
-                            .shadow(color: .black.opacity(0.16), radius: 4, y: 2)
+        MapGestureGate(onAutoLock: resetMapPosition) { isMapInteractionEnabled in
+            Map(
+                position: $mapPosition,
+                interactionModes: isMapInteractionEnabled ? .all : []
+            ) {
+                ForEach(mappableSessions) { item in
+                    Annotation(item.presentation.title, coordinate: item.coordinate) {
+                        Button {
+                            open(item.session)
+                        } label: {
+                            Image(systemName: item.presentation.systemImage)
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.white)
+                                .frame(width: 38, height: 38)
+                                .background(markerColor(item.presentation.semanticColor), in: Circle())
+                                .overlay(Circle().stroke(.white.opacity(0.9), lineWidth: 2))
+                                .shadow(color: .black.opacity(0.16), radius: 4, y: 2)
+                        }
+                        .accessibilityLabel(item.presentation.accessibilityLabel)
+                        .accessibilityValue(item.presentation.accessibilityValue)
                     }
-                    .accessibilityLabel(item.presentation.accessibilityLabel)
-                    .accessibilityValue(item.presentation.accessibilityValue)
                 }
             }
-        }
-        .mapControls {
-            MapCompass()
-            MapScaleView()
+            .mapControls {
+                MapCompass()
+                MapScaleView()
+            }
         }
     }
 
@@ -183,6 +191,12 @@ public struct ActivityTimelineView: View {
 
     private func open(_ session: SmartActivitySession) {
         navigate(.activitySession(carId: carId, sessionId: session.id))
+    }
+
+    private func resetMapPosition() {
+        withAnimation(.easeOut(duration: 0.25)) {
+            mapPosition = .automatic
+        }
     }
 
     private func filterTitle(_ filter: ActivityTimelineFilter) -> String {

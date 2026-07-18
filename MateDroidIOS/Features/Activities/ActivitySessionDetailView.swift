@@ -135,7 +135,7 @@ public struct ActivitySessionDetailView: View {
             }
             if let value = billedEnergy(session) {
                 energyRow(
-                    title: t("Billed energy", "计费电量"),
+                    title: t("Pricing basis energy", "计价采用电量"),
                     value: energyText(value),
                     systemImage: "receipt.fill"
                 )

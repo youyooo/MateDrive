@@ -94,6 +94,27 @@ final class ActivityTimelineViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.state.sessions.map(\.id), ["refreshed"])
     }
 
+    func testCacheRevisionAfterSuccessfulIndexNotificationDoesNotReadStoreTwice() async {
+        let initial = makeSession(id: "initial", startDate: date(1_000), kinds: [.drive])
+        let refreshed = makeSession(id: "refreshed", startDate: date(2_000), kinds: [.charge])
+        let store = TimelineSessionStoreSpy(listResponses: [[initial], [refreshed]])
+        let center = NotificationCenter()
+        let viewModel = ActivityTimelineViewModel(sessionStore: store, notificationCenter: center)
+
+        await viewModel.load(carId: 1, cacheRevision: 0)
+        center.post(
+            name: .smartActivityIndexDidChange,
+            object: nil,
+            userInfo: ["carId": 1]
+        )
+        await viewModel.waitUntilIdle()
+        await viewModel.load(carId: 1, cacheRevision: 1)
+
+        let loadCount = await store.listCallCountValue()
+        XCTAssertEqual(loadCount, 2)
+        XCTAssertEqual(viewModel.state.sessions.map(\.id), ["refreshed"])
+    }
+
     func testNotificationBurstDuringReadCoalescesAndDoesNotLoseFinalReload() async {
         let initial = makeSession(id: "initial", startDate: date(1_000), kinds: [.drive])
         let interim = makeSession(id: "interim", startDate: date(2_000), kinds: [.drive])
