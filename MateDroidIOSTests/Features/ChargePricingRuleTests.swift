@@ -712,7 +712,7 @@ final class ChargePricingRuleTests: XCTestCase {
         )
         let input = ChargePricingInput(
             startDate: "2026-07-01T10:00:00+08:00",
-            endDate: "2026-07-01T10:03:00+08:00",
+            endDate: "2026-07-01T10:11:00+08:00",
             address: nil,
             latitude: nil,
             longitude: nil,
