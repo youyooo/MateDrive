@@ -74,10 +74,18 @@ public actor ActivitiesStateCache: ActivitiesStateCaching {
     public func save(_ snapshot: ActivitiesCacheSnapshot, serverURL: String, carId: Int) async {
         restoreFromDiskIfNeeded()
         let key = Self.key(serverURL: serverURL, carId: carId)
-        if let existing = snapshots[key],
-           !snapshot.state.historyFullyLoaded,
-           (existing.state.historyFullyLoaded || existing.state.loadedPageCount > snapshot.state.loadedPageCount) {
-            return
+        if let existing = snapshots[key], !snapshot.state.historyFullyLoaded {
+            let existingIDs = Set(existing.state.items.map(\.stableID))
+            let candidateIDs = Set(snapshot.state.items.map(\.stableID))
+            let isMergedPartialCheckpoint = existing.state.historyFullyLoaded
+                && existingIDs.isSubset(of: candidateIDs)
+                && candidateIDs.count > existingIDs.count
+            if !existingIDs.isSubset(of: candidateIDs)
+                || (!isMergedPartialCheckpoint
+                    && (existing.state.historyFullyLoaded
+                        || existing.state.loadedPageCount > snapshot.state.loadedPageCount)) {
+                return
+            }
         }
         snapshots[key] = snapshot
         persist()

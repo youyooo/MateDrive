@@ -248,6 +248,132 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
         XCTAssertFalse(complete?.state.hasMore == true)
     }
 
+    func testDataPreloaderIgnoresDegradedSinglePageMetadataForFullActivityPage() async {
+        let client = DegradedSinglePageActivityHTTPClient()
+        let cache = ActivitiesStateCache(maximumAge: 60)
+        let settings = AppSettings(serverURL: "https://teslamate.example", lastSelectedCarId: 7)
+        let preloader = AppDataPreloader(
+            settingsStore: Task3PreloadSettingsStore(settings: settings),
+            secretStore: Task3PreloadSecretStore(),
+            clientOverride: client,
+            activitiesCache: cache
+        )
+
+        _ = await preloader.preload(force: true)
+        let snapshot = await cache.load(serverURL: settings.serverURL, carId: 7, now: Date())
+        let activityRequests = await client.requestedPaths.filter { $0.contains("/activities?") }
+
+        XCTAssertEqual(activityRequests, [
+            "/api/v1/cars/7/activities?page=1&show=200",
+            "/api/v1/cars/7/activities?page=2&show=200"
+        ])
+        XCTAssertEqual(snapshot?.state.items.count, 200)
+        XCTAssertEqual(snapshot?.state.loadedPageCount, 1)
+        XCTAssertTrue(snapshot?.state.paginationIsDegraded == true)
+        XCTAssertTrue(snapshot?.state.hasMore == true)
+        XCTAssertFalse(snapshot?.state.historyFullyLoaded == true)
+    }
+
+    func testDataPreloaderKeepsIncrementalHistoryPartialUntilItBridgesCompleteCache() async {
+        let client = IncrementalActivityContinuityHTTPClient()
+        let cache = ActivitiesStateCache(maximumAge: 60)
+        let settings = AppSettings(serverURL: "https://teslamate.example", lastSelectedCarId: 7)
+        var completeState = ActivitiesState()
+        completeState.items = [TeslaMateActivity(id: 1, type: "charge", startDate: "2026-07-01T00:00:00Z")]
+        completeState.loadedPageCount = 4
+        completeState.historyFullyLoaded = true
+        await cache.save(
+            ActivitiesCacheSnapshot(state: completeState),
+            serverURL: settings.serverURL,
+            carId: 7
+        )
+        let preloader = AppDataPreloader(
+            settingsStore: Task3PreloadSettingsStore(settings: settings),
+            secretStore: Task3PreloadSecretStore(),
+            clientOverride: client,
+            activitiesCache: cache
+        )
+
+        _ = await preloader.preload(force: true)
+        let partial = await cache.load(serverURL: settings.serverURL, carId: 7, now: Date())
+
+        XCTAssertEqual(partial?.state.items.count, 201)
+        XCTAssertEqual(partial?.state.loadedPageCount, 1)
+        XCTAssertTrue(partial?.state.hasMore == true)
+        XCTAssertFalse(partial?.state.historyFullyLoaded == true)
+
+        _ = await preloader.preload(force: true)
+        let complete = await cache.load(serverURL: settings.serverURL, carId: 7, now: Date())
+        let activityRequests = await client.requestedPaths.filter { $0.contains("/activities?") }
+
+        XCTAssertEqual(activityRequests, [
+            "/api/v1/cars/7/activities?page=1&show=200",
+            "/api/v1/cars/7/activities?page=2&show=200",
+            "/api/v1/cars/7/activities?page=1&show=200",
+            "/api/v1/cars/7/activities?page=2&show=200"
+        ])
+        XCTAssertEqual(complete?.state.items.count, 201)
+        XCTAssertEqual(complete?.state.loadedPageCount, 2)
+        XCTAssertTrue(complete?.state.historyFullyLoaded == true)
+        XCTAssertFalse(complete?.state.hasMore == true)
+    }
+
+    func testActivitiesCacheOnlyAllowsStrictMergedPartialToDowngradeCompleteHistory() async {
+        let cache = ActivitiesStateCache(maximumAge: 60)
+        let serverURL = "https://teslamate.example"
+        var complete = ActivitiesState()
+        complete.items = [
+            TeslaMateActivity(id: 1, type: "drive"),
+            TeslaMateActivity(id: 2, type: "charge")
+        ]
+        complete.loadedPageCount = 4
+        complete.historyFullyLoaded = true
+        await cache.save(ActivitiesCacheSnapshot(state: complete), serverURL: serverURL, carId: 7)
+
+        var mergedPartial = complete
+        mergedPartial.items.append(TeslaMateActivity(id: 3, type: "park"))
+        mergedPartial.loadedPageCount = 1
+        mergedPartial.historyFullyLoaded = false
+        await cache.save(ActivitiesCacheSnapshot(state: mergedPartial), serverURL: serverURL, carId: 7)
+
+        var losingPartial = mergedPartial
+        losingPartial.items.removeFirst()
+        losingPartial.loadedPageCount = 2
+        await cache.save(ActivitiesCacheSnapshot(state: losingPartial), serverURL: serverURL, carId: 7)
+
+        var regressedPartial = mergedPartial
+        regressedPartial.loadedPageCount = 0
+        await cache.save(ActivitiesCacheSnapshot(state: regressedPartial), serverURL: serverURL, carId: 7)
+        let restored = await cache.load(serverURL: serverURL, carId: 7, now: Date())
+
+        XCTAssertEqual(Set(restored?.state.items.map(\.stableID) ?? []), ["drive-1", "charge-2", "park-3"])
+        XCTAssertEqual(restored?.state.loadedPageCount, 1)
+        XCTAssertFalse(restored?.state.historyFullyLoaded == true)
+    }
+
+    func testDataPreloaderCapsDegradedActivityPaginationAtMaximumPageCount() async {
+        let client = EndlessDegradedActivityHTTPClient()
+        let cache = ActivitiesStateCache(maximumAge: 60)
+        let settings = AppSettings(serverURL: "https://teslamate.example", lastSelectedCarId: 7)
+        let preloader = AppDataPreloader(
+            settingsStore: Task3PreloadSettingsStore(settings: settings),
+            secretStore: Task3PreloadSecretStore(),
+            clientOverride: client,
+            activitiesCache: cache
+        )
+
+        _ = await preloader.preload(force: true)
+        let snapshot = await cache.load(serverURL: settings.serverURL, carId: 7, now: Date())
+        let activityRequestCount = await client.requestedPaths.filter { $0.contains("/activities?") }.count
+
+        XCTAssertEqual(activityRequestCount, 250)
+        XCTAssertEqual(snapshot?.state.items.count, 250)
+        XCTAssertEqual(snapshot?.state.loadedPageCount, 250)
+        XCTAssertTrue(snapshot?.state.historyLoadCapped == true)
+        XCTAssertTrue(snapshot?.state.hasMore == true)
+        XCTAssertFalse(snapshot?.state.historyFullyLoaded == true)
+    }
+
     func testBackgroundRunnerIndexesOnlyAfterHistoryAndStatusFinish() async {
         let order = BackgroundIndexCallOrderRecorder()
         let runner = BackgroundRefreshWorkRunner(
@@ -617,6 +743,102 @@ private actor PartialActivityRetryHTTPClient: HTTPClient {
         return (
             Data(body.utf8),
             HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: "HTTP/1.1", headerFields: nil)!
+        )
+    }
+}
+
+private actor DegradedSinglePageActivityHTTPClient: HTTPClient {
+    private(set) var requestedPaths: [String] = []
+
+    func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let url = request.url ?? URL(string: "https://teslamate.example")!
+        requestedPaths.append(url.path + (url.query.map { "?" + $0 } ?? ""))
+        let page = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?
+            .first(where: { $0.name == "page" })?.value.flatMap(Int.init)
+        let body: String
+        let statusCode: Int
+        if url.path == "/api/v1/cars" {
+            body = #"{"data":{"cars":[{"car_id":7,"name":"Test car 7"}]}}"#
+            statusCode = 200
+        } else if url.path.hasSuffix("/activities"), page == 1 {
+            let activities = (1 ... 200)
+                .map { #"{"id":\#($0),"type":"drive"}"# }
+                .joined(separator: ",")
+            body = #"{"data":[\#(activities)],"pagination":{"page":1,"limit":200,"totalPages":1,"totalRecords":0}}"#
+            statusCode = 200
+        } else if url.path.hasSuffix("/activities"), page == 2 {
+            body = #"{"error":"temporary failure"}"#
+            statusCode = 500
+        } else {
+            body = #"{}"#
+            statusCode = 200
+        }
+        return (
+            Data(body.utf8),
+            HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: "HTTP/1.1", headerFields: nil)!
+        )
+    }
+}
+
+private actor IncrementalActivityContinuityHTTPClient: HTTPClient {
+    private(set) var requestedPaths: [String] = []
+    private var secondPageAttemptCount = 0
+
+    func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let url = request.url ?? URL(string: "https://teslamate.example")!
+        requestedPaths.append(url.path + (url.query.map { "?" + $0 } ?? ""))
+        let page = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?
+            .first(where: { $0.name == "page" })?.value.flatMap(Int.init)
+        let body: String
+        let statusCode: Int
+        if url.path == "/api/v1/cars" {
+            body = #"{"data":{"cars":[{"car_id":7,"name":"Test car 7"}]}}"#
+            statusCode = 200
+        } else if url.path.hasSuffix("/activities"), page == 1 {
+            let activities = (2 ... 201)
+                .map { #"{"id":\#($0),"type":"drive","startDate":"2026-07-02T00:00:00Z"}"# }
+                .joined(separator: ",")
+            body = #"{"data":[\#(activities)],"pagination":{"page":1,"limit":200,"totalPages":2,"totalRecords":201}}"#
+            statusCode = 200
+        } else if url.path.hasSuffix("/activities"), page == 2 {
+            secondPageAttemptCount += 1
+            if secondPageAttemptCount == 1 {
+                body = #"{"error":"temporary failure"}"#
+                statusCode = 500
+            } else {
+                body = #"{"data":[{"id":1,"type":"charge","startDate":"2026-07-01T00:00:00Z"}],"pagination":{"page":2,"limit":200,"totalPages":2,"totalRecords":201}}"#
+                statusCode = 200
+            }
+        } else {
+            body = #"{}"#
+            statusCode = 200
+        }
+        return (
+            Data(body.utf8),
+            HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: "HTTP/1.1", headerFields: nil)!
+        )
+    }
+}
+
+private actor EndlessDegradedActivityHTTPClient: HTTPClient {
+    private(set) var requestedPaths: [String] = []
+
+    func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let url = request.url ?? URL(string: "https://teslamate.example")!
+        requestedPaths.append(url.path + (url.query.map { "?" + $0 } ?? ""))
+        let page = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?
+            .first(where: { $0.name == "page" })?.value.flatMap(Int.init)
+        let body: String
+        if url.path == "/api/v1/cars" {
+            body = #"{"data":{"cars":[{"car_id":7,"name":"Test car 7"}]}}"#
+        } else if url.path.hasSuffix("/activities"), let page {
+            body = #"{"data":[{"id":\#(page),"type":"drive"}],"pagination":{"page":1,"limit":1,"totalPages":9999,"totalRecords":0}}"#
+        } else {
+            body = #"{}"#
+        }
+        return (
+            Data(body.utf8),
+            HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!
         )
     }
 }

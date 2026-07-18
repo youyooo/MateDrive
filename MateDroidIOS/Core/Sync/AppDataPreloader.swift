@@ -207,6 +207,8 @@ public actor AppDataPreloader {
                     var units = cachedSnapshot?.state.units
                     var paginationIsDegraded = cachedSnapshot?.state.paginationIsDegraded ?? false
                     var hasMore = true
+                    var bridgedCachedHistory = false
+                    var reachedServerEnd = false
 
                     while hasMore, page <= maximumPages, !Task.isCancelled {
                         requested += 1
@@ -230,46 +232,57 @@ public actor AppDataPreloader {
                         items.removeAll { pageIDs.contains($0.stableID) }
                         items.append(contentsOf: response.data)
                         let reportedPages = response.pagination?.totalPages
-                        let metadataIsReliable = reportedPages.map { $0 > 0 && $0 < 9_999 } ?? false
-                        let mustResumePastCachedPage = !cachedHistoryIsComplete && page <= cachedLoadedPageCount
-                        paginationIsDegraded = paginationIsDegraded
-                            || (reportedPages ?? 0) >= 9_999
+                        let responseMetadataIsDegraded = (reportedPages ?? 0) >= 9_999
                             || (!response.data.isEmpty && response.pagination?.totalRecords == 0)
-                        if metadataIsReliable, let reportedPages {
+                            || response.pagination?.page.map { $0 != page } == true
+                        let metadataIsReliable = !responseMetadataIsDegraded
+                            && (reportedPages.map { $0 > 0 && $0 < 9_999 } ?? false)
+                        let mustResumePastCachedPage = !cachedHistoryIsComplete && page <= cachedLoadedPageCount
+                        let bridgesCachedHistory = overlapsCachedHistory
+                            && (cachedHistoryIsComplete || page > cachedLoadedPageCount)
+                        paginationIsDegraded = paginationIsDegraded || responseMetadataIsDegraded
+                        if bridgesCachedHistory {
+                            bridgedCachedHistory = true
+                            hasMore = false
+                        } else if metadataIsReliable, let reportedPages {
                             hasMore = page < reportedPages
                         } else {
                             let serverLimit = max(response.pagination?.limit ?? pageSize, 1)
                             hasMore = response.data.count >= serverLimit
                                 && (!newItems.isEmpty || mustResumePastCachedPage)
                         }
-                        if cachedHistoryIsComplete, overlapsCachedHistory {
-                            hasMore = false
+                        if !hasMore, !bridgedCachedHistory {
+                            reachedServerEnd = true
                         }
                         page += 1
+
+                        guard !items.isEmpty else { continue }
+                        var state = ActivitiesState()
+                        state.items = items.sorted {
+                            let lhs = $0.startDate.flatMap(DomainDateParser.date(from:)) ?? .distantPast
+                            let rhs = $1.startDate.flatMap(DomainDateParser.date(from:)) ?? .distantPast
+                            return lhs > rhs
+                        }
+                        state.hasMore = hasMore
+                        state.source = .unifiedAPI
+                        state.paginationIsDegraded = paginationIsDegraded
+                        state.historyFullyLoaded = bridgedCachedHistory || reachedServerEnd
+                        state.historyLoadCapped = !state.historyFullyLoaded && hasMore && page > maximumPages
+                        state.loadedPageCount = cachedHistoryIsComplete && !state.historyFullyLoaded
+                            ? successful
+                            : max(cachedLoadedPageCount, successful)
+                        state.currencyCode = settings.resolvedCurrencyCode()
+                        state.units = units
+                        await cache.save(
+                            ActivitiesCacheSnapshot(state: state, savedAt: savedAt),
+                            serverURL: settings.serverURL,
+                            carId: car.carId
+                        )
                     }
 
-                    guard successful > 0, !Task.isCancelled else {
+                    guard successful > 0, !items.isEmpty else {
                         return (requested, successful)
                     }
-                    var state = ActivitiesState()
-                    state.items = items.sorted {
-                        let lhs = $0.startDate.flatMap(DomainDateParser.date(from:)) ?? .distantPast
-                        let rhs = $1.startDate.flatMap(DomainDateParser.date(from:)) ?? .distantPast
-                        return lhs > rhs
-                    }
-                    state.hasMore = hasMore
-                    state.source = .unifiedAPI
-                    state.paginationIsDegraded = paginationIsDegraded
-                    state.historyFullyLoaded = cachedHistoryIsComplete || !hasMore
-                    state.historyLoadCapped = !cachedHistoryIsComplete && hasMore && page > maximumPages
-                    state.loadedPageCount = max(cachedLoadedPageCount, successful)
-                    state.currencyCode = settings.resolvedCurrencyCode()
-                    state.units = units
-                    await cache.save(
-                        ActivitiesCacheSnapshot(state: state, savedAt: savedAt),
-                        serverURL: settings.serverURL,
-                        carId: car.carId
-                    )
                     return (requested, successful)
                 }
             }
