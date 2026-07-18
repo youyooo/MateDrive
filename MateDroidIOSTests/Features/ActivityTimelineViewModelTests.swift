@@ -381,8 +381,8 @@ final class ActivityTimelineViewModelTests: XCTestCase {
             scope: .sessionOnly,
             purpose: .custom,
             customName: name,
-            icon: nil,
-            colorHex: nil,
+            icon: "tag.fill",
+            colorHex: "#007AFF",
             startMinute: nil,
             endMinute: nil,
             updatedAt: date(3_000)
