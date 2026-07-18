@@ -2,14 +2,30 @@ import SwiftUI
 
 @MainActor
 public struct RootView: View {
+    @Environment(\.scenePhase) private var scenePhase
     private let environment: AppEnvironment
     private let capabilityService: TeslaMateCapabilityService
-    private let historySyncRunner: HistorySyncRunner
+    private let dataSyncCoordinator: AppDataSyncCoordinator
+    private let cloudBackupCoordinator: any CloudBackupCoordinating
+    private let weatherService: WeatherService
+    private let launchSnapshot: WidgetVehicleSnapshot?
     @StateObject private var settingsViewModel: SettingsViewModel
-    @State private var path: [AppRoute] = []
+    @StateObject private var syncLifecycleController: AppDataSyncLifecycleController
+    @StateObject private var dashboardViewModel: DashboardViewModel
+    @StateObject private var activityTimelineViewModel: ActivityTimelineViewModel
+    @State private var navigation = RootNavigationState()
+    @State private var isLaunchExperienceVisible = true
 
-    public init(environment: AppEnvironment) {
+    public init(
+        environment: AppEnvironment,
+        dataSyncCoordinator: AppDataSyncCoordinator,
+        cloudBackupCoordinator: any CloudBackupCoordinating
+    ) {
         self.environment = environment
+        self.dataSyncCoordinator = dataSyncCoordinator
+        self.cloudBackupCoordinator = cloudBackupCoordinator
+        self.weatherService = WeatherService(api: OpenMeteoAPI())
+        self.launchSnapshot = WidgetSnapshotStore.shared.preferredVehicleSnapshot()
         let profileStore = DatabaseBackedTeslaMateServerProfileStore(databaseProvider: environment.databaseProvider)
         let capabilityService = TeslaMateCapabilityService(profileStore: profileStore)
         self.capabilityService = capabilityService
@@ -21,7 +37,14 @@ public struct RootView: View {
             secretStore: environment.secretStore,
             databaseProvider: environment.databaseProvider
         )
-        self.historySyncRunner = historySyncRunner
+        _syncLifecycleController = StateObject(
+            wrappedValue: AppDataSyncLifecycleController(
+                coordinator: dataSyncCoordinator,
+                didCompleteSync: { report in
+                    _ = await cloudBackupCoordinator.createAutomaticBackup(after: report)
+                }
+            )
+        )
         _settingsViewModel = StateObject(
             wrappedValue: SettingsViewModel(
                 settingsStore: environment.settingsStore,
@@ -35,26 +58,79 @@ public struct RootView: View {
                 notificationService: environment.notificationService
             )
         )
+        _dashboardViewModel = StateObject(
+            wrappedValue: DashboardViewModel(
+                api: SettingsBackedDashboardAPI(
+                    settingsStore: environment.settingsStore,
+                    secretStore: environment.secretStore,
+                    networkPolicy: .cacheOnly
+                ),
+                settingsStore: environment.settingsStore,
+                notificationService: environment.notificationService,
+                sentryAlertStore: DatabaseBackedSentryAlertLogStore(databaseProvider: environment.databaseProvider),
+                summaryProvider: DashboardSummaryProvider(
+                    databaseProvider: environment.databaseProvider,
+                    settingsStore: environment.settingsStore
+                ),
+                locationResolver: CachedDashboardLocationResolver(
+                    queueStore: DatabaseBackedGeocodeQueueStore(databaseProvider: environment.databaseProvider),
+                    reverseGeocoder: AppleReverseGeocodingAPI(),
+                    allowsNetworkLookup: false
+                )
+            )
+        )
+        _activityTimelineViewModel = StateObject(
+            wrappedValue: ActivityTimelineViewModel(
+                sessionStore: DatabaseBackedSmartActivityStore(
+                    databaseProvider: environment.databaseProvider
+                )
+            )
+        )
     }
 
     public var body: some View {
-        NavigationStack(path: $path) {
-            Group {
-                if settingsViewModel.settings.isConfigured {
-                    DashboardView(
-                        viewModel: dashboardViewModel(),
-                        navigate: navigate(to:)
+        Group {
+            if settingsViewModel.settings.isConfigured {
+                configuredTabs
+            } else {
+                NavigationStack(path: $navigation.settingsPath) {
+                    SettingsView(
+                        viewModel: settingsViewModel,
+                        cloudBackupCoordinator: cloudBackupCoordinator
                     )
-                } else {
-                    SettingsView(viewModel: settingsViewModel)
+                        .navigationDestination(for: AppRoute.self) { route in
+                            destination(for: route)
+                        }
                 }
             }
-            .navigationDestination(for: AppRoute.self, destination: destination(for:))
         }
         .environment(\.locale, appLocale)
         .environment(\.appLanguage, settingsViewModel.settings.appLanguage)
         .environment(\.appDisplayUnitSystem, settingsViewModel.settings.displayUnitSystem)
+        .overlay {
+            if isLaunchExperienceVisible {
+                LaunchExperienceView(snapshot: LaunchExperienceSnapshot(snapshot: launchSnapshot))
+                    .transition(.opacity)
+                    .zIndex(100)
+                    .task {
+                        #if DEBUG
+                        if ProcessInfo.processInfo.environment["MATEDRIVE_HOLD_LAUNCH_EXPERIENCE"] == "1" {
+                            return
+                        }
+                        #endif
+                        do {
+                            try await Task.sleep(for: .milliseconds(1_450))
+                        } catch {
+                            return
+                        }
+                        withAnimation(.easeOut(duration: 0.3)) {
+                            isLaunchExperienceVisible = false
+                        }
+                    }
+            }
+        }
         .task {
+            await syncLifecycleController.appDidBecomeActive()
             #if DEBUG
             await DebugLocalTeslamateSeeder.seedIfNeeded(
                 settingsStore: environment.settingsStore,
@@ -62,14 +138,121 @@ public struct RootView: View {
             )
             #endif
             await settingsViewModel.load()
-            async let historySync: HistorySyncReport = historySyncRunner.run()
+            await openPendingShortcutIfNeeded()
             await processPendingGeography()
             await refreshCapabilityProfileIfNeeded()
-            _ = await historySync
-            await processPendingGeography()
-            await settingsViewModel.refreshHistorySyncHealth()
+            let coordinator = dataSyncCoordinator
+            Task(priority: .utility) {
+                _ = await coordinator.waitUntilIdle()
+                await processPendingGeography()
+                await settingsViewModel.refreshHistorySyncHealth()
+            }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            switch phase {
+            case .active:
+                Task {
+                    await syncLifecycleController.appDidBecomeActive()
+                    await openPendingShortcutIfNeeded()
+                }
+            case .background:
+                syncLifecycleController.appDidEnterBackground()
+            case .inactive:
+                break
+            @unknown default:
+                break
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .mateDriveShortcutNavigationRequested)) { _ in
+            Task { await openPendingShortcutIfNeeded() }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .mateDriveCloudRestoreCompleted)) { _ in
+            Task {
+                await settingsViewModel.load()
+                syncLifecycleController.publishRestoredDataRevision()
+            }
+        }
+        .onChange(of: syncLifecycleController.cacheRevision) {
+            Task { await dashboardViewModel.load() }
         }
         .accessibilityIdentifier("root_view")
+    }
+
+    private var configuredTabs: some View {
+        TabView(
+            selection: Binding(
+                get: { navigation.selectedTab },
+                set: { navigation.selectTab($0) }
+            )
+        ) {
+            NavigationStack(path: $navigation.homePath) {
+                DashboardView(
+                    viewModel: dashboardViewModel,
+                    navigate: navigate(to:)
+                )
+                .navigationDestination(for: AppRoute.self) { route in
+                    destination(for: route)
+                }
+            }
+            .tabItem {
+                Label(t("Home", "首页"), systemImage: "house.fill")
+            }
+            .tag(RootTab.home)
+
+            NavigationStack(path: $navigation.activityPath) {
+                Group {
+                    if let carId = dashboardViewModel.state.selectedCarId {
+                        ActivityTimelineView(
+                            carId: carId,
+                            cacheRevision: syncLifecycleController.cacheRevision,
+                            viewModel: activityTimelineViewModel,
+                            navigate: navigate(to:)
+                        )
+                    } else {
+                        ContentUnavailableView(
+                            t("No vehicle selected", "尚未选择车辆"),
+                            systemImage: "car"
+                        )
+                    }
+                }
+                .navigationDestination(for: AppRoute.self) { route in
+                    destination(for: route)
+                }
+            }
+            .tabItem {
+                Label(t("Activity", "动态"), systemImage: "clock.arrow.circlepath")
+            }
+            .tag(RootTab.activity)
+
+            NavigationStack(path: $navigation.featuresPath) {
+                FeatureHubView(
+                    viewModel: dashboardViewModel,
+                    navigate: navigate(to:)
+                )
+                .navigationDestination(for: AppRoute.self) { route in
+                    destination(for: route)
+                }
+            }
+            .tabItem {
+                Label(t("Features", "功能"), systemImage: "square.grid.2x2.fill")
+            }
+            .tag(RootTab.features)
+
+            NavigationStack(path: $navigation.settingsPath) {
+                SettingsView(
+                    viewModel: settingsViewModel,
+                    cloudBackupCoordinator: cloudBackupCoordinator
+                )
+                    .navigationDestination(for: AppRoute.self) { route in
+                        destination(for: route)
+                    }
+            }
+            .tabItem {
+                Label(t("Settings", "设置"), systemImage: "gearshape.fill")
+            }
+            .tag(RootTab.settings)
+        }
+        .tint(Color(red: 0.10, green: 0.68, blue: 0.32))
     }
 
     private var appLocale: Locale {
@@ -80,7 +263,37 @@ public struct RootView: View {
     }
 
     private func navigate(to route: AppRoute) {
-        path.append(route)
+        navigation.open(route, source: navigation.selectedTab)
+    }
+
+    private func openPendingShortcutIfNeeded() async {
+        guard let destination = PendingShortcutNavigationStore.live.consume() else { return }
+        let settings = await environment.settingsStore.load()
+        let fallbackCarId = await shortcutFallbackCarId(settings: settings)
+        let route = MateDriveShortcutRouter.route(
+            destination: destination,
+            settings: settings,
+            fallbackCarId: fallbackCarId
+        )
+        if route == .settings, !settings.isConfigured {
+            navigation.settingsPath.removeAll()
+        } else {
+            navigation.openShortcut(route)
+        }
+    }
+
+    private func shortcutFallbackCarId(settings: AppSettings) async -> Int? {
+        guard settings.isConfigured,
+              settings.lastSelectedCarId == nil
+        else { return nil }
+        let factory = SettingsBackedTeslamateAPIFactory(
+            settingsStore: environment.settingsStore,
+            secretStore: environment.secretStore
+        )
+        guard case let .success(api) = await factory.makeAPI(settings: settings),
+              case let .success(cars) = await api.cars()
+        else { return nil }
+        return cars.first?.carId
     }
 
     private func refreshCapabilityProfileIfNeeded() async {
@@ -111,28 +324,17 @@ public struct RootView: View {
         await settingsViewModel.refreshGeographyHealth()
     }
 
-    private func dashboardViewModel() -> DashboardViewModel {
-        DashboardViewModel(
-            api: SettingsBackedDashboardAPI(
-                settingsStore: environment.settingsStore,
-                secretStore: environment.secretStore
-            ),
-            settingsStore: environment.settingsStore,
-            notificationService: environment.notificationService,
-            sentryAlertStore: sentryStore(),
-            summaryProvider: DashboardSummaryProvider(databaseProvider: environment.databaseProvider),
-            locationResolver: dashboardLocationResolver()
-        )
-    }
-
     @ViewBuilder
     private func destination(for route: AppRoute) -> some View {
         switch route {
         case .settings:
-            SettingsView(viewModel: settingsViewModel)
+            SettingsView(
+                viewModel: settingsViewModel,
+                cloudBackupCoordinator: cloudBackupCoordinator
+            )
         case .dashboard:
             DashboardView(
-                viewModel: dashboardViewModel(),
+                viewModel: dashboardViewModel,
                 navigate: navigate(to:)
             )
         case .palettePreview:
@@ -144,7 +346,17 @@ public struct RootView: View {
                 viewModel: chargesViewModel(),
                 navigate: navigate(to:)
             )
+        case let .energyCycles(carId, exteriorColor):
+            EnergyCyclesView(
+                carId: carId,
+                exteriorColor: exteriorColor,
+                viewModel: EnergyCyclesViewModel(
+                    provider: DatabaseBackedEnergyCycleDataProvider(databaseProvider: environment.databaseProvider)
+                ),
+                navigate: navigate(to:)
+            )
         case let .chargeDetail(carId, chargeId, exteriorColor):
+            let cacheKey = chargeDetailCacheKey(carId: carId, chargeId: chargeId)
             ChargeDetailView(
                 carId: carId,
                 chargeId: chargeId,
@@ -152,8 +364,10 @@ public struct RootView: View {
                 viewModel: ChargeDetailViewModel(
                     api: chargeAPI(),
                     settingsStore: environment.settingsStore,
+                    summaryCache: DatabaseBackedChargeSummaryCache(databaseProvider: environment.databaseProvider),
                     costOverrideStore: chargeCostOverrideStore(),
-                    tripMembershipManager: tripMembershipService()
+                    tripMembershipManager: tripMembershipService(),
+                    cacheKey: cacheKey
                 ),
                 navigate: navigate(to:)
             )
@@ -170,7 +384,10 @@ public struct RootView: View {
         case let .currentCharge(carId, _):
             CurrentChargeView(
                 carId: carId,
-                viewModel: CurrentChargeViewModel(api: chargeAPI())
+                viewModel: CurrentChargeViewModel(
+                    api: chargeAPI(),
+                    liveActivityManager: SystemChargeLiveActivityManager.shared
+                )
             )
         case let .activities(carId, exteriorColor):
             ActivitiesView(
@@ -178,27 +395,55 @@ public struct RootView: View {
                 exteriorColor: exteriorColor,
                 viewModel: ActivitiesViewModel(api: SettingsBackedActivityAPI(
                     settingsStore: environment.settingsStore,
-                    secretStore: environment.secretStore
-                ), settingsStore: environment.settingsStore),
+                    secretStore: environment.secretStore,
+                    networkPolicy: .cacheOnly
+                ), settingsStore: environment.settingsStore, cache: ActivitiesStateCache.shared,
+                sleepSummaryProvider: DashboardSummaryProvider(databaseProvider: environment.databaseProvider)),
                 standbyDrainAPI: SettingsBackedActivityAPI(
                     settingsStore: environment.settingsStore,
-                    secretStore: environment.secretStore
+                    secretStore: environment.secretStore,
+                    networkPolicy: .cacheOnly
+                ),
+                navigate: navigate(to:)
+            )
+        case let .activitySession(carId, sessionId):
+            ActivitySessionDetailView(
+                carId: carId,
+                sessionId: sessionId,
+                viewModel: ActivitySessionDetailViewModel(
+                    sessionStore: DatabaseBackedSmartActivityStore(
+                        databaseProvider: environment.databaseProvider
+                    ),
+                    labelStore: DatabaseBackedActivityLabelOverrideStore(
+                        databaseProvider: environment.databaseProvider
+                    )
+                ),
+                standbyDrainAPI: SettingsBackedActivityAPI(
+                    settingsStore: environment.settingsStore,
+                    secretStore: environment.secretStore,
+                    networkPolicy: .cacheOnly
                 ),
                 navigate: navigate(to:)
             )
         case let .places(carId):
             let api = SettingsBackedActivityAPI(
                 settingsStore: environment.settingsStore,
-                secretStore: environment.secretStore
+                secretStore: environment.secretStore,
+                networkPolicy: .cacheOnly
             )
             PlaceInsightsView(
                 carId: carId,
                 viewModel: PlaceInsightsViewModel(
                     api: api,
-                    placesAPI: SettingsBackedServerPlacesAPI(settingsStore: environment.settingsStore, secretStore: environment.secretStore),
+                    placesAPI: SettingsBackedServerPlacesAPI(
+                        settingsStore: environment.settingsStore,
+                        secretStore: environment.secretStore,
+                        networkPolicy: .cacheOnly
+                    ),
                     settingsStore: environment.settingsStore
                 ),
-                standbyDrainAPI: api
+                standbyDrainAPI: api,
+                settingsViewModel: settingsViewModel
             )
         case let .achievements(carId, exteriorColor):
             AchievementsView(
@@ -206,7 +451,8 @@ public struct RootView: View {
                 exteriorColor: exteriorColor,
                 viewModel: AchievementsViewModel(api: SettingsBackedAchievementsAPI(
                     settingsStore: environment.settingsStore,
-                    secretStore: environment.secretStore
+                    secretStore: environment.secretStore,
+                    networkPolicy: .cacheOnly
                 )),
                 navigate: navigate(to:)
             )
@@ -223,24 +469,37 @@ public struct RootView: View {
                 exteriorColor: exteriorColor,
                 viewModel: RecentDrivingMapViewModel(api: SettingsBackedDrivingCoordinatesAPI(
                     settingsStore: environment.settingsStore,
-                    secretStore: environment.secretStore
+                    secretStore: environment.secretStore,
+                    networkPolicy: .cacheOnly
                 )),
                 navigate: navigate
             )
         case let .driveDetail(carId, driveId, exteriorColor):
+            let cacheKey = driveDetailCacheKey(carId: carId, driveId: driveId)
             DriveDetailView(
                 carId: carId,
                 driveId: driveId,
                 exteriorColor: exteriorColor,
-                viewModel: DriveDetailViewModel(api: driveAPI(), weatherService: weatherService(), tripMembershipManager: tripMembershipService(), settingsStore: environment.settingsStore),
+                viewModel: DriveDetailViewModel(
+                    api: driveAPI(),
+                    weatherService: weatherService,
+                    tripMembershipManager: tripMembershipService(),
+                    settingsStore: environment.settingsStore,
+                    summaryCache: DatabaseBackedDriveSummaryCache(databaseProvider: environment.databaseProvider),
+                    cacheKey: cacheKey
+                ),
                 navigate: navigate(to:)
             )
         case let .driveMetricDetail(carId, driveId, metric, _):
+            let cacheKey = driveDetailCacheKey(carId: carId, driveId: driveId)
             DriveMetricDetailView(
                 carId: carId,
                 driveId: driveId,
                 metric: metric,
-                viewModel: DriveMetricDetailViewModel(api: driveAPI())
+                viewModel: DriveMetricDetailViewModel(
+                    api: driveAPI(),
+                    initialState: driveMetricInitialState(cacheKey: cacheKey)
+                )
             )
         case let .compareDrives(carId, baseDriveId, _):
             CompareDrivesView(
@@ -284,7 +543,11 @@ public struct RootView: View {
                     settingsStore: environment.settingsStore,
                     costOverrideStore: chargeCostOverrideStore(),
                     chargePricingAggregateStore: DatabaseBackedChargePricingAggregateStore(databaseProvider: environment.databaseProvider),
-                    activityAPI: SettingsBackedActivityAPI(settingsStore: environment.settingsStore, secretStore: environment.secretStore)
+                    activityAPI: SettingsBackedActivityAPI(
+                        settingsStore: environment.settingsStore,
+                        secretStore: environment.secretStore,
+                        networkPolicy: .cacheOnly
+                    )
                 ),
                 navigate: navigate(to:)
             )
@@ -295,7 +558,8 @@ public struct RootView: View {
                 currencySymbol: MateDroidCurrencyFormatter.symbol(for: settingsViewModel.settings.resolvedCurrencyCode()),
                 viewModel: CostReviewViewModel(api: SettingsBackedCostReviewAPI(
                     settingsStore: environment.settingsStore,
-                    secretStore: environment.secretStore
+                    secretStore: environment.secretStore,
+                    networkPolicy: .cacheOnly
                 )),
                 navigate: navigate(to:)
             )
@@ -305,7 +569,8 @@ public struct RootView: View {
                 exteriorColor: exteriorColor,
                 viewModel: DrivingRecordsViewModel(api: SettingsBackedDrivingRecordsAPI(
                     settingsStore: environment.settingsStore,
-                    secretStore: environment.secretStore
+                    secretStore: environment.secretStore,
+                    networkPolicy: .cacheOnly
                 )),
                 navigate: navigate
             )
@@ -315,7 +580,8 @@ public struct RootView: View {
                 exteriorColor: exteriorColor,
                 viewModel: DriveInsightsViewModel(api: SettingsBackedDriveInsightsAPI(
                     settingsStore: environment.settingsStore,
-                    secretStore: environment.secretStore
+                    secretStore: environment.secretStore,
+                    networkPolicy: .cacheOnly
                 )),
                 navigate: navigate(to:)
             )
@@ -324,16 +590,22 @@ public struct RootView: View {
                 carId: carId,
                 viewModel: EnvironmentHistoryViewModel(api: SettingsBackedEnvironmentHistoryAPI(
                     settingsStore: environment.settingsStore,
-                    secretStore: environment.secretStore
+                    secretStore: environment.secretStore,
+                    networkPolicy: .cacheOnly
                 ))
             )
         case let .topDrainLocations(carId):
-            let activityAPI = SettingsBackedActivityAPI(settingsStore: environment.settingsStore, secretStore: environment.secretStore)
+            let activityAPI = SettingsBackedActivityAPI(
+                settingsStore: environment.settingsStore,
+                secretStore: environment.secretStore,
+                networkPolicy: .cacheOnly
+            )
             TopDrainLocationsView(
                 carId: carId,
                 viewModel: TopDrainLocationsViewModel(api: SettingsBackedTopDrainLocationsAPI(
                     settingsStore: environment.settingsStore,
-                    secretStore: environment.secretStore
+                    secretStore: environment.secretStore,
+                    networkPolicy: .cacheOnly
                 )),
                 standbyDrainAPI: activityAPI
             )
@@ -342,7 +614,8 @@ public struct RootView: View {
                 carId: carId,
                 viewModel: CommuteRoutesViewModel(api: SettingsBackedCommuteRoutesAPI(
                     settingsStore: environment.settingsStore,
-                    secretStore: environment.secretStore
+                    secretStore: environment.secretStore,
+                    networkPolicy: .cacheOnly
                 ))
             )
         case let .countriesVisited(carId, exteriorColor, year):
@@ -412,7 +685,10 @@ public struct RootView: View {
     private func chargesViewModel() -> ChargesViewModel {
         let api = chargeAPI()
         return ChargesViewModel(
-            store: APIChargeSummaryProvider(api: api),
+            store: APIChargeSummaryProvider(
+                api: api,
+                cache: DatabaseBackedChargeSummaryCache(databaseProvider: environment.databaseProvider)
+            ),
             settingsStore: environment.settingsStore,
             costOverrideStore: chargeCostOverrideStore(),
             chargePricingAggregateStore: DatabaseBackedChargePricingAggregateStore(databaseProvider: environment.databaseProvider),
@@ -428,7 +704,16 @@ public struct RootView: View {
     private func chargeAPI() -> SettingsBackedChargeAPI {
         SettingsBackedChargeAPI(
             settingsStore: environment.settingsStore,
-            secretStore: environment.secretStore
+            secretStore: environment.secretStore,
+            networkPolicy: .cacheOnly
+        )
+    }
+
+    private func chargeDetailCacheKey(carId: Int, chargeId: Int) -> ChargeDetailCacheKey {
+        ChargeDetailCacheKey(
+            serverURL: settingsViewModel.settings.serverURL,
+            carId: carId,
+            chargeId: chargeId
         )
     }
 
@@ -446,18 +731,36 @@ public struct RootView: View {
     private func driveAPI() -> SettingsBackedDriveAPI {
         SettingsBackedDriveAPI(
             settingsStore: environment.settingsStore,
-            secretStore: environment.secretStore
+            secretStore: environment.secretStore,
+            networkPolicy: .cacheOnly
         )
     }
 
-    private func weatherService() -> WeatherService {
-        WeatherService(api: OpenMeteoAPI())
+    private func driveDetailCacheKey(carId: Int, driveId: Int) -> DriveDetailCacheKey {
+        DriveDetailCacheKey(
+            serverURL: settingsViewModel.settings.serverURL,
+            carId: carId,
+            driveId: driveId
+        )
+    }
+
+    private func driveMetricInitialState(cacheKey: DriveDetailCacheKey) -> DriveMetricDetailState {
+        guard let cached = DriveDetailStateCache.shared.state(for: cacheKey),
+              let detail = cached.driveDetail
+        else { return DriveMetricDetailState() }
+        return DriveMetricDetailState(
+            isLoading: false,
+            driveDetail: detail,
+            stats: cached.stats ?? DriveStatsCalculator.calculateStats(detail),
+            units: cached.units
+        )
     }
 
     private func analyticsAPI() -> SettingsBackedAnalyticsAPI {
         SettingsBackedAnalyticsAPI(
             settingsStore: environment.settingsStore,
-            secretStore: environment.secretStore
+            secretStore: environment.secretStore,
+            networkPolicy: .cacheOnly
         )
     }
 
@@ -476,7 +779,7 @@ public struct RootView: View {
             queueStore: DatabaseBackedGeocodeQueueStore(databaseProvider: environment.databaseProvider),
             reverseGeocoder: AppleReverseGeocodingAPI()
         )
-        return HistoricalGeographyEnricher(api: api, geocoder: geocoder)
+        return HistoricalGeographyEnricher(api: api, geocoder: geocoder, maximumAddresses: 0)
     }
 
     private func tripDataProvider() -> APITripDataProvider {
@@ -498,10 +801,7 @@ public struct RootView: View {
         DatabaseBackedSentryAlertLogStore(databaseProvider: environment.databaseProvider)
     }
 
-    private func dashboardLocationResolver() -> CachedDashboardLocationResolver {
-        CachedDashboardLocationResolver(
-            queueStore: DatabaseBackedGeocodeQueueStore(databaseProvider: environment.databaseProvider),
-            reverseGeocoder: AppleReverseGeocodingAPI()
-        )
+    private func t(_ english: String, _ chinese: String) -> String {
+        AppText.localized(english, chinese, language: settingsViewModel.settings.appLanguage)
     }
 }

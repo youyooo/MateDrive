@@ -507,6 +507,11 @@
 		EB72F19A0F76A744F96A9469 /* TeslaMateCapability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9847C5EDA844BEA9162A9E44 /* TeslaMateCapability.swift */; };
 		1B9B8CA25B308F83E92D37C4 /* ActivitiesStateCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223FF7D69D50D40F838B7479 /* ActivitiesStateCache.swift */; };
 		A80000000000000000000001 /* ActivityTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A80000000000000000000003 /* ActivityTimelineViewModel.swift */; };
+		A90000000000000000000001 /* ActivityTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000011 /* ActivityTimelineView.swift */; };
+		A90000000000000000000002 /* ActivitySessionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000012 /* ActivitySessionCard.swift */; };
+		A90000000000000000000003 /* ActivitySessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000013 /* ActivitySessionDetailView.swift */; };
+		A90000000000000000000004 /* ParkingActivityDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000014 /* ParkingActivityDetailView.swift */; };
+		A90000000000000000000005 /* ActivitySessionCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000015 /* ActivitySessionCardTests.swift */; };
 		ECC0A164C1A9A23FC7EB8625 /* ActivitiesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D18AF76B7DAECFCC22C6822B /* ActivitiesViewModel.swift */; };
 		ED5D13906A860462B5848132 /* AchievementModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69AE48525785E5A65483D8DF /* AchievementModels.swift */; };
 		EDC51BBCD974051673E17A69 /* CarModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5B90D51893805CB91F90E55 /* CarModels.swift */; };
@@ -913,6 +918,11 @@
 		223FF7D69D50D40F838B7479 /* ActivitiesStateCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitiesStateCache.swift; sourceTree = "<group>"; };
 		D18AF76B7DAECFCC22C6822B /* ActivitiesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitiesViewModel.swift; sourceTree = "<group>"; };
 		A80000000000000000000003 /* ActivityTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityTimelineViewModel.swift; sourceTree = "<group>"; };
+		A90000000000000000000011 /* ActivityTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityTimelineView.swift; sourceTree = "<group>"; };
+		A90000000000000000000012 /* ActivitySessionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySessionCard.swift; sourceTree = "<group>"; };
+		A90000000000000000000013 /* ActivitySessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySessionDetailView.swift; sourceTree = "<group>"; };
+		A90000000000000000000014 /* ParkingActivityDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingActivityDetailView.swift; sourceTree = "<group>"; };
+		A90000000000000000000015 /* ActivitySessionCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySessionCardTests.swift; sourceTree = "<group>"; };
 		D29FD409374B824BE0D8B34B /* TeslaMateServerProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeslaMateServerProfileStore.swift; sourceTree = "<group>"; };
 		D2EA6D8696C5CDC9437ABE06 /* m3h_PX02_W38A.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3h_PX02_W38A.png; sourceTree = "<group>"; };
 		D320495059EDC212F505CF78 /* SettingsBackedTeslamateAPIFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBackedTeslamateAPIFactory.swift; sourceTree = "<group>"; };
@@ -1014,11 +1024,15 @@
 				223FF7D69D50D40F838B7479 /* ActivitiesStateCache.swift */,
 				D882EDE00B92188C2D89B899 /* ActivitiesView.swift */,
 				D18AF76B7DAECFCC22C6822B /* ActivitiesViewModel.swift */,
+				A90000000000000000000011 /* ActivityTimelineView.swift */,
 				A80000000000000000000003 /* ActivityTimelineViewModel.swift */,
+				A90000000000000000000012 /* ActivitySessionCard.swift */,
+				A90000000000000000000013 /* ActivitySessionDetailView.swift */,
 				DD2C4C9A7B8103760CA5F590 /* ActivityAPIProvider.swift */,
 				5B3BF352769788551AC0E504 /* StandbyDrainView.swift */,
 				D781AAD83CB102188F9F10E1 /* StandbyDrainViewModel.swift */,
 				A10000000000000000000003 /* ParkingIntervalAnalyzer.swift */,
+				A90000000000000000000014 /* ParkingActivityDetailView.swift */,
 				A10000000000000000000004 /* SmartActivityModels.swift */,
 				A20000000000000000000003 /* ActivitySessionReconstructor.swift */,
 				A30000000000000000000003 /* ActivityPurposeClassifier.swift */,
@@ -1665,6 +1679,7 @@
 				35599BEE2270B1E80A3F0B8C /* AchievementsViewModelTests.swift */,
 				2738AC7A628E528EC30C3131 /* ActivitiesViewModelTests.swift */,
 				A80000000000000000000004 /* ActivityTimelineViewModelTests.swift */,
+				A90000000000000000000015 /* ActivitySessionCardTests.swift */,
 				9DE4347EA7C872BBE88A7DCD /* AnalyticalViewModelTests.swift */,
 				D6BF4550A0C735D0F8A133B1 /* CarImagePickerViewModelTests.swift */,
 				90AF52654BD2F30C966759CF /* ChargeCostResolverTests.swift */,
@@ -2178,8 +2193,12 @@
 				A20000000000000000000001 /* ActivitySessionReconstructor.swift in Sources */,
 				A30000000000000000000001 /* ActivityPurposeClassifier.swift in Sources */,
 				ECC0A164C1A9A23FC7EB8625 /* ActivitiesViewModel.swift in Sources */,
+				A90000000000000000000001 /* ActivityTimelineView.swift in Sources */,
 				A80000000000000000000001 /* ActivityTimelineViewModel.swift in Sources */,
+				A90000000000000000000002 /* ActivitySessionCard.swift in Sources */,
+				A90000000000000000000003 /* ActivitySessionDetailView.swift in Sources */,
 				CC547413D2C7D9972A60EA35 /* ActivityAPIProvider.swift in Sources */,
+				A90000000000000000000004 /* ParkingActivityDetailView.swift in Sources */,
 				386A351CE0634DDA2B9CA94F /* ActivityModels.swift in Sources */,
 				8CA1F7A24136EAABC25299A8 /* AggregateRecords.swift in Sources */,
 				C9E2380C8EB52E2EBAF7D758 /* AggregateStore.swift in Sources */,
@@ -2383,6 +2402,7 @@
 				A816A1BE30B5B36A44D80A02 /* AchievementsViewModelTests.swift in Sources */,
 				C0DF1E0F1BE9E0D28EA7AC87 /* ActivitiesViewModelTests.swift in Sources */,
 				A80000000000000000000002 /* ActivityTimelineViewModelTests.swift in Sources */,
+				A90000000000000000000005 /* ActivitySessionCardTests.swift in Sources */,
 				0773B6E82D638D6A78CE3E64 /* AggregateStoreTests.swift in Sources */,
 				293BB9735F3B47AEFC071E4F /* AnalyticalViewModelTests.swift in Sources */,
 				6E15E1F9D75887F6E62FF985 /* AppDatabaseProviderTests.swift in Sources */,
