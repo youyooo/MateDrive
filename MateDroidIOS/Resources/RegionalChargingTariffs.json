@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "generatedAt": "2026-07-18T00:00:00+08:00",
+  "regions": [
+    { "regionCode": "CN-11", "names": { "en": "Beijing", "zh-Hans": "北京" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-12", "names": { "en": "Tianjin", "zh-Hans": "天津" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-13", "names": { "en": "Hebei", "zh-Hans": "河北" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-14", "names": { "en": "Shanxi", "zh-Hans": "山西" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-15", "names": { "en": "Inner Mongolia", "zh-Hans": "内蒙古" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-21", "names": { "en": "Liaoning", "zh-Hans": "辽宁" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-22", "names": { "en": "Jilin", "zh-Hans": "吉林" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-23", "names": { "en": "Heilongjiang", "zh-Hans": "黑龙江" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-31", "names": { "en": "Shanghai", "zh-Hans": "上海" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-32", "names": { "en": "Jiangsu", "zh-Hans": "江苏" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-33", "names": { "en": "Zhejiang", "zh-Hans": "浙江" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-34", "names": { "en": "Anhui", "zh-Hans": "安徽" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-35", "names": { "en": "Fujian", "zh-Hans": "福建" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-36", "names": { "en": "Jiangxi", "zh-Hans": "江西" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-37", "names": { "en": "Shandong", "zh-Hans": "山东" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-41", "names": { "en": "Henan", "zh-Hans": "河南" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-42", "names": { "en": "Hubei", "zh-Hans": "湖北" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    {
+      "regionCode": "CN-43",
+      "names": { "en": "Hunan", "zh-Hans": "湖南" },
+      "availability": "verified",
+      "verifiedAt": "2026-07-18",
+      "tariffs": [
+        {
+          "id": "cn43-2024-residential-ev",
+          "status": "historical",
+          "customerClass": "residential-ev",
+          "chargeType": "ac",
+          "currencyCode": "CNY",
+          "effectiveFromDate": "2024-07-01",
+          "effectiveToDate": "2025-06-30",
+          "documentID": "湘发改价调规〔2024〕405号",
+          "sourceURL": "https://fgw.hunan.gov.cn/fgw/xxgk_70899/zcfg/dfxfg/202407/t20240708_33349442.html",
+          "basePricePerKWh": 0.604,
+          "serviceFeePerKWh": 0,
+          "sessionFee": 0,
+          "applicableWeekdays": null,
+          "applicableMonths": null,
+          "timeSegments": [
+            { "id": "cn43-low", "startMinuteOfDay": 1380, "endMinuteOfDay": 419, "pricePerKWh": 0.504 },
+            { "id": "cn43-flat-am", "startMinuteOfDay": 420, "endMinuteOfDay": 659, "pricePerKWh": 0.604 },
+            { "id": "cn43-high-midday", "startMinuteOfDay": 660, "endMinuteOfDay": 839, "pricePerKWh": 0.704 },
+            { "id": "cn43-flat-pm", "startMinuteOfDay": 840, "endMinuteOfDay": 1079, "pricePerKWh": 0.604 },
+            { "id": "cn43-high-evening", "startMinuteOfDay": 1080, "endMinuteOfDay": 1379, "pricePerKWh": 0.704 }
+          ]
+        }
+      ]
+    },
+    { "regionCode": "CN-44", "names": { "en": "Guangdong", "zh-Hans": "广东" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-45", "names": { "en": "Guangxi", "zh-Hans": "广西" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-46", "names": { "en": "Hainan", "zh-Hans": "海南" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-50", "names": { "en": "Chongqing", "zh-Hans": "重庆" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-51", "names": { "en": "Sichuan", "zh-Hans": "四川" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-52", "names": { "en": "Guizhou", "zh-Hans": "贵州" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-53", "names": { "en": "Yunnan", "zh-Hans": "云南" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-54", "names": { "en": "Tibet", "zh-Hans": "西藏" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-61", "names": { "en": "Shaanxi", "zh-Hans": "陕西" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-62", "names": { "en": "Gansu", "zh-Hans": "甘肃" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-63", "names": { "en": "Qinghai", "zh-Hans": "青海" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-64", "names": { "en": "Ningxia", "zh-Hans": "宁夏" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] },
+    { "regionCode": "CN-65", "names": { "en": "Xinjiang", "zh-Hans": "新疆" }, "availability": "noVerifiedDedicatedTariff", "verifiedAt": "2026-07-18", "tariffs": [] }
+  ]
+}

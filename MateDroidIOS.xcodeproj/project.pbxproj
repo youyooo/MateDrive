@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02BD2872091E133826CEA9C2 /* RegionalChargingTariffs.json in Resources */ = {isa = PBXBuildFile; fileRef = BBFBD364C33CDEC19E0FD219 /* RegionalChargingTariffs.json */; };
+		0B01BCD3398E2810E040E041 /* RegionalChargingTariffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AF2DCD008615291AED633A0 /* RegionalChargingTariffTests.swift */; };
+		DEA74C8A15E518A82727DC25 /* RegionalChargingTariff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575850D0D156946C990A5859 /* RegionalChargingTariff.swift */; };
 		000C931EF90A106B7583DF57 /* myjs_PPSW_WY18P.png in Resources */ = {isa = PBXBuildFile; fileRef = 818CFD73E6BCF9C76CAD2FAB /* myjs_PPSW_WY18P.png */; };
 		009C155A081913685669FB83 /* myjs_PPSW_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = 20FF5F73D3F7184B1416D07A /* myjs_PPSW_WY19P.png */; };
 		2F183411A6C18544F5D0E726 /* SmartActivityStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D198D65B17943AD18B6270AC /* SmartActivityStore.swift */; };
@@ -559,6 +562,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		575850D0D156946C990A5859 /* RegionalChargingTariff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionalChargingTariff.swift; sourceTree = "<group>"; };
+		7AF2DCD008615291AED633A0 /* RegionalChargingTariffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionalChargingTariffTests.swift; sourceTree = "<group>"; };
+		BBFBD364C33CDEC19E0FD219 /* RegionalChargingTariffs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = RegionalChargingTariffs.json; sourceTree = "<group>"; };
 		011FCD2C379AA4C393BB02B2 /* TeslaMateDiagnosticExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeslaMateDiagnosticExport.swift; sourceTree = "<group>"; };
 		08941F1596F35B88C04D8317 /* SmartActivityRecords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartActivityRecords.swift; sourceTree = "<group>"; };
 		0EE90F45E38460FD3B068565 /* ChargePricingObservationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargePricingObservationStore.swift; sourceTree = "<group>"; };
@@ -2002,6 +2008,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02BD2872091E133826CEA9C2 /* RegionalChargingTariffs.json in Resources */,
 				728ECAB52E1131786691FCC4 /* Assets.xcassets in Resources */,
 				08865DC0E47767EB4371BAC1 /* Localizable.xcstrings in Resources */,
 				40A0B02D5C75AA8A5E0FD63D /* PrivacyInfo.xcprivacy in Resources */,
@@ -2133,6 +2140,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DEA74C8A15E518A82727DC25 /* RegionalChargingTariff.swift in Sources */,
 				FEE7142D27E8DF4565848E88 /* APIError.swift in Sources */,
 				A466510265FA5879929D49CE /* APIResult.swift in Sources */,
 				ED5D13906A860462B5848132 /* AchievementModels.swift in Sources */,
@@ -2340,6 +2348,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B01BCD3398E2810E040E041 /* RegionalChargingTariffTests.swift in Sources */,
 				EF3861FD1B59152BC4CCA2B2 /* APIClientTests.swift in Sources */,
 				370790B0F7EBEF15DB4993C8 /* APIDecodingTests.swift in Sources */,
 				A816A1BE30B5B36A44D80A02 /* AchievementsViewModelTests.swift in Sources */,

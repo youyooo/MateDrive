@@ -3,7 +3,7 @@ PROJECT := MateDroidIOS.xcodeproj
 SCHEME := MateDrive
 DESTINATION := platform=iOS Simulator,name=iPhone 17,OS=26.5
 
-.PHONY: bootstrap generate generate-app-icon build build-code install-device archive-release archive-audit vehicle-privacy-audit vehicle-image-audit release-technical-gate test test-build test-scripts localization-audit app-store-technical-audit app-store-audit preflight verify integration-test
+.PHONY: bootstrap generate generate-app-icon build build-code install-device archive-release archive-audit vehicle-privacy-audit vehicle-image-audit regional-tariff-audit release-technical-gate test test-build test-scripts localization-audit app-store-technical-audit app-store-audit preflight verify integration-test
 
 bootstrap:
 	@if [ -z "$(XCODEGEN)" ]; then echo "xcodegen is required. Install with: brew install xcodegen"; exit 1; fi
@@ -36,6 +36,9 @@ vehicle-privacy-audit:
 vehicle-image-audit:
 	python3 scripts/validate_vehicle_images.py
 
+regional-tariff-audit:
+	python3 scripts/audit_regional_tariffs.py
+
 release-technical-gate: app-store-technical-audit archive-release archive-audit
 
 test: generate
@@ -59,7 +62,7 @@ app-store-audit:
 app-store-technical-audit: vehicle-image-audit
 	python3 scripts/audit_app_store_submission.py --technical-only
 
-preflight: vehicle-privacy-audit vehicle-image-audit test-scripts localization-audit build-code test-build
+preflight: regional-tariff-audit vehicle-privacy-audit vehicle-image-audit test-scripts localization-audit build-code test-build
 
 verify: vehicle-privacy-audit vehicle-image-audit test-scripts test
 

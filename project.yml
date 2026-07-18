@@ -19,6 +19,8 @@ targets:
       - path: MateDroidWidget/WidgetDisplayData.swift
       - path: MateDroidIOS/Resources/VehicleImageCatalog.json
         buildPhase: resources
+      - path: MateDroidIOS/Resources/RegionalChargingTariffs.json
+        buildPhase: resources
     settings:
       base:
         PRODUCT_NAME: MateDrive
