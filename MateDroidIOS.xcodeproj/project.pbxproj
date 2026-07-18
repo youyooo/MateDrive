@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		000C931EF90A106B7583DF57 /* myjs_PPSW_WY18P.png in Resources */ = {isa = PBXBuildFile; fileRef = 818CFD73E6BCF9C76CAD2FAB /* myjs_PPSW_WY18P.png */; };
 		009C155A081913685669FB83 /* myjs_PPSW_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = 20FF5F73D3F7184B1416D07A /* myjs_PPSW_WY19P.png */; };
+		2F183411A6C18544F5D0E726 /* SmartActivityStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D198D65B17943AD18B6270AC /* SmartActivityStore.swift */; };
+		B9C6F3CCA5AED0C480902F99 /* ChargePricingObservationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE90F45E38460FD3B068565 /* ChargePricingObservationStore.swift */; };
+		C8D8C2FF7D0CD9D2F0DE4806 /* SmartActivityRecords.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08941F1596F35B88C04D8317 /* SmartActivityRecords.swift */; };
+		F2AF81FB58BDC468F5ACAD38 /* SmartActivityStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4151340207F9ABA9B77E4483 /* SmartActivityStoreTests.swift */; };
 		01ABC863C96005FCC0440B5F /* RecentDrivingMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524928F57028393F6C06F20 /* RecentDrivingMapView.swift */; };
 		01BB0F72591FB9AA90262747 /* vehicle_model-x-refresh_dual-motor_pearl-white_cyberstream-20.png in Resources */ = {isa = PBXBuildFile; fileRef = 9CFF085FB974B458CEC01200 /* vehicle_model-x-refresh_dual-motor_pearl-white_cyberstream-20.png */; };
 		01DEB624BD1E7D8B66EA7158 /* vehicle_model-y-juniper-standard_standard_stealth-grey_photon-18.png in Resources */ = {isa = PBXBuildFile; fileRef = B49F23313941ABAB99BD4551 /* vehicle_model-y-juniper-standard_standard_stealth-grey_photon-18.png */; };
@@ -553,6 +557,10 @@
 
 /* Begin PBXFileReference section */
 		011FCD2C379AA4C393BB02B2 /* TeslaMateDiagnosticExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeslaMateDiagnosticExport.swift; sourceTree = "<group>"; };
+		08941F1596F35B88C04D8317 /* SmartActivityRecords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartActivityRecords.swift; sourceTree = "<group>"; };
+		0EE90F45E38460FD3B068565 /* ChargePricingObservationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargePricingObservationStore.swift; sourceTree = "<group>"; };
+		4151340207F9ABA9B77E4483 /* SmartActivityStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartActivityStoreTests.swift; sourceTree = "<group>"; };
+		D198D65B17943AD18B6270AC /* SmartActivityStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartActivityStore.swift; sourceTree = "<group>"; };
 		01DDC1F70D1D836214D91576 /* CompareDrivesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompareDrivesViewModel.swift; sourceTree = "<group>"; };
 		01E39D9E04FAB25E5D175DBF /* m3_PMNG_W39B.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3_PMNG_W39B.png; sourceTree = "<group>"; };
 		031AFAA77EFD8806E329CD68 /* MileageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MileageView.swift; sourceTree = "<group>"; };
@@ -1047,6 +1055,7 @@
 				890069412B409CB59A8C9EA1 /* ChargePricingAuditStoreTests.swift */,
 				54B02345C108A1F524C8957F /* PersistenceMigrationTests.swift */,
 				63614E0CAA8153C3429E504D /* SleepIntervalStoreTests.swift */,
+				4151340207F9ABA9B77E4483 /* SmartActivityStoreTests.swift */,
 				0563F9DBE1EE19B8F6C8DFF1 /* TeslaMateServerProfileStoreTests.swift */,
 				31EBA95C136B39A265072518 /* TripRouteCacheTests.swift */,
 			);
@@ -1528,11 +1537,13 @@
 				A3B8CAAF3D7561DA77F406EB /* AggregateStore.swift */,
 				58C12BA6B36413325E83EC1A /* ChargeCostOverrideStore.swift */,
 				633920743339692D7B380583 /* ChargePricingAuditStore.swift */,
+				0EE90F45E38460FD3B068565 /* ChargePricingObservationStore.swift */,
 				FD0BC558502ECCAEA6B9C7F7 /* ChargeSummaryStore.swift */,
 				608672828845DD9CB0230901 /* DriveSummaryStore.swift */,
 				9AB162016C47A3D53A804661 /* GeocodeStore.swift */,
 				7179472AF96900E829D122C2 /* SentryAlertLogStore.swift */,
 				4EFE69B039F93D4CD90CAEF7 /* SleepIntervalStore.swift */,
+				D198D65B17943AD18B6270AC /* SmartActivityStore.swift */,
 				D29FD409374B824BE0D8B34B /* TeslaMateServerProfileStore.swift */,
 				CF5300742A994A2436DE024F /* TripStore.swift */,
 			);
@@ -1726,6 +1737,7 @@
 				3940E84BA7A4AC940027B4E8 /* GeocodeRecords.swift */,
 				B2E09C0DE63F6D83B4E88830 /* SentryRecords.swift */,
 				88D7D68461295E37271F7AF6 /* SleepIntervalRecord.swift */,
+				08941F1596F35B88C04D8317 /* SmartActivityRecords.swift */,
 				595BF1BED1BCA93F405EAE83 /* TripRecords.swift */,
 			);
 			path = Records;
@@ -2156,6 +2168,7 @@
 				A4EE48D1B5FCCA04619F2E0B /* ChargePricingAuditStore.swift in Sources */,
 				788F0F4FE24C1A112C4282A2 /* ChargePricingBatch.swift in Sources */,
 				8498474BFCD43E4BB703BDCA /* ChargePricingBatchView.swift in Sources */,
+				B9C6F3CCA5AED0C480902F99 /* ChargePricingObservationStore.swift in Sources */,
 				6962561FD83D91AE5D1D9E23 /* ChargePricingRule.swift in Sources */,
 				FEFED4A7889210AC432FEBDC /* ChargePricingRulesView.swift in Sources */,
 				9201C98590F0C3B2A7DABAB9 /* ChargeStatsCalculator.swift in Sources */,
@@ -2249,6 +2262,8 @@
 				A822ADABDF7CCE9684822DA4 /* SentryAlertLogStore.swift in Sources */,
 				397EB8C17841B258F435DA6F /* SleepIntervalRecord.swift in Sources */,
 				3B40324808AEF86E13CFC3D3 /* SleepIntervalStore.swift in Sources */,
+				C8D8C2FF7D0CD9D2F0DE4806 /* SmartActivityRecords.swift in Sources */,
+				2F183411A6C18544F5D0E726 /* SmartActivityStore.swift in Sources */,
 				06CFB65CA832E7353A55A32A /* SentryHistoryView.swift in Sources */,
 				DD2DBCCD603E88C9EF57CB3F /* SentryHistoryViewModel.swift in Sources */,
 				60C6536BE2950390308526D3 /* SentryNotificationContent.swift in Sources */,
@@ -2356,6 +2371,7 @@
 				A20000000000000000000002 /* ActivitySessionReconstructorTests.swift in Sources */,
 				803634E960660D8A303BAEC3 /* PersistenceMigrationTests.swift in Sources */,
 				F75DF227E4A3C6490D0E6DFF /* SleepIntervalStoreTests.swift in Sources */,
+				F2AF81FB58BDC468F5ACAD38 /* SmartActivityStoreTests.swift in Sources */,
 				9924C70CE099C09171076C6D /* PlaceInsightsViewModelTests.swift in Sources */,
 				03747BEC32AF1F98CEA0E4AD /* RecentDrivingMapViewModelTests.swift in Sources */,
 				7AD164D64542ADBC81E6EC3D /* RequestAuthenticatorTests.swift in Sources */,

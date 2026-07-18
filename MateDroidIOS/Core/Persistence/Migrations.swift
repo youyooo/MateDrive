@@ -284,6 +284,57 @@ public enum Migrations {
                 ON sleep_intervals(car_id, start_date, end_date);
                 """
             ]
+        ),
+        Migration(
+            version: 23,
+            statements: [
+                """
+                CREATE TABLE IF NOT EXISTS vehicle_activity_sessions (
+                  session_id TEXT PRIMARY KEY NOT NULL,
+                  car_id INTEGER NOT NULL,
+                  start_date TEXT NOT NULL,
+                  end_date TEXT,
+                  place_key TEXT NOT NULL,
+                  purpose TEXT NOT NULL,
+                  confidence REAL,
+                  quality TEXT NOT NULL,
+                  derivation_version INTEGER NOT NULL,
+                  source_fingerprint TEXT NOT NULL,
+                  derivation_fingerprint TEXT NOT NULL,
+                  payload_json TEXT NOT NULL,
+                  updated_at TEXT NOT NULL
+                );
+                """,
+                "CREATE INDEX IF NOT EXISTS vehicle_activity_sessions_car_date ON vehicle_activity_sessions(car_id, start_date DESC);",
+                """
+                CREATE TABLE IF NOT EXISTS activity_label_overrides (
+                  override_id TEXT PRIMARY KEY NOT NULL,
+                  car_id INTEGER NOT NULL,
+                  session_id TEXT,
+                  place_key TEXT,
+                  scope TEXT NOT NULL,
+                  purpose TEXT NOT NULL,
+                  custom_name TEXT,
+                  icon TEXT NOT NULL,
+                  color_hex TEXT NOT NULL,
+                  start_minute INTEGER,
+                  end_minute INTEGER,
+                  updated_at TEXT NOT NULL
+                );
+                """,
+                """
+                CREATE TABLE IF NOT EXISTS charge_pricing_observations (
+                  observation_id TEXT PRIMARY KEY NOT NULL,
+                  car_id INTEGER NOT NULL,
+                  charge_id INTEGER NOT NULL,
+                  station_key TEXT NOT NULL,
+                  scope TEXT NOT NULL,
+                  payload_json TEXT NOT NULL,
+                  confirmed_at TEXT NOT NULL
+                );
+                """,
+                "CREATE INDEX IF NOT EXISTS charge_pricing_observations_station ON charge_pricing_observations(car_id, station_key, confirmed_at DESC);"
+            ]
         )
     ]
 

@@ -26,10 +26,37 @@ final class PersistenceMigrationTests: XCTestCase {
         XCTAssertTrue(tables.contains("charge_pricing_audit_batches"))
         XCTAssertTrue(tables.contains("charge_pricing_audit_items"))
         XCTAssertTrue(tables.contains("sleep_intervals"))
+        XCTAssertTrue(tables.contains("vehicle_activity_sessions"))
+        XCTAssertTrue(tables.contains("activity_label_overrides"))
+        XCTAssertTrue(tables.contains("charge_pricing_observations"))
         let version = try await database.userVersion()
-        XCTAssertEqual(version, 20)
-        XCTAssertEqual(DatabaseSchemaVersion.current, 20)
+        XCTAssertEqual(version, 23)
+        XCTAssertEqual(DatabaseSchemaVersion.current, 23)
         XCTAssertEqual(SchemaVersion.current, 13)
+    }
+
+    func testMigration23CreatesSmartActivityTablesAndIndexes() async throws {
+        let database = try SQLiteDatabase.inMemory()
+
+        try await Migrations.applyAll(to: database)
+
+        let version = try await database.userVersion()
+        XCTAssertEqual(version, 23)
+        for table in [
+            "vehicle_activity_sessions",
+            "activity_label_overrides",
+            "charge_pricing_observations"
+        ] {
+            let rows = try await database.rows(
+                "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?;",
+                bindings: [.text(table)]
+            )
+            XCTAssertEqual(rows.count, 1)
+        }
+        let sessionIndexes = try await database.rows("PRAGMA index_list(vehicle_activity_sessions);")
+        let observationIndexes = try await database.rows("PRAGMA index_list(charge_pricing_observations);")
+        XCTAssertTrue(sessionIndexes.contains { $0.count >= 2 && $0[1].textValue == "vehicle_activity_sessions_car_date" })
+        XCTAssertTrue(observationIndexes.contains { $0.count >= 2 && $0[1].textValue == "charge_pricing_observations_station" })
     }
 
     func testVersion20CreatesSleepIntervalsWithCompositePrimaryKeyAndRangeIndex() async throws {
@@ -50,7 +77,7 @@ final class PersistenceMigrationTests: XCTestCase {
         XCTAssertEqual(columns.map { $0[1].textValue }, ["car_id", "start_date", "end_date"])
         XCTAssertEqual(primaryKeyColumns, ["car_id", "start_date", "end_date"])
         XCTAssertTrue(indexes.contains { $0.count >= 2 && $0[1].textValue == "sleep_intervals_car_range" })
-        XCTAssertEqual(version, 20)
+        XCTAssertEqual(version, 23)
     }
 
     func testDriveSummarySchemaPreservesMissingDistanceAndDuration() async throws {
@@ -335,6 +362,6 @@ final class PersistenceMigrationTests: XCTestCase {
         XCTAssertTrue(requiredChargeColumns.isSubset(of: chargeColumns), file: file, line: line)
         XCTAssertTrue(requiredDriveColumns.isSubset(of: driveColumns), file: file, line: line)
         XCTAssertTrue(tables.contains("sleep_intervals"), file: file, line: line)
-        XCTAssertEqual(version, 20, file: file, line: line)
+        XCTAssertEqual(version, 23, file: file, line: line)
     }
 }
