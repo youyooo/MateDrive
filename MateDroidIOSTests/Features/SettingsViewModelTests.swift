@@ -15,7 +15,49 @@ final class SettingsViewModelTests: XCTestCase {
 
         XCTAssertEqual(settings.serverURL, "https://teslamate.example")
         XCTAssertEqual(settings.currencyCode, "CNY")
+        XCTAssertTrue(settings.chargeTariffTemplates.isEmpty)
         XCTAssertNil(settings.vehicleImageOverride(for: URL(string: "https://teslamate.example")!, carID: 1))
+    }
+
+    func testGeofenceKindsDecodeOldValuesAndExposeNewKinds() throws {
+        XCTAssertEqual(try JSONDecoder().decode(GeofenceKind.self, from: Data("\"home\"".utf8)), .home)
+        XCTAssertEqual(try JSONDecoder().decode(GeofenceKind.self, from: Data("\"work\"".utf8)), .work)
+        XCTAssertEqual(GeofenceKind.shopping.title(language: .english), "Shopping")
+        XCTAssertEqual(GeofenceKind.schoolPickup.title(language: .chinese), "学校或接送")
+        XCTAssertEqual(GeofenceKind.shopping.systemImage, "cart.fill")
+        XCTAssertEqual(GeofenceKind.schoolPickup.systemImage, "figure.2.and.child.holdinghands")
+    }
+
+    func testTariffTemplatesRoundTripAndSaveWithoutChangingRulesOrServerSettings() async throws {
+        let rule = ChargePricingRule(id: "rule", name: "Existing Rule", pricePerKWh: 1)
+        let store = InMemorySettingsStore(initial: AppSettings(
+            serverURL: "https://teslamate.example",
+            currencyCode: "CNY",
+            chargePricingRules: [rule]
+        ))
+        let viewModel = SettingsViewModel(settingsStore: store, secretStore: InMemorySecretStore())
+        await viewModel.load()
+        let template = ChargeTariffTemplate(
+            id: "template",
+            name: "Peak and Valley",
+            chargeType: .ac,
+            pricePerKWh: 0.8,
+            timeSegments: [
+                ChargePricingTimeSegment(startMinuteOfDay: 0, endMinuteOfDay: 479, pricePerKWh: 0.4),
+                ChargePricingTimeSegment(startMinuteOfDay: 480, endMinuteOfDay: 1_439, pricePerKWh: 0.8)
+            ]
+        )
+
+        await viewModel.saveChargeTariffTemplates([template])
+
+        let saved = try XCTUnwrap(store.saved)
+        XCTAssertEqual(saved.serverURL, "https://teslamate.example")
+        XCTAssertEqual(saved.currencyCode, "CNY")
+        XCTAssertEqual(saved.chargePricingRules, [rule])
+        XCTAssertEqual(saved.chargeTariffTemplates, [template])
+
+        let restored = try JSONDecoder().decode(AppSettings.self, from: JSONEncoder().encode(saved))
+        XCTAssertEqual(restored.chargeTariffTemplates, [template])
     }
 
     nonisolated func testConcurrentSaveSurvivesLegacyOverrideMigrationLoad() async throws {
@@ -80,7 +122,85 @@ final class SettingsViewModelTests: XCTestCase {
         XCTAssertEqual(settings.currencyCode, MateDroidCurrencyFormatter.automaticCode)
         XCTAssertEqual(settings.displayUnitSystem, .teslamate)
         XCTAssertEqual(settings.appLanguage, .system)
+        XCTAssertEqual(settings.authenticationMode, .none)
+        XCTAssertFalse(settings.usesCloudflareAccess)
         XCTAssertFalse(settings.forceChineseLanguage)
+        XCTAssertTrue(settings.mergeAdjacentDrives)
+        XCTAssertEqual(settings.adjacentDriveMergeMaximumGapMinutes, 30)
+    }
+
+    func testGeofenceRulesRoundTripAndOldSettingsKeepDefaults() throws {
+        let coordinate = SyntheticCoordinates.point()
+        let home = GeofenceRule(
+            carId: 7,
+            name: "Home",
+            kind: .home,
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude,
+            radiusMeters: 120
+        )
+        let settings = AppSettings(
+            geofenceRules: [home],
+            usesGeofencesForCommuteClassification: false
+        )
+
+        let restored = try JSONDecoder().decode(AppSettings.self, from: JSONEncoder().encode(settings))
+        let legacy = try JSONDecoder().decode(AppSettings.self, from: Data("{}".utf8))
+
+        XCTAssertEqual(restored.geofenceRules, [home])
+        XCTAssertFalse(restored.usesGeofencesForCommuteClassification)
+        XCTAssertTrue(legacy.geofenceRules.isEmpty)
+        XCTAssertTrue(legacy.usesGeofencesForCommuteClassification)
+    }
+
+    func testGeofenceMatchingUsesVehicleScopeAndMostSpecificRadius() {
+        let coordinate = SyntheticCoordinates.point()
+        let nearbyCoordinate = SyntheticCoordinates.point(
+            latitudeOffset: 0.0002,
+            longitudeOffset: 0.0001
+        )
+        let broad = GeofenceRule(
+            id: "broad",
+            carId: 7,
+            name: "Community",
+            kind: .other,
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude,
+            radiusMeters: 500
+        )
+        let home = GeofenceRule(
+            id: "home",
+            carId: 7,
+            name: "Home",
+            kind: .home,
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude,
+            radiusMeters: 120
+        )
+        let anotherCar = GeofenceRule(
+            id: "other-car",
+            carId: 9,
+            name: "Other car",
+            kind: .work,
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude,
+            radiusMeters: 50
+        )
+
+        let matched = GeofenceRuleEngine.matchingRule(
+            latitude: nearbyCoordinate.latitude,
+            longitude: nearbyCoordinate.longitude,
+            carId: 7,
+            rules: [broad, anotherCar, home]
+        )
+
+        XCTAssertEqual(matched?.id, "home")
+        XCTAssertNil(GeofenceRuleEngine.matchingRule(
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude,
+            carId: 7,
+            rules: [anotherCar]
+        ))
     }
 
     func testAppLanguageExposesEveryBundledLocalization() {
@@ -141,6 +261,7 @@ final class SettingsViewModelTests: XCTestCase {
         XCTAssertEqual(settings.serverURL, "https://teslamate.example")
         XCTAssertEqual(settings.currencyCode, "CNY")
         XCTAssertEqual(settings.appLanguage, .system)
+        XCTAssertEqual(settings.authenticationMode, .automatic)
         XCTAssertFalse(settings.forceChineseLanguage)
     }
 
@@ -174,6 +295,7 @@ final class SettingsViewModelTests: XCTestCase {
     func testSavingSettingsSeparatesSecretsFromNonSecrets() async throws {
         let store = InMemorySettingsStore(
             initial: AppSettings(
+                authenticationMode: .automatic,
                 showShortDrivesCharges: true,
                 teslamateBaseURL: "https://grafana.example",
                 lastSelectedCarId: 7,
@@ -222,7 +344,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func testSavingSettingsWithBlankSecretFieldsPreservesExistingSecrets() async throws {
         let store = InMemorySettingsStore(
-            initial: AppSettings(serverURL: "https://teslamate.example", currencyCode: "EUR")
+            initial: AppSettings(
+                serverURL: "https://teslamate.example",
+                authenticationMode: .automatic,
+                currencyCode: "EUR"
+            )
         )
         let secrets = InMemorySecretStore()
         try await secrets.set("saved-token", for: "apiToken")
@@ -283,7 +409,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func testSavingLanguageOnlyClearsStaleConnectionReport() async throws {
         let store = InMemorySettingsStore(
-            initial: AppSettings(serverURL: "https://teslamate.example", appLanguage: .chinese)
+            initial: AppSettings(
+                serverURL: "https://teslamate.example",
+                authenticationMode: .automatic,
+                appLanguage: .chinese
+            )
         )
         let viewModel = SettingsViewModel(
             settingsStore: store,
@@ -442,7 +572,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func testConnectionDiagnosticUsesSavedSettingsAndSecrets() async throws {
         let store = InMemorySettingsStore(
-            initial: AppSettings(serverURL: "https://teslamate.example", appLanguage: .chinese)
+            initial: AppSettings(
+                serverURL: "https://teslamate.example",
+                authenticationMode: .automatic,
+                appLanguage: .chinese
+            )
         )
         let secrets = InMemorySecretStore()
         try await secrets.set("token-123", for: "apiToken")
@@ -478,6 +612,8 @@ final class SettingsViewModelTests: XCTestCase {
         await viewModel.save(
             serverURL: "https://teslamate.example",
             secondaryServerURL: "",
+            authenticationMode: .apiKeys,
+            usesCloudflareAccess: true,
             apiToken: "token-123",
             basicUsername: "",
             basicPassword: "",
@@ -507,6 +643,7 @@ final class SettingsViewModelTests: XCTestCase {
             initial: AppSettings(
                 serverURL: "https://old.example",
                 secondaryServerURL: "https://old-backup.example",
+                authenticationMode: .automatic,
                 acceptInvalidCerts: false,
                 appLanguage: .chinese
             )
@@ -535,6 +672,49 @@ final class SettingsViewModelTests: XCTestCase {
         XCTAssertEqual(store.saved?.secondaryServerURL, "https://old-backup.example")
         XCTAssertEqual(store.saved?.acceptInvalidCerts, false)
         XCTAssertEqual(secrets.values["apiToken"], "saved-token")
+    }
+
+    func testSavingBearerAuthenticationRemovesConflictingCredentials() async throws {
+        let store = InMemorySettingsStore(initial: AppSettings(
+            serverURL: "https://teslamate.example",
+            authenticationMode: .automatic,
+            usesCloudflareAccess: true
+        ))
+        let secrets = InMemorySecretStore()
+        try await secrets.set("old-token", for: "apiToken")
+        try await secrets.set("alice", for: "httpBasicAuthUsername")
+        try await secrets.set("secret", for: "httpBasicAuthPassword")
+        try await secrets.set("access-key", for: "apiAccessKey")
+        try await secrets.set("secret-key", for: "apiSecretKey")
+        try await secrets.set("cf-id", for: "cloudflareAccessClientID")
+        try await secrets.set("cf-secret", for: "cloudflareAccessClientSecret")
+        let viewModel = SettingsViewModel(settingsStore: store, secretStore: secrets)
+        await viewModel.load()
+
+        await viewModel.save(
+            serverURL: "https://teslamate.example",
+            secondaryServerURL: "",
+            authenticationMode: .bearerToken,
+            usesCloudflareAccess: false,
+            apiToken: "new-token",
+            basicUsername: "",
+            basicPassword: "",
+            acceptInvalidCerts: false,
+            currencyCode: "CNY",
+            appLanguage: .chinese,
+            batteryReferenceRangeKm: nil,
+            batteryRecordingStartOdometerKm: nil
+        )
+
+        XCTAssertEqual(store.saved?.authenticationMode, .bearerToken)
+        XCTAssertFalse(store.saved?.usesCloudflareAccess ?? true)
+        XCTAssertEqual(secrets.values["apiToken"], "new-token")
+        XCTAssertNil(secrets.values["httpBasicAuthUsername"])
+        XCTAssertNil(secrets.values["httpBasicAuthPassword"])
+        XCTAssertNil(secrets.values["apiAccessKey"])
+        XCTAssertNil(secrets.values["apiSecretKey"])
+        XCTAssertNil(secrets.values["cloudflareAccessClientID"])
+        XCTAssertNil(secrets.values["cloudflareAccessClientSecret"])
     }
 
     func testLoadAndManualRefreshUpdateGeographyCacheHealth() async {

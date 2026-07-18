@@ -49,9 +49,52 @@ public struct ParkingIntervalMetrics: Codable, Equatable, Sendable {
 public enum SmartActivityPurpose: String, Codable, CaseIterable, Sendable {
     case replenishment, homeCharging, workCharging, commute, shopping
     case pickupDropoff, parking, custom, unclassified
+
+    public func title(language: AppLanguage, customName: String? = nil) -> String {
+        if self == .custom,
+           let customName = customName?.trimmingCharacters(in: .whitespacesAndNewlines),
+           !customName.isEmpty {
+            return customName
+        }
+
+        switch self {
+        case .replenishment:
+            return AppText.localized("Replenishment", "补能", language: language)
+        case .homeCharging:
+            return AppText.localized("Home charging", "家庭充电", language: language)
+        case .workCharging:
+            return AppText.localized("Work charging", "工作地充电", language: language)
+        case .commute:
+            return AppText.localized("Commute", "通勤", language: language)
+        case .shopping:
+            return AppText.localized("Shopping", "购物", language: language)
+        case .pickupDropoff:
+            return AppText.localized("Pickup or drop-off", "接送", language: language)
+        case .parking:
+            return AppText.localized("Parking", "停车", language: language)
+        case .custom:
+            return AppText.localized("Custom activity", "自定义活动", language: language)
+        case .unclassified:
+            return AppText.localized("Unclassified", "未分类", language: language)
+        }
+    }
+
+    public var systemImage: String {
+        switch self {
+        case .replenishment: return "bolt.car.fill"
+        case .homeCharging: return "house.and.flag.fill"
+        case .workCharging: return "building.2.fill"
+        case .commute: return "car.fill"
+        case .shopping: return "cart.fill"
+        case .pickupDropoff: return "figure.2.and.child.holdinghands"
+        case .parking: return "parkingsign.circle.fill"
+        case .custom: return "tag.fill"
+        case .unclassified: return "questionmark.circle"
+        }
+    }
 }
 
-public enum ActivityClassificationSource: String, Codable, Sendable {
+public enum ActivityClassificationSource: String, Codable, Equatable, Sendable {
     case userSession, userPlaceRule, geofence, learnedPattern, heuristic, none
 }
 

@@ -146,6 +146,8 @@
 		A10000000000000000000002 /* SmartActivityModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000004 /* SmartActivityModels.swift */; };
 		A20000000000000000000001 /* ActivitySessionReconstructor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* ActivitySessionReconstructor.swift */; };
 		A20000000000000000000002 /* ActivitySessionReconstructorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* ActivitySessionReconstructorTests.swift */; };
+		A30000000000000000000001 /* ActivityPurposeClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000003 /* ActivityPurposeClassifier.swift */; };
+		A30000000000000000000002 /* ActivityPurposeClassifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000004 /* ActivityPurposeClassifierTests.swift */; };
 		4A55E748C75BF0D12D8DF2E4 /* m3_PMBL_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = 5C6FC0F0445E89A8021EFF79 /* m3_PMBL_W39B.png */; };
 		4A7A9CD0F6A238998768E342 /* TyrePressureNotificationContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A44D7D40C8371F6612991FB /* TyrePressureNotificationContent.swift */; };
 		4A82FEF2097F40E29D2BE6C4 /* OpenMeteoAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AE0C2C5B733F1674CD13D4 /* OpenMeteoAPI.swift */; };
@@ -870,6 +872,8 @@
 		A10000000000000000000004 /* SmartActivityModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartActivityModels.swift; sourceTree = "<group>"; };
 		A20000000000000000000003 /* ActivitySessionReconstructor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySessionReconstructor.swift; sourceTree = "<group>"; };
 		A20000000000000000000004 /* ActivitySessionReconstructorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySessionReconstructorTests.swift; sourceTree = "<group>"; };
+		A30000000000000000000003 /* ActivityPurposeClassifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityPurposeClassifier.swift; sourceTree = "<group>"; };
+		A30000000000000000000004 /* ActivityPurposeClassifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityPurposeClassifierTests.swift; sourceTree = "<group>"; };
 		C91ACFE0BCC2AC11FD63DBA9 /* m3hp_PN01_W30P.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = m3hp_PN01_W30P.png; sourceTree = "<group>"; };
 		CA3786B98B74FD96D3746ADE /* TripDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDataProvider.swift; sourceTree = "<group>"; };
 		CA728256DE808FF49962B145 /* DriveSummaryRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveSummaryRecord.swift; sourceTree = "<group>"; };
@@ -991,6 +995,7 @@
 				A10000000000000000000003 /* ParkingIntervalAnalyzer.swift */,
 				A10000000000000000000004 /* SmartActivityModels.swift */,
 				A20000000000000000000003 /* ActivitySessionReconstructor.swift */,
+				A30000000000000000000003 /* ActivityPurposeClassifier.swift */,
 				1634D94032DB1A6A0C21B383 /* TopDrainLocationsView.swift */,
 				A2DFE99FE979016BD32AE322 /* TopDrainLocationsViewModel.swift */,
 			);
@@ -1649,6 +1654,7 @@
 				C6B435DB386DD8FC5EAD76F7 /* ParkingFeeRuleTests.swift */,
 				C982618C1C9F63081D1B5043 /* ParkingIntervalAnalyzerTests.swift */,
 				A20000000000000000000004 /* ActivitySessionReconstructorTests.swift */,
+				A30000000000000000000004 /* ActivityPurposeClassifierTests.swift */,
 				3C6AF070F62DDB45FA7ECBC9 /* PlaceInsightsViewModelTests.swift */,
 				34C7260B66BF10560FA0568B /* RecentDrivingMapViewModelTests.swift */,
 				FEC7956DD0C114E56D02D9BA /* SentryHistoryViewModelTests.swift */,
@@ -2134,6 +2140,7 @@
 				A10000000000000000000001 /* ParkingIntervalAnalyzer.swift in Sources */,
 				A10000000000000000000002 /* SmartActivityModels.swift in Sources */,
 				A20000000000000000000001 /* ActivitySessionReconstructor.swift in Sources */,
+				A30000000000000000000001 /* ActivityPurposeClassifier.swift in Sources */,
 				ECC0A164C1A9A23FC7EB8625 /* ActivitiesViewModel.swift in Sources */,
 				CC547413D2C7D9972A60EA35 /* ActivityAPIProvider.swift in Sources */,
 				386A351CE0634DDA2B9CA94F /* ActivityModels.swift in Sources */,
@@ -2369,6 +2376,7 @@
 				4503698C28F3857FAEC0167B /* ParkingFeeRuleTests.swift in Sources */,
 				CD350E3513044E797FE71EDC /* ParkingIntervalAnalyzerTests.swift in Sources */,
 				A20000000000000000000002 /* ActivitySessionReconstructorTests.swift in Sources */,
+				A30000000000000000000002 /* ActivityPurposeClassifierTests.swift in Sources */,
 				803634E960660D8A303BAEC3 /* PersistenceMigrationTests.swift in Sources */,
 				F75DF227E4A3C6490D0E6DFF /* SleepIntervalStoreTests.swift in Sources */,
 				F2AF81FB58BDC468F5ACAD38 /* SmartActivityStoreTests.swift in Sources */,

@@ -23,6 +23,10 @@ public enum ActivitySessionReconstructor {
         events: [TeslaMateActivity],
         sleepIntervals: [SleepInterval],
         geofences: [GeofenceRule],
+        labelOverrides: [ActivityLabelOverride] = [],
+        recurrenceCountsByPlaceKey: [String: Int] = [:],
+        chargeIdentitiesByChargeID: [Int: ChargePricingChargerIdentity] = [:],
+        confirmedCommuteSessionIDs: Set<String> = [],
         configuration: ActivitySessionReconstructionConfiguration = .init()
     ) -> [SmartActivitySession] {
         let ordered = deduplicated(events).sorted(by: orderedBefore)
@@ -36,6 +40,10 @@ public enum ActivitySessionReconstructor {
                 events: ordered,
                 sleepIntervals: sleepIntervals,
                 geofences: geofences,
+                labelOverrides: labelOverrides,
+                recurrenceCountsByPlaceKey: recurrenceCountsByPlaceKey,
+                chargeIdentitiesByChargeID: chargeIdentitiesByChargeID,
+                confirmedCommuteSessionIDs: confirmedCommuteSessionIDs,
                 configuration: configuration,
                 claimedSourceKeys: claimedSourceKeys
             ) else {
@@ -49,7 +57,14 @@ public enum ActivitySessionReconstructor {
             guard drive.kind == .drive,
                   !claimedSourceKeys.contains(sourceKey(for: drive))
             else { return nil }
-            return fallbackSession(carId: carId, drive: drive, geofences: geofences)
+            return fallbackSession(
+                carId: carId,
+                drive: drive,
+                geofences: geofences,
+                labelOverrides: labelOverrides,
+                recurrenceCountsByPlaceKey: recurrenceCountsByPlaceKey,
+                confirmedCommuteSessionIDs: confirmedCommuteSessionIDs
+            )
         }
 
         return sessions.sorted {
@@ -63,6 +78,10 @@ public enum ActivitySessionReconstructor {
         events: [TeslaMateActivity],
         sleepIntervals: [SleepInterval],
         geofences: [GeofenceRule],
+        labelOverrides: [ActivityLabelOverride],
+        recurrenceCountsByPlaceKey: [String: Int],
+        chargeIdentitiesByChargeID: [Int: ChargePricingChargerIdentity],
+        confirmedCommuteSessionIDs: Set<String>,
         configuration: ActivitySessionReconstructionConfiguration,
         claimedSourceKeys: Set<String>
     ) -> SmartActivitySession? {
@@ -131,7 +150,7 @@ public enum ActivitySessionReconstructor {
         let startDate = arrival?.startDate.flatMap(DomainDateParser.date(from:)) ?? parkingStart
         let endDate = departure?.endDate.flatMap(DomainDateParser.date(from:)) ?? parkingEnd
 
-        return SmartActivitySession(
+        let session = SmartActivitySession(
             id: "\(carId)-\(parking.id)",
             carId: carId,
             startDate: startDate,
@@ -150,6 +169,16 @@ public enum ActivitySessionReconstructor {
             derivationVersion: 1,
             sourceFingerprint: sourceFingerprint,
             derivationFingerprint: sourceFingerprint
+        )
+        return classified(
+            session,
+            geofence: geofence,
+            labelOverrides: labelOverrides,
+            recurrenceCount: recurrenceCountsByPlaceKey[session.placeKey] ?? 0,
+            chargeIdentity: charges.first.flatMap { chargeIdentitiesByChargeID[$0.id] },
+            hasCharge: !charges.isEmpty,
+            hasPromptDeparture: departure != nil && !charges.isEmpty,
+            isConfirmedCommute: confirmedCommuteSessionIDs.contains(session.id)
         )
     }
 
@@ -260,7 +289,10 @@ public enum ActivitySessionReconstructor {
     private static func fallbackSession(
         carId: Int,
         drive: TeslaMateActivity,
-        geofences: [GeofenceRule]
+        geofences: [GeofenceRule],
+        labelOverrides: [ActivityLabelOverride],
+        recurrenceCountsByPlaceKey: [String: Int],
+        confirmedCommuteSessionIDs: Set<String>
     ) -> SmartActivitySession? {
         guard let startDate = drive.startDate.flatMap(DomainDateParser.date(from:)) else {
             return nil
@@ -276,7 +308,7 @@ public enum ActivitySessionReconstructor {
         let references = [SmartActivityEventReference(sourceActivity: drive)]
         let sourceFingerprint = fingerprint(references)
 
-        return SmartActivitySession(
+        let session = SmartActivitySession(
             id: "\(carId)-\(drive.id)",
             carId: carId,
             startDate: startDate,
@@ -296,6 +328,97 @@ public enum ActivitySessionReconstructor {
             sourceFingerprint: sourceFingerprint,
             derivationFingerprint: sourceFingerprint
         )
+        return classified(
+            session,
+            geofence: geofence,
+            labelOverrides: labelOverrides,
+            recurrenceCount: recurrenceCountsByPlaceKey[session.placeKey] ?? 0,
+            chargeIdentity: nil,
+            hasCharge: false,
+            hasPromptDeparture: false,
+            isConfirmedCommute: confirmedCommuteSessionIDs.contains(session.id)
+        )
+    }
+
+    private static func classified(
+        _ session: SmartActivitySession,
+        geofence: GeofenceRule?,
+        labelOverrides: [ActivityLabelOverride],
+        recurrenceCount: Int,
+        chargeIdentity: ChargePricingChargerIdentity?,
+        hasCharge: Bool,
+        hasPromptDeparture: Bool,
+        isConfirmedCommute: Bool
+    ) -> SmartActivitySession {
+        let classification = ActivityPurposeClassifier.classify(
+            ActivityClassificationInput(
+                session: session,
+                sessionOverride: matchingSessionOverride(for: session, in: labelOverrides),
+                placeOverride: matchingPlaceOverride(for: session, in: labelOverrides),
+                geofenceKind: geofence?.kind,
+                recurrenceCount: recurrenceCount,
+                chargeIdentity: chargeIdentity,
+                hasCharge: hasCharge,
+                hasPromptDeparture: hasPromptDeparture,
+                isConfirmedCommute: isConfirmedCommute
+            )
+        )
+        return SmartActivitySession(
+            id: session.id,
+            carId: session.carId,
+            startDate: session.startDate,
+            endDate: session.endDate,
+            placeKey: session.placeKey,
+            latitude: session.latitude,
+            longitude: session.longitude,
+            geofenceID: session.geofenceID,
+            provisionalKind: session.provisionalKind,
+            classification: classification,
+            parkingMetrics: session.parkingMetrics,
+            chargeCost: session.chargeCost,
+            eventReferences: session.eventReferences,
+            isOpen: session.isOpen,
+            quality: session.quality,
+            derivationVersion: session.derivationVersion,
+            sourceFingerprint: session.sourceFingerprint,
+            derivationFingerprint: session.derivationFingerprint
+        )
+    }
+
+    private static func matchingSessionOverride(
+        for session: SmartActivitySession,
+        in overrides: [ActivityLabelOverride]
+    ) -> ActivityLabelOverride? {
+        preferredOverride(overrides.filter {
+            $0.carId == session.carId && $0.sessionId == session.id
+        })
+    }
+
+    private static func matchingPlaceOverride(
+        for session: SmartActivitySession,
+        in overrides: [ActivityLabelOverride]
+    ) -> ActivityLabelOverride? {
+        preferredOverride(overrides.filter {
+            $0.carId == session.carId
+                && $0.scope == .futureAtPlace
+                && $0.placeKey == session.placeKey
+                && matchesTimeWindow($0, date: session.startDate)
+        })
+    }
+
+    private static func preferredOverride(_ overrides: [ActivityLabelOverride]) -> ActivityLabelOverride? {
+        overrides.sorted {
+            $0.updatedAt == $1.updatedAt ? $0.id < $1.id : $0.updatedAt > $1.updatedAt
+        }.first
+    }
+
+    private static func matchesTimeWindow(_ override: ActivityLabelOverride, date: Date) -> Bool {
+        guard let start = override.startMinute, let end = override.endMinute else { return true }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .gmt
+        let minute = calendar.component(.hour, from: date) * 60 + calendar.component(.minute, from: date)
+        if start <= end { return (start...end).contains(minute) }
+        return minute >= start || minute <= end
     }
 
     private static func sharesPlace(
