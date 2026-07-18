@@ -20,6 +20,9 @@ public enum ParkingIntervalAnalyzer {
         let chargeGain: Int? = input.charges.isEmpty
             ? nil
             : (chargeDeltas.count == input.charges.count ? chargeDeltas.filter { $0 > 0 }.reduce(0, +) : nil)
+        let chargeEnergy: Double? = input.charges.isEmpty
+            ? nil
+            : (input.charges.allSatisfy { $0.kwh != nil } ? input.charges.compactMap(\.kwh).reduce(0, +) : nil)
         let standby = input.charges.isEmpty
             ? netSOC
             : netSOC.flatMap { net in chargeGain.map { net - $0 } }
@@ -39,7 +42,10 @@ public enum ParkingIntervalAnalyzer {
             startSOC == nil ? "missing_start_soc" : nil,
             netSOC == nil ? "missing_soc_change" : nil,
             (!input.charges.isEmpty && chargeGain == nil) ? "missing_charge_soc_change" : nil,
-            endRange == nil ? "missing_end_range" : nil
+            (!input.charges.isEmpty && chargeEnergy == nil) ? "missing_charge_energy" : nil,
+            startRange == nil ? "missing_start_range" : nil,
+            endRange == nil ? "missing_end_range" : nil,
+            rangeDelta == nil ? "missing_range_change" : nil
         ].compactMap { $0 }
 
         return ParkingIntervalMetrics(
@@ -54,18 +60,12 @@ public enum ParkingIntervalAnalyzer {
             startRatedRangeKm: startRange,
             endRatedRangeKm: endRange,
             ratedRangeChangeKm: rangeDelta,
-            vehicleReportedChargeEnergyKWh: input.charges.compactMap(\.kwh).nilIfEmpty?.reduce(0, +),
+            vehicleReportedChargeEnergyKWh: chargeEnergy,
             sleepDuration: sleep,
             awakeDuration: max(0, end.timeIntervalSince(start) - sleep),
             wakeCount: wakeCount,
             quality: missing.isEmpty ? .complete : .partial,
             missingReasonCodes: missing
         )
-    }
-}
-
-private extension Collection {
-    var nilIfEmpty: Self? {
-        isEmpty ? nil : self
     }
 }

@@ -436,6 +436,7 @@
 		CC6612E8710816719C3D6FD5 /* SoftwareUpdatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951CF42E02BEEB5660E6580C /* SoftwareUpdatesView.swift */; };
 		CC6ABE2DBBB6834A5A92FD93 /* myjp_PB01_WY21A.png in Resources */ = {isa = PBXBuildFile; fileRef = EEBF37D31F0EEAF6F0F17AF2 /* myjp_PB01_WY21A.png */; };
 		CD1278815373260984F6DD1E /* NominatimAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A612223F7025174149CB1508 /* NominatimAPI.swift */; };
+		CD350E3513044E797FE71EDC /* ParkingIntervalAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C982618C1C9F63081D1B5043 /* ParkingIntervalAnalyzerTests.swift */; };
 		CD84CC81844A1CA0A3E78710 /* vehicle_model-y-juniper-performance_performance_stealth-grey_uberturbine-21.png in Resources */ = {isa = PBXBuildFile; fileRef = 2A1B68925F3927222ED10DCE /* vehicle_model-y-juniper-performance_performance_stealth-grey_uberturbine-21.png */; };
 		CE76C4BFBC2960803720172B /* my_PPSW_WY19B.png in Resources */ = {isa = PBXBuildFile; fileRef = FDBF612DE81213747A9AE6FC /* my_PPSW_WY19B.png */; };
 		CEB127E4B544CB423793457B /* mx_PPSW_WT20.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D5C0A6204F02F921E441BD5 /* mx_PPSW_WT20.png */; };

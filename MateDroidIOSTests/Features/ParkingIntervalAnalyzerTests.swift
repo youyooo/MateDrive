@@ -138,9 +138,104 @@ final class ParkingIntervalAnalyzerTests: XCTestCase {
         XCTAssertTrue(metrics.missingReasonCodes.contains("missing_charge_soc_change"))
     }
 
-    func testMalformedDateRangeReturnsNil() {
+    func testMissingChargeEnergyRemainsNilAndPartial() throws {
         let park = TeslaMateActivity(
             id: 21,
+            type: "park",
+            startDate: "2026-07-18T10:00:00+08:00",
+            endDate: "2026-07-18T12:00:00+08:00",
+            rangeDiffKm: 25,
+            soc: 60,
+            socDiff: 2,
+            endRangeKm: 390
+        )
+        let charges = [
+            TeslaMateActivity(id: 22, type: "charge", kwh: 4, socDiff: 3),
+            TeslaMateActivity(id: 23, type: "charge", socDiff: 1)
+        ]
+
+        let metrics = try XCTUnwrap(ParkingIntervalAnalyzer.analyze(
+            ParkingIntervalInput(parking: park, charges: charges, sleepIntervals: [])
+        ))
+
+        XCTAssertNil(metrics.vehicleReportedChargeEnergyKWh)
+        XCTAssertEqual(metrics.quality, .partial)
+        XCTAssertTrue(metrics.missingReasonCodes.contains("missing_charge_energy"))
+    }
+
+    func testMissingRangeMetricsRemainPartial() throws {
+        let park = TeslaMateActivity(
+            id: 24,
+            type: "park",
+            startDate: "2026-07-18T10:00:00+08:00",
+            endDate: "2026-07-18T12:00:00+08:00",
+            soc: 60,
+            socDiff: -1
+        )
+
+        let metrics = try XCTUnwrap(ParkingIntervalAnalyzer.analyze(
+            ParkingIntervalInput(parking: park, charges: [], sleepIntervals: [])
+        ))
+
+        XCTAssertNil(metrics.startRatedRangeKm)
+        XCTAssertNil(metrics.endRatedRangeKm)
+        XCTAssertNil(metrics.ratedRangeChangeKm)
+        XCTAssertEqual(metrics.quality, .partial)
+        XCTAssertTrue(metrics.missingReasonCodes.contains("missing_start_range"))
+        XCTAssertTrue(metrics.missingReasonCodes.contains("missing_end_range"))
+        XCTAssertTrue(metrics.missingReasonCodes.contains("missing_range_change"))
+    }
+
+    func testParkingWithoutChargeEnergyCanRemainComplete() throws {
+        let park = TeslaMateActivity(
+            id: 25,
+            type: "park",
+            startDate: "2026-07-18T10:00:00+08:00",
+            endDate: "2026-07-18T12:00:00+08:00",
+            rangeDiffKm: -5,
+            soc: 60,
+            socDiff: -1,
+            endRangeKm: 390
+        )
+
+        let metrics = try XCTUnwrap(ParkingIntervalAnalyzer.analyze(
+            ParkingIntervalInput(parking: park, charges: [], sleepIntervals: [])
+        ))
+
+        XCTAssertNil(metrics.vehicleReportedChargeEnergyKWh)
+        XCTAssertEqual(metrics.quality, .complete)
+        XCTAssertFalse(metrics.missingReasonCodes.contains("missing_charge_energy"))
+    }
+
+    func testNonParkingInputReturnsNil() {
+        let drive = TeslaMateActivity(
+            id: 26,
+            type: "drive",
+            startDate: "2026-07-18T10:00:00+08:00",
+            endDate: "2026-07-18T12:00:00+08:00"
+        )
+
+        XCTAssertNil(ParkingIntervalAnalyzer.analyze(
+            ParkingIntervalInput(parking: drive, charges: [], sleepIntervals: [])
+        ))
+    }
+
+    func testNonIncreasingDateRangeReturnsNil() {
+        let park = TeslaMateActivity(
+            id: 27,
+            type: "park",
+            startDate: "2026-07-18T12:00:00+08:00",
+            endDate: "2026-07-18T10:00:00+08:00"
+        )
+
+        XCTAssertNil(ParkingIntervalAnalyzer.analyze(
+            ParkingIntervalInput(parking: park, charges: [], sleepIntervals: [])
+        ))
+    }
+
+    func testMalformedDateRangeReturnsNil() {
+        let park = TeslaMateActivity(
+            id: 28,
             type: "park",
             startDate: "not-a-date",
             endDate: "2026-07-18T12:00:00+08:00"
