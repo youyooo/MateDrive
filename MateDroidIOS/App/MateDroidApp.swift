@@ -15,6 +15,18 @@ struct MateDroidApp: App {
         )
         self.environment = environment
         self.backgroundScheduler = scheduler
+        let smartActivityIndexer = SmartActivityIndexer(
+            source: CachedSmartActivitySourceLoader(
+                activitiesCache: ActivitiesStateCache.shared,
+                sleepIntervalStore: DatabaseBackedSleepIntervalStore(databaseProvider: environment.databaseProvider),
+                settingsStore: environment.settingsStore,
+                chargeCostOverrideStore: DatabaseBackedChargeCostOverrideStore(
+                    databaseProvider: environment.databaseProvider
+                )
+            ),
+            sessionStore: DatabaseBackedSmartActivityStore(databaseProvider: environment.databaseProvider),
+            labelStore: DatabaseBackedActivityLabelOverrideStore(databaseProvider: environment.databaseProvider)
+        )
 
         let refreshRunner = BackgroundRefreshWorkRunner(
             historySyncRunner: HistorySyncRunner(
@@ -46,6 +58,11 @@ struct MateDroidApp: App {
                 guard statusRefreshed, !Task.isCancelled else { return false }
                 _ = await dataPreloader.preload()
                 return !Task.isCancelled
+            },
+            rebuildSmartActivities: { carIds in
+                let report = await smartActivityIndexer.rebuild(carIds: carIds)
+                return report.failedCarIds.isEmpty
+                    && report.completedCarIds.count + report.unchangedCarIds.count == report.attemptedCarIds.count
             }
         )
 

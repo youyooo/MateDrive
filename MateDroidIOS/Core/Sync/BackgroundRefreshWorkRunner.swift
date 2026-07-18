@@ -3,16 +3,23 @@ import Foundation
 public struct BackgroundRefreshReport: Equatable, Sendable {
     public let historySyncReport: HistorySyncReport
     public let vehicleStatusRefreshed: Bool
+    public let smartActivitiesIndexed: Bool
     public let wasCancelled: Bool
 
-    public init(historySyncReport: HistorySyncReport, vehicleStatusRefreshed: Bool, wasCancelled: Bool = false) {
+    public init(
+        historySyncReport: HistorySyncReport,
+        vehicleStatusRefreshed: Bool,
+        smartActivitiesIndexed: Bool = true,
+        wasCancelled: Bool = false
+    ) {
         self.historySyncReport = historySyncReport
         self.vehicleStatusRefreshed = vehicleStatusRefreshed
+        self.smartActivitiesIndexed = smartActivitiesIndexed
         self.wasCancelled = wasCancelled
     }
 
     public var isSuccessful: Bool {
-        !wasCancelled && historySyncReport.failedCarIDs.isEmpty && vehicleStatusRefreshed
+        !wasCancelled && historySyncReport.failedCarIDs.isEmpty && vehicleStatusRefreshed && smartActivitiesIndexed
     }
 }
 
@@ -23,13 +30,16 @@ public protocol BackgroundRefreshWorkRunning: Sendable {
 public struct BackgroundRefreshWorkRunner: BackgroundRefreshWorkRunning {
     private let historySyncRunner: any HistorySyncRunning
     private let refreshVehicleStatus: @Sendable () async -> Bool
+    private let rebuildSmartActivities: @Sendable ([Int]) async -> Bool
 
     public init(
         historySyncRunner: any HistorySyncRunning,
-        refreshVehicleStatus: @escaping @Sendable () async -> Bool
+        refreshVehicleStatus: @escaping @Sendable () async -> Bool,
+        rebuildSmartActivities: @escaping @Sendable ([Int]) async -> Bool = { _ in true }
     ) {
         self.historySyncRunner = historySyncRunner
         self.refreshVehicleStatus = refreshVehicleStatus
+        self.rebuildSmartActivities = rebuildSmartActivities
     }
 
     public func run() async -> BackgroundRefreshReport {
@@ -45,9 +55,19 @@ public struct BackgroundRefreshWorkRunner: BackgroundRefreshWorkRunning {
             )
         }
         let statusRefreshed = await refreshVehicleStatus()
+        guard !Task.isCancelled else {
+            return BackgroundRefreshReport(
+                historySyncReport: historyReport,
+                vehicleStatusRefreshed: statusRefreshed,
+                smartActivitiesIndexed: false,
+                wasCancelled: true
+            )
+        }
+        let smartActivitiesIndexed = await rebuildSmartActivities(historyReport.completedCarIDs)
         return BackgroundRefreshReport(
             historySyncReport: historyReport,
             vehicleStatusRefreshed: statusRefreshed,
+            smartActivitiesIndexed: smartActivitiesIndexed,
             wasCancelled: Task.isCancelled
         )
     }
@@ -56,6 +76,7 @@ public struct BackgroundRefreshWorkRunner: BackgroundRefreshWorkRunning {
         BackgroundRefreshReport(
             historySyncReport: HistorySyncReport(attemptedCarIDs: [], completedCarIDs: [], failedCarIDs: []),
             vehicleStatusRefreshed: false,
+            smartActivitiesIndexed: false,
             wasCancelled: true
         )
     }

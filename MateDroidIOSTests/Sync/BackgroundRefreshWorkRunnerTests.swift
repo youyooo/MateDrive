@@ -213,6 +213,58 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
         XCTAssertGreaterThan(report.successfulEndpointCount, 0)
         XCTAssertTrue(requestedPaths.contains { $0.hasPrefix("/api/v1/cars/7/states?") })
     }
+
+    func testBackgroundRunnerIndexesOnlyAfterHistoryAndStatusFinish() async {
+        let order = BackgroundIndexCallOrderRecorder()
+        let runner = BackgroundRefreshWorkRunner(
+            historySyncRunner: OrderedBackgroundHistoryRunner(order: order),
+            refreshVehicleStatus: {
+                await order.append("status")
+                return true
+            },
+            rebuildSmartActivities: { carIds in
+                await order.append("index-\(carIds)")
+                return true
+            }
+        )
+
+        let report = await runner.run()
+        let lastCall = await order.last
+
+        XCTAssertEqual(lastCall, "index-[1]")
+        XCTAssertTrue(report.smartActivitiesIndexed)
+        XCTAssertTrue(report.isSuccessful)
+    }
+
+    func testIndexingFailureMakesBackgroundRefreshFail() async {
+        let runner = BackgroundRefreshWorkRunner(
+            historySyncRunner: StubBackgroundHistoryRunner(
+                report: HistorySyncReport(attemptedCarIDs: [1], completedCarIDs: [1], failedCarIDs: [])
+            ),
+            refreshVehicleStatus: { true },
+            rebuildSmartActivities: { _ in false }
+        )
+
+        let report = await runner.run()
+
+        XCTAssertFalse(report.smartActivitiesIndexed)
+        XCTAssertFalse(report.isSuccessful)
+    }
+}
+
+private actor BackgroundIndexCallOrderRecorder {
+    private var values: [String] = []
+    var last: String? { values.last }
+    func append(_ value: String) { values.append(value) }
+}
+
+private struct OrderedBackgroundHistoryRunner: HistorySyncRunning {
+    let order: BackgroundIndexCallOrderRecorder
+
+    func run() async -> HistorySyncReport {
+        await order.append("history")
+        return HistorySyncReport(attemptedCarIDs: [1], completedCarIDs: [1], failedCarIDs: [])
+    }
 }
 
 private struct StubBackgroundHistoryRunner: HistorySyncRunning {

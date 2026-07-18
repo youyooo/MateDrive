@@ -12,6 +12,8 @@
 		DEA74C8A15E518A82727DC25 /* RegionalChargingTariff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575850D0D156946C990A5859 /* RegionalChargingTariff.swift */; };
 		000C931EF90A106B7583DF57 /* myjs_PPSW_WY18P.png in Resources */ = {isa = PBXBuildFile; fileRef = 818CFD73E6BCF9C76CAD2FAB /* myjs_PPSW_WY18P.png */; };
 		009C155A081913685669FB83 /* myjs_PPSW_WY19P.png in Resources */ = {isa = PBXBuildFile; fileRef = 20FF5F73D3F7184B1416D07A /* myjs_PPSW_WY19P.png */; };
+		0CD8E53DF412679718F9CD66 /* SmartActivityIndexerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D30BD8F96D6836AC9C029D9B /* SmartActivityIndexerTests.swift */; };
+		7E1E198EBFF158C70AB52601 /* SmartActivityIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1BBF4908E3D3374EEB6DBC /* SmartActivityIndexer.swift */; };
 		2F183411A6C18544F5D0E726 /* SmartActivityStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D198D65B17943AD18B6270AC /* SmartActivityStore.swift */; };
 		B9C6F3CCA5AED0C480902F99 /* ChargePricingObservationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE90F45E38460FD3B068565 /* ChargePricingObservationStore.swift */; };
 		C8D8C2FF7D0CD9D2F0DE4806 /* SmartActivityRecords.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08941F1596F35B88C04D8317 /* SmartActivityRecords.swift */; };
@@ -570,6 +572,8 @@
 		BBFBD364C33CDEC19E0FD219 /* RegionalChargingTariffs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = RegionalChargingTariffs.json; sourceTree = "<group>"; };
 		011FCD2C379AA4C393BB02B2 /* TeslaMateDiagnosticExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeslaMateDiagnosticExport.swift; sourceTree = "<group>"; };
 		08941F1596F35B88C04D8317 /* SmartActivityRecords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartActivityRecords.swift; sourceTree = "<group>"; };
+		0E1BBF4908E3D3374EEB6DBC /* SmartActivityIndexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartActivityIndexer.swift; sourceTree = "<group>"; };
+		D30BD8F96D6836AC9C029D9B /* SmartActivityIndexerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartActivityIndexerTests.swift; sourceTree = "<group>"; };
 		0EE90F45E38460FD3B068565 /* ChargePricingObservationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargePricingObservationStore.swift; sourceTree = "<group>"; };
 		4151340207F9ABA9B77E4483 /* SmartActivityStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartActivityStoreTests.swift; sourceTree = "<group>"; };
 		D198D65B17943AD18B6270AC /* SmartActivityStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartActivityStore.swift; sourceTree = "<group>"; };
@@ -1109,6 +1113,7 @@
 			isa = PBXGroup;
 			children = (
 				B8EB73D19F47A3E95BC7FE03 /* BackgroundRefreshWorkRunnerTests.swift */,
+				D30BD8F96D6836AC9C029D9B /* SmartActivityIndexerTests.swift */,
 				032912E45EB88CDE4565F9ED /* GeocodingServiceTests.swift */,
 				C6AAFD36C34E542C2FA3F1F9 /* SyncCoordinatorTests.swift */,
 				2646DCFFFF97A99B634423E8 /* WeatherServiceTests.swift */,
@@ -1145,6 +1150,7 @@
 			children = (
 				9F97549BEE2BE5CC722D758C /* AppDataPreloader.swift */,
 				AFFF061FE97136309E1C214F /* BackgroundRefreshWorkRunner.swift */,
+				0E1BBF4908E3D3374EEB6DBC /* SmartActivityIndexer.swift */,
 				B12B5C9A57A15B84ABD426BC /* BackgroundSyncScheduler.swift */,
 				07617EFD0B09C40AFA9023B8 /* GeocodingService.swift */,
 				7D2DF4EA88BC4894124091E0 /* SyncCoordinator.swift */,
@@ -2177,6 +2183,7 @@
 				1A975ACBF6F8972B37DDE6FD /* AppText.swift in Sources */,
 				A40000000000000000000001 /* SleepDuration.swift in Sources */,
 				F1E1FAD44A9B7868291E8585 /* BackgroundRefreshWorkRunner.swift in Sources */,
+				7E1E198EBFF158C70AB52601 /* SmartActivityIndexer.swift in Sources */,
 				7405CBCA4985CDC1C8E3993F /* BackgroundSyncScheduler.swift in Sources */,
 				6A137B8452DBF2B840484BD5 /* BatteryModels.swift in Sources */,
 				B0D670B10934C4925EEF389C /* BatteryView.swift in Sources */,
@@ -2370,6 +2377,7 @@
 				E89393A7708F116BC14B8905 /* AppRouteTests.swift in Sources */,
 				7F5769BEB879A9CC8BD5D4DF /* AppStoreReadinessTests.swift in Sources */,
 				EE3880836F68CBBB0DBC4277 /* BackgroundRefreshWorkRunnerTests.swift in Sources */,
+				0CD8E53DF412679718F9CD66 /* SmartActivityIndexerTests.swift in Sources */,
 				07F2A074FCF50F3F458B5567 /* CarColorPaletteTests.swift in Sources */,
 				6A6F09A16D07CF77B1E344CF /* CarImagePickerViewModelTests.swift in Sources */,
 				28C18ABEC95C0F2DFF27F946 /* CarImageResolverTests.swift in Sources */,
