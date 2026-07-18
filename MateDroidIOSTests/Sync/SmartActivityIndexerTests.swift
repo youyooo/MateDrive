@@ -342,9 +342,10 @@ final class SmartActivityIndexerTests: XCTestCase {
         XCTAssertEqual(fingerprint, "original")
     }
 
-    func testCancellationAfterCommittedReplaceWithoutOriginalFingerprintClearsCarState() async throws {
+    func testCancellationAfterCommittedReplaceWithoutIndexStateRestoresLegacySnapshotFingerprint() async throws {
+        let previous = Self.previousSession(carId: 1)
         let store = PostCommitGatedSmartActivitySessionStore(
-            sessions: [Self.previousSession(carId: 1)],
+            sessions: [previous],
             fingerprint: nil
         )
         let indexer = SmartActivityIndexer(
@@ -362,9 +363,78 @@ final class SmartActivityIndexerTests: XCTestCase {
         let sessions = try await store.sessions(carId: 1)
         let fingerprint = try await store.derivationFingerprint(carId: 1)
         let removeCarCount = await store.removeCarCount
-        XCTAssertTrue(sessions.isEmpty)
-        XCTAssertNil(fingerprint)
-        XCTAssertEqual(removeCarCount, 1)
+        XCTAssertEqual(sessions, [previous])
+        XCTAssertEqual(fingerprint, previous.derivationFingerprint)
+        XCTAssertEqual(removeCarCount, 0)
+    }
+
+    func testCancellationRestorationFailureKeepsFailedReportAndDoesNotNotify() async {
+        let notifications = IndexNotificationCounter()
+        let store = PostCommitGatedSmartActivitySessionStore(
+            sessions: [Self.previousSession(carId: 1)],
+            fingerprint: "original",
+            failRestoration: true
+        )
+        let indexer = SmartActivityIndexer(
+            source: MutableSmartActivitySourceLoader(snapshot: Self.snapshot()),
+            sessionStore: store,
+            labelStore: InMemoryActivityLabelOverrideStore(),
+            postChange: { carId in await notifications.record(carId) }
+        )
+
+        let task = Task { await indexer.rebuild(carIds: [1]) }
+        await store.waitUntilFirstReplaceCommitted()
+        task.cancel()
+        await store.releaseFirstReplace()
+        let report = await task.value
+        let notifiedCarIds = await notifications.carIds
+
+        XCTAssertEqual(report.failedCarIds, [1])
+        XCTAssertTrue(report.completedCarIds.isEmpty)
+        XCTAssertTrue(notifiedCarIds.isEmpty)
+    }
+
+    func testCancelledQueuedRebuildReturnsPromptlyWithoutReleasingActiveOperation() async throws {
+        let source = SequencedGatedSmartActivitySourceLoader(
+            first: Self.snapshot(overrides: [20: 1]),
+            latest: Self.snapshot(overrides: [20: 3])
+        )
+        let store = InMemorySmartActivitySessionStore()
+        let indexer = SmartActivityIndexer(
+            source: source,
+            sessionStore: store,
+            labelStore: InMemoryActivityLabelOverrideStore()
+        )
+        let cancelledReturned = expectation(description: "cancelled waiter returns")
+
+        let first = Task { await indexer.rebuild(carIds: [1]) }
+        await source.waitUntilFirstRequest()
+        let second = Task {
+            let report = await indexer.rebuild(carIds: [1])
+            cancelledReturned.fulfill()
+            return report
+        }
+        try await Task.sleep(for: .milliseconds(20))
+        second.cancel()
+        await fulfillment(of: [cancelledReturned], timeout: 0.5)
+        let cancelledReport = await second.value
+        let requestCountAfterCancellation = await source.requestCount
+        XCTAssertEqual(cancelledReport.failedCarIds, [1])
+        XCTAssertEqual(requestCountAfterCancellation, 1)
+
+        let third = Task { await indexer.rebuild(carIds: [1]) }
+        try await Task.sleep(for: .milliseconds(20))
+        let requestCountWhileFirstIsActive = await source.requestCount
+        XCTAssertEqual(requestCountWhileFirstIsActive, 1)
+
+        await source.releaseFirstRequest()
+        _ = await first.value
+        let thirdReport = await third.value
+        let finalRequestCount = await source.requestCount
+        let finalSessions = try await store.sessions(carId: 1)
+        XCTAssertEqual(thirdReport.completedCarIds, [1])
+        XCTAssertEqual(finalRequestCount, 2)
+        XCTAssertEqual(finalSessions.first?.chargeCost?.amount, 3)
     }
 
     func testKnownDcChargeUsesDcRuleAndDoesNotUseResidentialTariff() async throws {
@@ -413,6 +483,81 @@ final class SmartActivityIndexerTests: XCTestCase {
         _ = await regionalIndexer.rebuild(carIds: [1])
         let regionalSessions = try await regionalStore.sessions(carId: 1)
         XCTAssertNil(regionalSessions.first?.chargeCost)
+    }
+
+    func testUnknownChargeTypeDoesNotUseResidentialOrAcSpecificPricingButUsesAnyRule() async throws {
+        let unknownCharge = TeslaMateActivity(
+            id: 20,
+            type: "charge",
+            startDate: "2026-07-18T01:00:00Z",
+            endDate: "2026-07-18T03:00:00Z",
+            durationMin: nil,
+            startAddress: "Home",
+            startLatitude: 31.2304,
+            startLongitude: 121.4737,
+            kwh: 10
+        )
+        let activities = [Self.activityFixture[0], Self.activityFixture[1], unknownCharge]
+        let acRule = ChargePricingRule(
+            id: "ac-only",
+            name: "AC only",
+            chargeType: .ac,
+            pricePerKWh: 1,
+            currencyCode: "CNY"
+        )
+
+        let regionalStore = InMemorySmartActivitySessionStore()
+        let regionalIndexer = SmartActivityIndexer(
+            source: MutableSmartActivitySourceLoader(snapshot: Self.snapshot(
+                activities: activities,
+                overrides: [:],
+                pricingRules: [],
+                residentialTariffRegionCode: "CN-43",
+                tariffCatalog: Self.regionalTariffCatalog
+            )),
+            sessionStore: regionalStore,
+            labelStore: InMemoryActivityLabelOverrideStore()
+        )
+        _ = await regionalIndexer.rebuild(carIds: [1])
+        let regionalSessions = try await regionalStore.sessions(carId: 1)
+        XCTAssertNil(regionalSessions.first?.chargeCost)
+
+        let acStore = InMemorySmartActivitySessionStore()
+        let acIndexer = SmartActivityIndexer(
+            source: MutableSmartActivitySourceLoader(snapshot: Self.snapshot(
+                activities: activities,
+                overrides: [:],
+                pricingRules: [acRule]
+            )),
+            sessionStore: acStore,
+            labelStore: InMemoryActivityLabelOverrideStore()
+        )
+        _ = await acIndexer.rebuild(carIds: [1])
+        let acSessions = try await acStore.sessions(carId: 1)
+        XCTAssertNil(acSessions.first?.chargeCost)
+
+        let anyRule = ChargePricingRule(
+            id: "any",
+            name: "Any charger",
+            chargeType: .any,
+            pricePerKWh: 1.5,
+            currencyCode: "CNY"
+        )
+        let anyStore = InMemorySmartActivitySessionStore()
+        let anyIndexer = SmartActivityIndexer(
+            source: MutableSmartActivitySourceLoader(snapshot: Self.snapshot(
+                activities: activities,
+                overrides: [:],
+                pricingRules: [acRule, anyRule]
+            )),
+            sessionStore: anyStore,
+            labelStore: InMemoryActivityLabelOverrideStore()
+        )
+        _ = await anyIndexer.rebuild(carIds: [1])
+        let anySessions = try await anyStore.sessions(carId: 1)
+        let anyCost = try XCTUnwrap(anySessions.first?.chargeCost)
+        XCTAssertEqual(anyCost.amount, 15)
+        XCTAssertEqual(anyCost.ruleID, "any")
     }
 
     func testPricingRuleOrderParticipatesInFingerprint() async {
@@ -598,6 +743,7 @@ final class SmartActivityIndexerTests: XCTestCase {
 
 private enum SmartActivityIndexerTestError: Error {
     case sourceFailure
+    case restorationFailure
 }
 
 private actor MutableSmartActivitySourceLoader: SmartActivitySourceLoading {
@@ -745,10 +891,12 @@ private actor PostCommitGatedSmartActivitySessionStore: SmartActivitySessionStor
     private var commitWaiters: [CheckedContinuation<Void, Never>] = []
     private var releaseWaiters: [CheckedContinuation<Void, Never>] = []
     private(set) var removeCarCount = 0
+    private let failRestoration: Bool
 
-    init(sessions: [SmartActivitySession], fingerprint: String?) {
+    init(sessions: [SmartActivitySession], fingerprint: String?, failRestoration: Bool = false) {
         storedSessions = sessions
         storedFingerprint = fingerprint
+        self.failRestoration = failRestoration
     }
 
     func sessions(carId _: Int) async throws -> [SmartActivitySession] { storedSessions }
@@ -768,6 +916,9 @@ private actor PostCommitGatedSmartActivitySessionStore: SmartActivitySessionStor
         sessions: [SmartActivitySession],
         derivationFingerprint: String
     ) async throws {
+        if !shouldGateNextReplace, failRestoration {
+            throw SmartActivityIndexerTestError.restorationFailure
+        }
         storedSessions = sessions
         storedFingerprint = derivationFingerprint
         guard shouldGateNextReplace else { return }

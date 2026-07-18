@@ -172,7 +172,7 @@ public actor SmartActivityIndexer: SmartActivityIndexing {
     private let labelStore: any ActivityLabelOverrideStoring
     private let postChange: @Sendable (Int) async -> Void
     private var operationInProgress = false
-    private var operationWaiters: [CheckedContinuation<Void, Never>] = []
+    private var operationWaiters: [OperationWaiter] = []
 
     public init(
         source: any SmartActivitySourceLoading,
@@ -196,7 +196,14 @@ public actor SmartActivityIndexer: SmartActivityIndexing {
 
     public func rebuild(carIds: [Int]) async -> SmartActivityIndexReport {
         let attempted = Array(Set(carIds)).sorted()
-        await acquireOperation()
+        guard await acquireOperation() else {
+            return SmartActivityIndexReport(
+                attemptedCarIds: attempted,
+                completedCarIds: [],
+                failedCarIds: attempted,
+                unchangedCarIds: []
+            )
+        }
         defer { releaseOperation() }
         guard !Task.isCancelled else {
             return SmartActivityIndexReport(
@@ -244,11 +251,15 @@ public actor SmartActivityIndexer: SmartActivityIndexing {
                     try Task.checkCancellation()
                 } catch {
                     if Task.isCancelled || error is CancellationError {
-                        try? await restore(
-                            carId: carId,
-                            sessions: existing,
-                            derivationFingerprint: storedFingerprint
-                        )
+                        do {
+                            try await restore(
+                                carId: carId,
+                                sessions: existing,
+                                derivationFingerprint: storedFingerprint
+                            )
+                        } catch {
+                            throw SmartActivityIndexError.restorationFailed
+                        }
                     }
                     throw error
                 }
@@ -268,27 +279,46 @@ public actor SmartActivityIndexer: SmartActivityIndexing {
     }
 
     public func removeDerivedData() async throws {
-        await acquireOperation()
+        guard await acquireOperation() else {
+            throw CancellationError()
+        }
         defer { releaseOperation() }
         try Task.checkCancellation()
         try await sessionStore.removeDerivedSessions()
     }
 
-    private func acquireOperation() async {
-        if operationInProgress {
-            await withCheckedContinuation { continuation in
-                operationWaiters.append(continuation)
-            }
-        } else {
+    private func acquireOperation() async -> Bool {
+        guard !Task.isCancelled else { return false }
+        guard operationInProgress else {
             operationInProgress = true
+            return true
         }
+
+        let waiterID = UUID()
+        return await withTaskCancellationHandler {
+            await withCheckedContinuation { continuation in
+                guard !Task.isCancelled else {
+                    continuation.resume(returning: false)
+                    return
+                }
+                operationWaiters.append(OperationWaiter(id: waiterID, continuation: continuation))
+            }
+        } onCancel: {
+            Task { await self.cancelOperationWaiter(id: waiterID) }
+        }
+    }
+
+    private func cancelOperationWaiter(id: UUID) {
+        guard let index = operationWaiters.firstIndex(where: { $0.id == id }) else { return }
+        let waiter = operationWaiters.remove(at: index)
+        waiter.continuation.resume(returning: false)
     }
 
     private func releaseOperation() {
         if operationWaiters.isEmpty {
             operationInProgress = false
         } else {
-            operationWaiters.removeFirst().resume()
+            operationWaiters.removeFirst().continuation.resume(returning: true)
         }
     }
 
@@ -297,15 +327,17 @@ public actor SmartActivityIndexer: SmartActivityIndexing {
         sessions: [SmartActivitySession],
         derivationFingerprint: String?
     ) async throws {
-        guard let derivationFingerprint else {
+        if let restorationFingerprint = derivationFingerprint ?? sessions.first?.derivationFingerprint {
+            try await sessionStore.replace(
+                carId: carId,
+                sessions: sessions,
+                derivationFingerprint: restorationFingerprint
+            )
+        } else if sessions.isEmpty {
             try await sessionStore.removeDerivedSessions(carId: carId)
-            return
+        } else {
+            try await sessionStore.replace(carId: carId, sessions: sessions)
         }
-        try await sessionStore.replace(
-            carId: carId,
-            sessions: sessions,
-            derivationFingerprint: derivationFingerprint
-        )
     }
 
     private func deriveOffMain(
@@ -424,23 +456,18 @@ public actor SmartActivityIndexer: SmartActivityIndexing {
             source.geofences.first { $0.id == id }?.kind
         }
         let currencyCode = source.settings.resolvedCurrencyCode()
-        let rules = source.settings.chargePricingRules.filter { $0.origin != .regionalOfficial }
+        let configuredRules = source.settings.chargePricingRules.filter { $0.origin != .regionalOfficial }
         let resolutions = charges.compactMap { reference -> ResolvedCharge? in
             let activity = reference.sourceActivity
             let aggregate = source.chargePricingAggregates[activity.id]
-            let inferredIsDc = ChargeStatsCalculator.isDcCharge(
-                chargeId: activity.id,
-                energyAddedKwh: activity.kwh ?? activity.kwhUsed,
-                durationMin: activity.durationMin.map { Int($0.rounded()) },
-                dcChargeIds: [],
-                processedChargeIds: []
-            )
-            let identityIsDc = aggregate?.chargerIdentity.map { $0 != .ac } ?? false
-            let isDc = identityIsDc || (aggregate?.isDc ?? inferredIsDc)
+            let resolvedIsDc = resolvedChargeType(activity: activity, aggregate: aggregate)
             let chargerIdentity: ChargePricingChargerIdentity
-            if isDc, let measuredIdentity = aggregate?.chargerIdentity, measuredIdentity != .ac {
+            if resolvedIsDc == true,
+               let measuredIdentity = aggregate?.chargerIdentity,
+               measuredIdentity != .ac
+            {
                 chargerIdentity = measuredIdentity
-            } else if isDc {
+            } else if resolvedIsDc == true {
                 chargerIdentity = ChargeStatsCalculator.chargerIdentity(
                     isDc: true,
                     fastChargerBrand: nil,
@@ -449,6 +476,9 @@ public actor SmartActivityIndexer: SmartActivityIndexing {
             } else {
                 chargerIdentity = .ac
             }
+            let rules = resolvedIsDc == nil
+                ? configuredRules.filter { $0.chargeType == .any }
+                : configuredRules
             let pricingInput = ChargePricingInput(
                 startDate: activity.startDate,
                 endDate: activity.endDate,
@@ -457,19 +487,21 @@ public actor SmartActivityIndexer: SmartActivityIndexing {
                 longitude: activity.startLongitude ?? activity.endLongitude,
                 energyAddedKWh: activity.kwh ?? activity.kwhUsed,
                 energySamples: aggregate?.energySamples ?? [],
-                isDc: isDc,
+                isDc: resolvedIsDc ?? false,
                 chargerIdentity: chargerIdentity
             )
-            let regionalRule = regionalPricingRule(
-                settings: source.settings,
-                catalog: source.tariffCatalog,
-                startDate: activity.startDate
-            )
+            let regionalRule = resolvedIsDc == false
+                ? regionalPricingRule(
+                    settings: source.settings,
+                    catalog: source.tariffCatalog,
+                    startDate: activity.startDate
+                )
+                : nil
             guard let resolution = ChargeCostResolver.resolve(ChargeCostResolutionInput(
                 manualCost: source.chargeCostOverrides[activity.id],
                 apiCost: activity.cost,
                 currencyCode: currencyCode,
-                isAC: !isDc,
+                isAC: resolvedIsDc == false,
                 geofenceKind: geofenceKind,
                 pricingInput: pricingInput,
                 rules: rules,
@@ -496,6 +528,35 @@ public actor SmartActivityIndexer: SmartActivityIndexing {
             isEstimated: resolutions.contains { $0.resolution.isEstimated },
             isExplicitlyFree: amount == 0 && resolutions.allSatisfy { $0.resolution.isExplicitlyFree },
             components: components
+        )
+    }
+
+    nonisolated private static func resolvedChargeType(
+        activity: TeslaMateActivity,
+        aggregate: ChargeDetailPricingAggregate?
+    ) -> Bool? {
+        if let identity = aggregate?.chargerIdentity {
+            return identity != .ac
+        }
+        if let isDc = aggregate?.isDc {
+            return isDc
+        }
+        guard let energy = activity.kwh ?? activity.kwhUsed,
+              energy.isFinite,
+              energy > 0,
+              let duration = activity.durationMin,
+              duration.isFinite,
+              duration > 0
+        else {
+            return nil
+        }
+        let durationMinutes = max(1, Int(duration.rounded()))
+        return ChargeStatsCalculator.isDcCharge(
+            chargeId: activity.id,
+            energyAddedKwh: energy,
+            durationMin: durationMinutes,
+            dcChargeIds: [],
+            processedChargeIds: []
         )
     }
 
@@ -651,6 +712,12 @@ public actor SmartActivityIndexer: SmartActivityIndexing {
 
 private enum SmartActivityIndexError: Error {
     case missingCache
+    case restorationFailed
+}
+
+private struct OperationWaiter {
+    let id: UUID
+    let continuation: CheckedContinuation<Bool, Never>
 }
 
 private struct DerivedCarSnapshot: Sendable {
