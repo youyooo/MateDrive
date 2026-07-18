@@ -19,7 +19,7 @@ public struct AppDataPreloadReport: Equatable, Sendable {
     }
 
     public var canIndexSmartActivities: Bool {
-        !didRun || activitiesRefreshSucceeded
+        activitiesRefreshSucceeded
     }
 
     public static let skipped = AppDataPreloadReport(
@@ -39,6 +39,7 @@ public actor AppDataPreloader {
     private let minimumInterval: TimeInterval
     private let now: @Sendable () -> Date
     private var lastStartedAt: Date?
+    private var lastActivityRefreshSucceeded = false
 
     public init(
         settingsStore: any SettingsStoring,
@@ -68,9 +69,15 @@ public actor AppDataPreloader {
         if !force,
            let lastStartedAt,
            startedAt.timeIntervalSince(lastStartedAt) < minimumInterval {
-            return .skipped
+            return AppDataPreloadReport(
+                didRun: false,
+                requestedEndpointCount: 0,
+                successfulEndpointCount: 0,
+                activitiesRefreshSucceeded: lastActivityRefreshSucceeded
+            )
         }
         lastStartedAt = startedAt
+        lastActivityRefreshSucceeded = false
 
         let settings = await settingsStore.load()
         guard !Task.isCancelled, settings.isConfigured else {
@@ -126,12 +133,14 @@ public actor AppDataPreloader {
         )
         let (sleepResult, activitiesResult) = await (sleepTask, activitiesTask)
 
+        let activitiesRefreshSucceeded = !Task.isCancelled
+            && activitiesResult.successfulCarCount == orderedCars.count
+        lastActivityRefreshSucceeded = activitiesRefreshSucceeded
         return AppDataPreloadReport(
             didRun: true,
             requestedEndpointCount: 1 + sleepResult.requestedCount + activitiesResult.requestedPageCount,
             successfulEndpointCount: 1 + sleepResult.successfulCount + activitiesResult.successfulPageCount,
-            activitiesRefreshSucceeded: !Task.isCancelled
-                && activitiesResult.successfulCarCount == orderedCars.count
+            activitiesRefreshSucceeded: activitiesRefreshSucceeded
         )
     }
 
@@ -199,7 +208,7 @@ public actor AppDataPreloader {
     ) async -> (requestedPageCount: Int, successfulPageCount: Int, successfulCarCount: Int) {
         let cache = activitiesCache
         let savedAt = now()
-        return await withTaskGroup(of: (requested: Int, successful: Int).self) { group in
+        return await withTaskGroup(of: (requested: Int, successful: Int, isFresh: Bool).self) { group in
             for car in cars {
                 group.addTask {
                     let pageSize = 200
@@ -317,7 +326,8 @@ public actor AppDataPreloader {
                         )
                     }
 
-                    return (requested, successful)
+                    let isFresh = !Task.isCancelled && (reachedServerEnd || bridgedCachedHistory)
+                    return (requested, successful, isFresh)
                 }
             }
 
@@ -327,7 +337,7 @@ public actor AppDataPreloader {
             for await result in group {
                 requested += result.requested
                 successful += result.successful
-                if result.successful > 0 {
+                if result.isFresh {
                     successfulCars += 1
                 }
             }

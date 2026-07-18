@@ -242,9 +242,14 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
         XCTAssertTrue(firstReport.activitiesRefreshSucceeded)
         XCTAssertTrue(firstReport.canIndexSmartActivities)
         XCTAssertFalse(secondReport.didRun)
-        XCTAssertFalse(secondReport.activitiesRefreshSucceeded)
+        XCTAssertTrue(secondReport.activitiesRefreshSucceeded)
         XCTAssertTrue(secondReport.canIndexSmartActivities)
         XCTAssertEqual(secondRequestCount, firstRequestCount)
+    }
+
+    func testStandaloneSkippedPreloadReportCannotIndexActivities() {
+        XCTAssertFalse(AppDataPreloadReport.skipped.activitiesRefreshSucceeded)
+        XCTAssertFalse(AppDataPreloadReport.skipped.canIndexSmartActivities)
     }
 
     func testDataPreloaderRejectsIndexingWhenAllActivityRequestsFail() async {
@@ -264,6 +269,31 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
         XCTAssertFalse(report.activitiesRefreshSucceeded)
         XCTAssertFalse(report.canIndexSmartActivities)
         XCTAssertGreaterThan(report.successfulEndpointCount, 0)
+    }
+
+    func testDataPreloaderSkippedRunInheritsFailedActivityRefresh() async {
+        let client = ActivityFreshnessHTTPClient(failedActivityCarIDs: [7])
+        let preloader = AppDataPreloader(
+            settingsStore: Task3PreloadSettingsStore(settings: AppSettings(
+                serverURL: "https://teslamate.example",
+                lastSelectedCarId: 7
+            )),
+            secretStore: Task3PreloadSecretStore(),
+            clientOverride: client,
+            minimumInterval: 300
+        )
+
+        let failedReport = await preloader.preload(force: true)
+        let firstRequestCount = await client.requestedPaths.count
+        let skippedReport = await preloader.preload()
+        let secondRequestCount = await client.requestedPaths.count
+
+        XCTAssertTrue(failedReport.didRun)
+        XCTAssertFalse(failedReport.canIndexSmartActivities)
+        XCTAssertFalse(skippedReport.didRun)
+        XCTAssertFalse(skippedReport.activitiesRefreshSucceeded)
+        XCTAssertFalse(skippedReport.canIndexSmartActivities)
+        XCTAssertEqual(secondRequestCount, firstRequestCount)
     }
 
     func testDataPreloaderRequiresSuccessfulActivitiesResponseForEveryCar() async {
@@ -301,9 +331,11 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
             activitiesCache: cache
         )
 
-        _ = await preloader.preload(force: true)
+        let partialReport = await preloader.preload(force: true)
         let partial = await cache.load(serverURL: settings.serverURL, carId: 7, now: Date())
 
+        XCTAssertFalse(partialReport.activitiesRefreshSucceeded)
+        XCTAssertFalse(partialReport.canIndexSmartActivities)
         XCTAssertEqual(partial?.state.items.map(\.stableID), ["drive-2"])
         XCTAssertEqual(partial?.state.loadedPageCount, 1)
         XCTAssertFalse(partial?.state.historyFullyLoaded == true)
