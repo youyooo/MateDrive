@@ -28,6 +28,22 @@ final class SmartActivityStoreTests: XCTestCase {
         XCTAssertEqual(indexedValues, [[.null, .null]])
     }
 
+    func testSessionsWithEqualStartDatesUseIDAsTieBreaker() async throws {
+        let stores = try await SmartActivityTestStores.make()
+        let older = SmartActivitySession.fixture(
+            id: "older",
+            startDate: Date(timeIntervalSince1970: 1_720_000_000)
+        )
+        let sameNewerDate = Date(timeIntervalSince1970: 1_720_003_600)
+        let laterID = SmartActivitySession.fixture(id: "same-b", startDate: sameNewerDate)
+        let earlierID = SmartActivitySession.fixture(id: "same-a", startDate: sameNewerDate)
+
+        try await stores.sessions.replace(carId: 1, sessions: [laterID, older, earlierID])
+
+        let sessions = try await stores.sessions.sessions(carId: 1)
+        XCTAssertEqual(sessions, [earlierID, laterID, older])
+    }
+
     func testReplacingDerivedSessionsDoesNotDeleteUserOverridesOrPricingObservations() async throws {
         let stores = try await SmartActivityTestStores.make()
         let session = SmartActivitySession.fixture(classification: .fixture)
@@ -107,6 +123,35 @@ final class SmartActivityStoreTests: XCTestCase {
                 .text("malformed"), .int(1), .text("2026-07-19T00:00:00Z"),
                 .text("broken"), .text("parking"), .text("unavailable"), .int(1),
                 .text("source"), .text("derived"), .text("not-json"),
+                .text("2026-07-19T00:00:00Z")
+            ]
+        )
+
+        let sessions = try await stores.sessions.sessions(carId: 1)
+        XCTAssertEqual(sessions, [valid])
+    }
+
+    func testValidSessionPayloadWithMismatchedIndexedIdentityIsSkipped() async throws {
+        let stores = try await SmartActivityTestStores.make()
+        let valid = SmartActivitySession.fixture(id: "valid")
+        try await stores.sessions.replace(carId: 1, sessions: [valid])
+        let mismatchedPayload = SmartActivitySession.fixture(
+            id: "payload-id",
+            startDate: Date(timeIntervalSince1970: 1_720_003_600)
+        )
+        try await stores.database.run(
+            """
+            INSERT INTO vehicle_activity_sessions
+            (session_id, car_id, start_date, end_date, place_key, purpose, confidence,
+             quality, derivation_version, source_fingerprint, derivation_fingerprint,
+             payload_json, updated_at)
+            VALUES (?, ?, ?, NULL, ?, ?, NULL, ?, ?, ?, ?, ?, ?);
+            """,
+            bindings: [
+                .text("indexed-id"), .int(1), .text("2026-07-19T00:00:00Z"),
+                .text("place:home"), .text("parking"), .text("unavailable"), .int(3),
+                .text("source-1"), .text("derived-1"),
+                .text(try SmartActivityPersistenceCoding.encode(mismatchedPayload)),
                 .text("2026-07-19T00:00:00Z")
             ]
         )

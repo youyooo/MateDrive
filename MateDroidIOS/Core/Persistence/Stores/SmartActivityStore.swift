@@ -25,38 +25,27 @@ public struct SmartActivityStore: SmartActivitySessionStoring {
     public func sessions(carId: Int) async throws -> [SmartActivitySession] {
         let rows = try await database.rows(
             """
-            SELECT payload_json
+            SELECT session_id, car_id, start_date, payload_json
             FROM vehicle_activity_sessions
             WHERE car_id = ?
             ORDER BY start_date DESC, session_id ASC;
             """,
             bindings: [.int(carId)]
         )
-        return rows.compactMap { row in
-            guard let payload = row.first?.textValue,
-                  let session = try? SmartActivityPersistenceCoding.decode(SmartActivitySession.self, from: payload),
-                  session.carId == carId
-            else { return nil }
-            return session
-        }
+        return rows.compactMap(Self.session)
     }
 
     public func session(carId: Int, sessionId: String) async throws -> SmartActivitySession? {
         let rows = try await database.rows(
             """
-            SELECT payload_json
+            SELECT session_id, car_id, start_date, payload_json
             FROM vehicle_activity_sessions
             WHERE car_id = ? AND session_id = ?
             LIMIT 1;
             """,
             bindings: [.int(carId), .text(sessionId)]
         )
-        guard let payload = rows.first?.first?.textValue,
-              let session = try? SmartActivityPersistenceCoding.decode(SmartActivitySession.self, from: payload),
-              session.carId == carId,
-              session.id == sessionId
-        else { return nil }
-        return session
+        return rows.first.flatMap(Self.session)
     }
 
     public func replace(carId: Int, sessions: [SmartActivitySession]) async throws {
@@ -110,6 +99,21 @@ public struct SmartActivityStore: SmartActivitySessionStoring {
 
     public func removeDerivedSessions() async throws {
         try await database.run("DELETE FROM vehicle_activity_sessions;")
+    }
+
+    private static func session(_ row: [SQLiteColumnValue]) -> SmartActivitySession? {
+        guard row.count == 4,
+              let sessionId = row[0].textValue,
+              let carId = row[1].intValue,
+              let startDateValue = row[2].textValue,
+              let startDate = SmartActivityPersistenceCoding.date(startDateValue),
+              let payload = row[3].textValue,
+              let session = try? SmartActivityPersistenceCoding.decode(SmartActivitySession.self, from: payload),
+              session.id == sessionId,
+              session.carId == carId,
+              session.startDate == startDate
+        else { return nil }
+        return session
     }
 }
 

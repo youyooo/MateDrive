@@ -80,6 +80,93 @@ final class PersistenceMigrationTests: XCTestCase {
         XCTAssertEqual(version, 23)
     }
 
+    func testVersion20AddsDriveRatedRangeColumnsWithoutLosingExistingRows() async throws {
+        let database = try SQLiteDatabase.inMemory()
+        try await createVersion18ChargeSummaryTable(in: database)
+        try await createVersion19DriveSummaryTable(in: database)
+        try await database.execute("INSERT INTO drives_summary VALUES (10, 1, 'start', 'end', 20, 30, 14, 4.2, 210, 'api', 80, 70);")
+        try await database.execute("CREATE TABLE sleep_intervals (car_id INTEGER NOT NULL, start_date TEXT NOT NULL, end_date TEXT NOT NULL, PRIMARY KEY(car_id, start_date, end_date));")
+        try await database.setUserVersion(20)
+
+        try await Migrations.applyAll(to: database)
+
+        let rows = try await database.rows(
+            "SELECT drive_id, distance, start_rated_range_km, end_rated_range_km FROM drives_summary;"
+        )
+        let version = try await database.userVersion()
+        XCTAssertEqual(rows, [[.int(10), .double(20), .null, .null]])
+        XCTAssertEqual(version, 23)
+    }
+
+    func testVersion20RawSQLUpgradeAppliesMigrations21Through23WithoutDataLoss() async throws {
+        let database = try SQLiteDatabase.inMemory()
+        try await database.execute("""
+            CREATE TABLE drives_summary (
+              drive_id INTEGER PRIMARY KEY NOT NULL,
+              car_id INTEGER NOT NULL,
+              start_date TEXT NOT NULL,
+              end_date TEXT NOT NULL,
+              distance REAL,
+              duration_min INTEGER,
+              schema_version INTEGER NOT NULL DEFAULT 13,
+              energy_consumed_net REAL,
+              consumption_net REAL,
+              energy_source TEXT,
+              start_battery_level INTEGER,
+              end_battery_level INTEGER
+            );
+            """)
+        try await database.execute("""
+            INSERT INTO drives_summary
+            (drive_id, car_id, start_date, end_date, distance, duration_min, schema_version,
+             energy_consumed_net, consumption_net, energy_source, start_battery_level, end_battery_level)
+            VALUES (10, 1, 'start', 'end', 20, 30, 13, 4.2, 210, 'api', 80, 70);
+            """)
+        try await database.setUserVersion(20)
+
+        try await Migrations.applyAll(to: database)
+
+        let requiredColumns: Set<String> = [
+            "start_rated_range_km", "end_rated_range_km", "start_address", "end_address",
+            "speed_avg", "outside_temp_avg", "route_fingerprint_json", "climate_on_fraction",
+            "elevation_gain_m", "elevation_loss_m"
+        ]
+        let columns = Set(
+            try await database.rows("PRAGMA table_info(drives_summary);")
+                .compactMap { $0[1].textValue }
+        )
+        XCTAssertTrue(requiredColumns.isSubset(of: columns))
+        for table in [
+            "vehicle_activity_sessions",
+            "activity_label_overrides",
+            "charge_pricing_observations"
+        ] {
+            let rows = try await database.rows(
+                "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?;",
+                bindings: [.text(table)]
+            )
+            XCTAssertEqual(rows, [[.text(table)]])
+        }
+        let rows = try await database.rows(
+            """
+            SELECT drive_id, car_id, start_date, end_date, distance, duration_min,
+                   energy_consumed_net, consumption_net, energy_source,
+                   start_battery_level, end_battery_level,
+                   start_rated_range_km, end_rated_range_km,
+                   start_address, end_address, speed_avg, outside_temp_avg,
+                   route_fingerprint_json, climate_on_fraction, elevation_gain_m, elevation_loss_m
+            FROM drives_summary;
+            """
+        )
+        XCTAssertEqual(rows, [[
+            .int(10), .int(1), .text("start"), .text("end"), .double(20), .int(30),
+            .double(4.2), .double(210), .text("api"), .int(80), .int(70),
+            .null, .null, .null, .null, .null, .null, .null, .null, .null, .null
+        ]])
+        let version = try await database.userVersion()
+        XCTAssertEqual(version, 23)
+    }
+
     func testDriveSummarySchemaPreservesMissingDistanceAndDuration() async throws {
         let database = try SQLiteDatabase.inMemory()
         try await Migrations.applyAll(to: database)

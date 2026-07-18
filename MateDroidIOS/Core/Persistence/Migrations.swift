@@ -286,6 +286,28 @@ public enum Migrations {
             ]
         ),
         Migration(
+            version: 21,
+            statements: [],
+            columnsToAddIfMissing: [
+                MigrationColumn(table: "drives_summary", name: "start_rated_range_km", definition: "REAL"),
+                MigrationColumn(table: "drives_summary", name: "end_rated_range_km", definition: "REAL")
+            ]
+        ),
+        Migration(
+            version: 22,
+            statements: [],
+            columnsToAddIfMissing: [
+                MigrationColumn(table: "drives_summary", name: "start_address", definition: "TEXT"),
+                MigrationColumn(table: "drives_summary", name: "end_address", definition: "TEXT"),
+                MigrationColumn(table: "drives_summary", name: "speed_avg", definition: "REAL"),
+                MigrationColumn(table: "drives_summary", name: "outside_temp_avg", definition: "REAL"),
+                MigrationColumn(table: "drives_summary", name: "route_fingerprint_json", definition: "TEXT"),
+                MigrationColumn(table: "drives_summary", name: "climate_on_fraction", definition: "REAL"),
+                MigrationColumn(table: "drives_summary", name: "elevation_gain_m", definition: "REAL"),
+                MigrationColumn(table: "drives_summary", name: "elevation_loss_m", definition: "REAL")
+            ]
+        ),
+        Migration(
             version: 23,
             statements: [
                 """
