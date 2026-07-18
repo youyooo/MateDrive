@@ -275,6 +275,15 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public var acceptInvalidCerts: Bool
     public var currencyCode: String
     public var residentialTariffRegionCode: String?
+    public var homeTariffRegionCode: String? {
+        get { residentialTariffRegionCode }
+        set {
+            residentialTariffRegionCode = newValue?
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .uppercased()
+                .nilIfEmpty
+        }
+    }
     public var displayUnitSystem: DisplayUnitSystem
     public var formatPreferencesVersion: Int
     public var showShortDrivesCharges: Bool
@@ -359,6 +368,7 @@ public struct AppSettings: Codable, Equatable, Sendable {
         case acceptInvalidCerts
         case currencyCode
         case residentialTariffRegionCode
+        case homeTariffRegionCode
         case displayUnitSystem
         case formatPreferencesVersion
         case showShortDrivesCharges
@@ -389,7 +399,10 @@ public struct AppSettings: Codable, Equatable, Sendable {
         secondaryServerURL = try container.decodeIfPresent(String.self, forKey: .secondaryServerURL) ?? ""
         acceptInvalidCerts = try container.decodeIfPresent(Bool.self, forKey: .acceptInvalidCerts) ?? false
         currencyCode = try container.decodeIfPresent(String.self, forKey: .currencyCode) ?? MateDroidCurrencyFormatter.automaticCode
-        residentialTariffRegionCode = try container.decodeIfPresent(String.self, forKey: .residentialTariffRegionCode)?
+        residentialTariffRegionCode = try (
+            container.decodeIfPresent(String.self, forKey: .residentialTariffRegionCode)
+                ?? container.decodeIfPresent(String.self, forKey: .homeTariffRegionCode)
+        )?
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .uppercased()
             .nilIfEmpty

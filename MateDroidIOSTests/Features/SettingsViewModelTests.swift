@@ -27,6 +27,23 @@ final class SettingsViewModelTests: XCTestCase {
         XCTAssertEqual(GeofenceKind.schoolPickup.systemImage, "figure.2.and.child.holdinghands")
     }
 
+    func testSavingHomeTariffRegionKeepsCurrencyAndCanonicalFieldInSync() async throws {
+        let store = InMemorySettingsStore(initial: AppSettings(currencyCode: "HKD"))
+        let viewModel = SettingsViewModel(settingsStore: store, secretStore: InMemorySecretStore())
+        await viewModel.load()
+
+        await viewModel.saveHomeTariffRegionCode(" cn-43 ")
+
+        let saved = try XCTUnwrap(store.saved)
+        XCTAssertEqual(saved.homeTariffRegionCode, "CN-43")
+        XCTAssertEqual(saved.residentialTariffRegionCode, "CN-43")
+        XCTAssertEqual(saved.currencyCode, "HKD")
+
+        await viewModel.saveResidentialTariffRegionCode(nil)
+        XCTAssertNil(viewModel.settings.homeTariffRegionCode)
+        XCTAssertEqual(viewModel.settings.currencyCode, "HKD")
+    }
+
     nonisolated func testConcurrentSaveSurvivesLegacyOverrideMigrationLoad() async throws {
         let suiteName = "SettingsStoreMigration.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))

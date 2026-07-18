@@ -235,6 +235,22 @@ public final class SettingsViewModel: ObservableObject {
         settings = updated
     }
 
+    public func saveResidentialTariffRegionCode(_ regionCode: String?) async {
+        var updated = settings
+        let normalizedRegionCode = regionCode?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .uppercased()
+        updated.residentialTariffRegionCode = normalizedRegionCode?.isEmpty == false
+            ? normalizedRegionCode
+            : nil
+        await settingsStore.save(updated)
+        settings = updated
+    }
+
+    public func saveHomeTariffRegionCode(_ regionCode: String?) async {
+        await saveResidentialTariffRegionCode(regionCode)
+    }
+
     public func saveParkingFeeRules(_ rules: [ParkingFeeRule]) async {
         var updated = settings
         updated.parkingFeeRules = rules
