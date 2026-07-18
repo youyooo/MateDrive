@@ -18,7 +18,7 @@ final class ActivityPurposeClassifierTests: XCTestCase {
 
     func testPlaceOverrideWinsOverGeofence() {
         let result = ActivityPurposeClassifier.classify(.fixture(
-            placeOverride: .fixture(purpose: .custom),
+            placeOverride: .fixture(purpose: .custom, scope: .futureAtPlace),
             geofenceKind: .shopping,
             recurrenceCount: 4
         ))
@@ -89,7 +89,230 @@ final class ActivityPurposeClassifierTests: XCTestCase {
         XCTAssertEqual(SmartActivityPurpose.pickupDropoff.systemImage, "figure.2.and.child.holdinghands")
     }
 
-    func testReconstructionAppliesMatchingSessionOverrideWithoutChangingSources() {
+    func testUnknownGeofenceKindDegradesToOtherWithoutDiscardingSettings() throws {
+        let data = Data(
+            """
+            {
+              "serverURL": "https://teslamate.example",
+              "geofenceRules": [{
+                "id": "future-kind",
+                "carId": 7,
+                "name": "Future venue",
+                "kind": "futureVenue",
+                "latitude": 31.2304,
+                "longitude": 121.4737,
+                "radiusMeters": 120,
+                "isEnabled": true,
+                "participatesInCommuteClassification": true
+              }]
+            }
+            """.utf8
+        )
+
+        let settings = try JSONDecoder().decode(AppSettings.self, from: data)
+        let encoded = try JSONEncoder().encode(settings)
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+        let rules = try XCTUnwrap(object["geofenceRules"] as? [[String: Any]])
+
+        XCTAssertEqual(settings.serverURL, "https://teslamate.example")
+        XCTAssertEqual(settings.geofenceRules.first?.kind, .other)
+        XCTAssertEqual(rules.first?["kind"] as? String, "other")
+        XCTAssertEqual(String(decoding: try JSONEncoder().encode(GeofenceKind.shopping), as: UTF8.self), "\"shopping\"")
+    }
+
+    func testConflictingOverrideScopesKeepSessionOnlyAheadOfPlaceRule() throws {
+        let parking = TeslaMateActivity(
+            id: 50,
+            type: "park",
+            startDate: "2026-07-18T10:00:00Z",
+            endDate: "2026-07-18T11:00:00Z"
+        )
+        let sessionOverride = ActivityLabelOverride(
+            id: "session",
+            carId: 1,
+            sessionId: "1-50",
+            placeKey: nil,
+            scope: .sessionOnly,
+            purpose: .pickupDropoff,
+            customName: nil,
+            icon: "figure.2.and.child.holdinghands",
+            colorHex: "#FF9500",
+            startMinute: nil,
+            endMinute: nil,
+            updatedAt: Date(timeIntervalSince1970: 1)
+        )
+        let newerPlaceOverride = ActivityLabelOverride(
+            id: "place",
+            carId: 1,
+            sessionId: "1-50",
+            placeKey: "parking:50",
+            scope: .futureAtPlace,
+            purpose: .shopping,
+            customName: nil,
+            icon: "cart.fill",
+            colorHex: "#34C759",
+            startMinute: nil,
+            endMinute: nil,
+            updatedAt: Date(timeIntervalSince1970: 2)
+        )
+
+        let session = try XCTUnwrap(ActivitySessionReconstructor.reconstruct(
+            carId: 1,
+            events: [parking],
+            sleepIntervals: [],
+            geofences: [],
+            labelOverrides: [newerPlaceOverride, sessionOverride]
+        ).first)
+
+        XCTAssertEqual(session.classification?.purpose, .pickupDropoff)
+        XCTAssertEqual(session.classification?.source, .userSession)
+    }
+
+    func testPlaceRuleWindowUsesInjectedLocalTimeZone() throws {
+        let parking = TeslaMateActivity(
+            id: 20,
+            type: "park",
+            startDate: "2026-07-18T16:30:00Z",
+            endDate: "2026-07-18T17:30:00Z"
+        )
+        let override = ActivityLabelOverride(
+            id: "midnight-place",
+            carId: 1,
+            sessionId: nil,
+            placeKey: "parking:20",
+            scope: .futureAtPlace,
+            purpose: .shopping,
+            customName: nil,
+            icon: "cart.fill",
+            colorHex: "#34C759",
+            startMinute: 0,
+            endMinute: 60,
+            updatedAt: Date(timeIntervalSince1970: 1)
+        )
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try XCTUnwrap(TimeZone(identifier: "Asia/Shanghai"))
+
+        let session = try XCTUnwrap(ActivitySessionReconstructor.reconstruct(
+            carId: 1,
+            events: [parking],
+            sleepIntervals: [],
+            geofences: [],
+            labelOverrides: [override],
+            configuration: .init(calendar: calendar)
+        ).first)
+
+        XCTAssertEqual(session.classification?.purpose, .shopping)
+        XCTAssertEqual(session.classification?.source, .userPlaceRule)
+    }
+
+    func testParkingPlaceRuleUsesParkingStartAsArrivalTimestamp() throws {
+        let arrival = TeslaMateActivity(
+            id: 30,
+            type: "drive",
+            startDate: "2026-07-18T08:00:00Z",
+            endDate: "2026-07-18T09:00:00Z",
+            endLatitude: 31.2304,
+            endLongitude: 121.4737
+        )
+        let parking = TeslaMateActivity(
+            id: 31,
+            type: "park",
+            startDate: "2026-07-18T10:30:00Z",
+            endDate: "2026-07-18T11:30:00Z",
+            endLatitude: 31.2304,
+            endLongitude: 121.4737
+        )
+        let geofence = GeofenceRule(
+            id: "arrival-place",
+            name: "Arrival place",
+            kind: .other,
+            latitude: 31.2304,
+            longitude: 121.4737,
+            radiusMeters: 100
+        )
+        let override = ActivityLabelOverride(
+            id: "parking-arrival-window",
+            carId: 1,
+            sessionId: nil,
+            placeKey: "geofence:arrival-place",
+            scope: .futureAtPlace,
+            purpose: .shopping,
+            customName: nil,
+            icon: "cart.fill",
+            colorHex: "#34C759",
+            startMinute: 10 * 60,
+            endMinute: 11 * 60,
+            updatedAt: Date(timeIntervalSince1970: 1)
+        )
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .current
+
+        let session = try XCTUnwrap(ActivitySessionReconstructor.reconstruct(
+            carId: 1,
+            events: [arrival, parking],
+            sleepIntervals: [],
+            geofences: [geofence],
+            labelOverrides: [override],
+            configuration: .init(calendar: calendar)
+        ).first)
+
+        // TeslaMate activity IDs are source IDs; the approved stable session ID remains carId-sourceID.
+        XCTAssertEqual(session.id, "1-31")
+        XCTAssertEqual(session.eventReferences.map(\.sourceID), [30, 31])
+        XCTAssertEqual(session.classification?.purpose, .shopping)
+        XCTAssertEqual(session.classification?.source, .userPlaceRule)
+    }
+
+    func testFallbackDrivePlaceRuleUsesDriveEndAsArrivalTimestamp() throws {
+        let drive = TeslaMateActivity(
+            id: 40,
+            type: "drive",
+            startDate: "2026-07-18T08:00:00Z",
+            endDate: "2026-07-18T10:30:00Z",
+            endLatitude: 31.2304,
+            endLongitude: 121.4737
+        )
+        let geofence = GeofenceRule(
+            id: "drive-arrival",
+            name: "Drive arrival",
+            kind: .other,
+            latitude: 31.2304,
+            longitude: 121.4737,
+            radiusMeters: 100
+        )
+        let override = ActivityLabelOverride(
+            id: "drive-arrival-window",
+            carId: 1,
+            sessionId: nil,
+            placeKey: "geofence:drive-arrival",
+            scope: .futureAtPlace,
+            purpose: .pickupDropoff,
+            customName: nil,
+            icon: "figure.2.and.child.holdinghands",
+            colorHex: "#FF9500",
+            startMinute: 10 * 60,
+            endMinute: 11 * 60,
+            updatedAt: Date(timeIntervalSince1970: 1)
+        )
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .current
+
+        let session = try XCTUnwrap(ActivitySessionReconstructor.reconstruct(
+            carId: 1,
+            events: [drive],
+            sleepIntervals: [],
+            geofences: [geofence],
+            labelOverrides: [override],
+            configuration: .init(calendar: calendar)
+        ).first)
+
+        XCTAssertEqual(session.id, "1-40")
+        XCTAssertEqual(session.eventReferences.map(\.sourceID), [40])
+        XCTAssertEqual(session.classification?.purpose, .pickupDropoff)
+        XCTAssertEqual(session.classification?.source, .userPlaceRule)
+    }
+
+    func testReconstructionAppliesMatchingSessionOverrideWithoutChangingSources() throws {
         let parking = TeslaMateActivity(
             id: 1,
             type: "park",
@@ -104,8 +327,8 @@ final class ActivityPurposeClassifierTests: XCTestCase {
             scope: .sessionOnly,
             purpose: .custom,
             customName: "Gym",
-            icon: "tag",
-            colorHex: "#000000",
+            icon: "dumbbell.fill",
+            colorHex: "#123456",
             startMinute: nil,
             endMinute: nil,
             updatedAt: Date(timeIntervalSince1970: 1)
@@ -119,8 +342,37 @@ final class ActivityPurposeClassifierTests: XCTestCase {
             labelOverrides: [override]
         ).first
 
-        XCTAssertEqual(session?.classification?.purpose, .custom)
-        XCTAssertEqual(session?.classification?.source, .userSession)
+        let classification = try XCTUnwrap(session?.classification)
+        let restored = try JSONDecoder().decode(
+            ActivityClassificationResult.self,
+            from: JSONEncoder().encode(classification)
+        )
+        let legacy = try JSONDecoder().decode(
+            ActivityClassificationResult.self,
+            from: Data(
+                """
+                {
+                  "purpose": "custom",
+                  "confidence": 1,
+                  "source": "userSession",
+                  "reasons": ["confirmedOverride"],
+                  "classifierVersion": 1
+                }
+                """.utf8
+            )
+        )
+
+        XCTAssertEqual(classification.purpose, .custom)
+        XCTAssertEqual(classification.source, .userSession)
+        XCTAssertEqual(classification.title(language: .english), "Gym")
+        XCTAssertEqual(classification.systemImage, "dumbbell.fill")
+        XCTAssertEqual(classification.colorHex, "#123456")
+        XCTAssertEqual(restored, classification)
+        XCTAssertNil(legacy.customPresentation)
+        XCTAssertEqual(legacy.title(language: .english), "Custom activity")
+        XCTAssertEqual(legacy.systemImage, "tag.fill")
+        XCTAssertNil(legacy.colorHex)
+        XCTAssertEqual(session?.id, "1-1")
         XCTAssertEqual(session?.eventReferences.map(\.sourceID), [1])
     }
 }
@@ -178,13 +430,16 @@ private extension SmartActivitySession {
 }
 
 private extension ActivityLabelOverride {
-    static func fixture(purpose: SmartActivityPurpose) -> ActivityLabelOverride {
+    static func fixture(
+        purpose: SmartActivityPurpose,
+        scope: ActivityLabelScope = .sessionOnly
+    ) -> ActivityLabelOverride {
         ActivityLabelOverride(
             id: "override-\(purpose.rawValue)",
             carId: 1,
             sessionId: "session",
             placeKey: "place",
-            scope: .sessionOnly,
+            scope: scope,
             purpose: purpose,
             customName: nil,
             icon: "tag",

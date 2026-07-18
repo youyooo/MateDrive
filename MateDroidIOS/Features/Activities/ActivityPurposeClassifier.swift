@@ -195,7 +195,10 @@ private extension ActivityLabelOverride {
             confidence: 1,
             source: source,
             reasons: [.confirmedOverride],
-            classifierVersion: ActivityPurposeClassifier.classifierVersion
+            classifierVersion: ActivityPurposeClassifier.classifierVersion,
+            customPresentation: purpose == .custom
+                ? ActivityCustomPresentation(customName: customName, icon: icon, colorHex: colorHex)
+                : nil
         )
     }
 }

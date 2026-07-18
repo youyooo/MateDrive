@@ -5,15 +5,18 @@ public struct ActivitySessionReconstructionConfiguration: Equatable, Sendable {
     public let chargeStartGrace: TimeInterval
     public let departureGrace: TimeInterval
     public let clusterRadiusMeters: Double
+    public let calendar: Calendar
 
     public init(
         chargeStartGrace: TimeInterval = 60 * 60,
         departureGrace: TimeInterval = 90 * 60,
-        clusterRadiusMeters: Double = 250
+        clusterRadiusMeters: Double = 250,
+        calendar: Calendar = .current
     ) {
         self.chargeStartGrace = chargeStartGrace
         self.departureGrace = departureGrace
         self.clusterRadiusMeters = clusterRadiusMeters
+        self.calendar = calendar
     }
 }
 
@@ -63,7 +66,8 @@ public enum ActivitySessionReconstructor {
                 geofences: geofences,
                 labelOverrides: labelOverrides,
                 recurrenceCountsByPlaceKey: recurrenceCountsByPlaceKey,
-                confirmedCommuteSessionIDs: confirmedCommuteSessionIDs
+                confirmedCommuteSessionIDs: confirmedCommuteSessionIDs,
+                configuration: configuration
             )
         }
 
@@ -178,7 +182,9 @@ public enum ActivitySessionReconstructor {
             chargeIdentity: charges.first.flatMap { chargeIdentitiesByChargeID[$0.id] },
             hasCharge: !charges.isEmpty,
             hasPromptDeparture: departure != nil && !charges.isEmpty,
-            isConfirmedCommute: confirmedCommuteSessionIDs.contains(session.id)
+            isConfirmedCommute: confirmedCommuteSessionIDs.contains(session.id),
+            arrivalDate: parkingStart,
+            calendar: configuration.calendar
         )
     }
 
@@ -292,11 +298,13 @@ public enum ActivitySessionReconstructor {
         geofences: [GeofenceRule],
         labelOverrides: [ActivityLabelOverride],
         recurrenceCountsByPlaceKey: [String: Int],
-        confirmedCommuteSessionIDs: Set<String>
+        confirmedCommuteSessionIDs: Set<String>,
+        configuration: ActivitySessionReconstructionConfiguration
     ) -> SmartActivitySession? {
         guard let startDate = drive.startDate.flatMap(DomainDateParser.date(from:)) else {
             return nil
         }
+        let endDate = drive.endDate.flatMap(DomainDateParser.date(from:))
 
         let location = location(for: drive, role: .arrival)
         let geofence = GeofenceRuleEngine.matchingRule(
@@ -312,7 +320,7 @@ public enum ActivitySessionReconstructor {
             id: "\(carId)-\(drive.id)",
             carId: carId,
             startDate: startDate,
-            endDate: drive.endDate.flatMap(DomainDateParser.date(from:)),
+            endDate: endDate,
             placeKey: placeKey(geofence: geofence, location: location, fallbackPrefix: "drive", fallbackID: drive.id),
             latitude: location?.latitude,
             longitude: location?.longitude,
@@ -322,7 +330,7 @@ public enum ActivitySessionReconstructor {
             parkingMetrics: nil,
             chargeCost: nil,
             eventReferences: references,
-            isOpen: drive.endDate.flatMap(DomainDateParser.date(from:)) == nil,
+            isOpen: endDate == nil,
             quality: .partial,
             derivationVersion: 1,
             sourceFingerprint: sourceFingerprint,
@@ -336,7 +344,9 @@ public enum ActivitySessionReconstructor {
             chargeIdentity: nil,
             hasCharge: false,
             hasPromptDeparture: false,
-            isConfirmedCommute: confirmedCommuteSessionIDs.contains(session.id)
+            isConfirmedCommute: confirmedCommuteSessionIDs.contains(session.id),
+            arrivalDate: endDate,
+            calendar: configuration.calendar
         )
     }
 
@@ -348,13 +358,20 @@ public enum ActivitySessionReconstructor {
         chargeIdentity: ChargePricingChargerIdentity?,
         hasCharge: Bool,
         hasPromptDeparture: Bool,
-        isConfirmedCommute: Bool
+        isConfirmedCommute: Bool,
+        arrivalDate: Date?,
+        calendar: Calendar
     ) -> SmartActivitySession {
         let classification = ActivityPurposeClassifier.classify(
             ActivityClassificationInput(
                 session: session,
                 sessionOverride: matchingSessionOverride(for: session, in: labelOverrides),
-                placeOverride: matchingPlaceOverride(for: session, in: labelOverrides),
+                placeOverride: matchingPlaceOverride(
+                    for: session,
+                    arrivalDate: arrivalDate,
+                    calendar: calendar,
+                    in: labelOverrides
+                ),
                 geofenceKind: geofence?.kind,
                 recurrenceCount: recurrenceCount,
                 chargeIdentity: chargeIdentity,
@@ -390,19 +407,23 @@ public enum ActivitySessionReconstructor {
         in overrides: [ActivityLabelOverride]
     ) -> ActivityLabelOverride? {
         preferredOverride(overrides.filter {
-            $0.carId == session.carId && $0.sessionId == session.id
+            $0.carId == session.carId
+                && $0.scope == .sessionOnly
+                && $0.sessionId == session.id
         })
     }
 
     private static func matchingPlaceOverride(
         for session: SmartActivitySession,
+        arrivalDate: Date?,
+        calendar: Calendar,
         in overrides: [ActivityLabelOverride]
     ) -> ActivityLabelOverride? {
         preferredOverride(overrides.filter {
             $0.carId == session.carId
                 && $0.scope == .futureAtPlace
                 && $0.placeKey == session.placeKey
-                && matchesTimeWindow($0, date: session.startDate)
+                && matchesTimeWindow($0, date: arrivalDate, calendar: calendar)
         })
     }
 
@@ -412,10 +433,13 @@ public enum ActivitySessionReconstructor {
         }.first
     }
 
-    private static func matchesTimeWindow(_ override: ActivityLabelOverride, date: Date) -> Bool {
+    private static func matchesTimeWindow(
+        _ override: ActivityLabelOverride,
+        date: Date?,
+        calendar: Calendar
+    ) -> Bool {
         guard let start = override.startMinute, let end = override.endMinute else { return true }
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .gmt
+        guard let date else { return false }
         let minute = calendar.component(.hour, from: date) * 60 + calendar.component(.minute, from: date)
         if start <= end { return (start...end).contains(minute) }
         return minute >= start || minute <= end

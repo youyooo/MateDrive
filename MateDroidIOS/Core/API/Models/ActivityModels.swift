@@ -22,7 +22,7 @@ public enum TeslaMateActivityKind: String, CaseIterable, Codable, Hashable, Send
     case unknown
 }
 
-public struct TeslaMateActivity: Decodable, Equatable, Hashable, Sendable, Identifiable {
+public struct TeslaMateActivity: Codable, Equatable, Hashable, Sendable, Identifiable {
     public let id: Int
     public let type: String
     public let startDate: String?
@@ -111,7 +111,7 @@ public extension TeslaMateActivity {
     }
 }
 
-public struct TeslaMateActivityStats: Decodable, Equatable, Hashable, Sendable {
+public struct TeslaMateActivityStats: Codable, Equatable, Hashable, Sendable {
     public let regenUtilization: Double?
     public let hardBrakingCount: Int?
     public let hardBrakingPer100km: Double?
@@ -127,7 +127,7 @@ public struct TeslaMateActivityStats: Decodable, Equatable, Hashable, Sendable {
     public let evaluations: [TeslaMateDriveEvaluation]?
 }
 
-public struct TeslaMateDriveEvaluation: Decodable, Equatable, Hashable, Sendable, Identifiable {
+public struct TeslaMateDriveEvaluation: Codable, Equatable, Hashable, Sendable, Identifiable {
     public var id: String { "\(type)-\(priority ?? 0)-\(titleKey ?? "")" }
     public let type: String
     public let priority: Int?

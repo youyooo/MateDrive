@@ -104,12 +104,57 @@ public enum ActivityClassificationReason: String, Codable, Hashable, Sendable {
     case repeatedTimeWindow, repeatedRoute, confirmedOverride
 }
 
+public struct ActivityCustomPresentation: Codable, Equatable, Sendable {
+    public let customName: String?
+    public let icon: String
+    public let colorHex: String
+
+    public init(customName: String?, icon: String, colorHex: String) {
+        self.customName = customName
+        self.icon = icon
+        self.colorHex = colorHex
+    }
+}
+
 public struct ActivityClassificationResult: Codable, Equatable, Sendable {
     public let purpose: SmartActivityPurpose
     public let confidence: Double
     public let source: ActivityClassificationSource
     public let reasons: [ActivityClassificationReason]
     public let classifierVersion: Int
+    public let customPresentation: ActivityCustomPresentation?
+
+    public init(
+        purpose: SmartActivityPurpose,
+        confidence: Double,
+        source: ActivityClassificationSource,
+        reasons: [ActivityClassificationReason],
+        classifierVersion: Int,
+        customPresentation: ActivityCustomPresentation? = nil
+    ) {
+        self.purpose = purpose
+        self.confidence = confidence
+        self.source = source
+        self.reasons = reasons
+        self.classifierVersion = classifierVersion
+        self.customPresentation = customPresentation
+    }
+
+    public func title(language: AppLanguage) -> String {
+        purpose.title(language: language, customName: customPresentation?.customName)
+    }
+
+    public var systemImage: String {
+        guard purpose == .custom,
+              let icon = customPresentation?.icon.trimmingCharacters(in: .whitespacesAndNewlines),
+              !icon.isEmpty
+        else { return purpose.systemImage }
+        return icon
+    }
+
+    public var colorHex: String? {
+        purpose == .custom ? customPresentation?.colorHex : nil
+    }
 }
 
 public enum SmartActivityChargeCostSource: String, Codable, Equatable, Sendable {

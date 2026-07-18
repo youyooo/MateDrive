@@ -148,6 +148,7 @@
 		A20000000000000000000002 /* ActivitySessionReconstructorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* ActivitySessionReconstructorTests.swift */; };
 		A30000000000000000000001 /* ActivityPurposeClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000003 /* ActivityPurposeClassifier.swift */; };
 		A30000000000000000000002 /* ActivityPurposeClassifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000004 /* ActivityPurposeClassifierTests.swift */; };
+		A40000000000000000000001 /* SleepDuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40000000000000000000002 /* SleepDuration.swift */; };
 		4A55E748C75BF0D12D8DF2E4 /* m3_PMBL_W39B.png in Resources */ = {isa = PBXBuildFile; fileRef = 5C6FC0F0445E89A8021EFF79 /* m3_PMBL_W39B.png */; };
 		4A7A9CD0F6A238998768E342 /* TyrePressureNotificationContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A44D7D40C8371F6612991FB /* TyrePressureNotificationContent.swift */; };
 		4A82FEF2097F40E29D2BE6C4 /* OpenMeteoAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AE0C2C5B733F1674CD13D4 /* OpenMeteoAPI.swift */; };
@@ -810,6 +811,7 @@
 		A2DFE99FE979016BD32AE322 /* TopDrainLocationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopDrainLocationsViewModel.swift; sourceTree = "<group>"; };
 		A3640B46BD5D5C4F04213135 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		A3B8CAAF3D7561DA77F406EB /* AggregateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AggregateStore.swift; sourceTree = "<group>"; };
+		A40000000000000000000002 /* SleepDuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepDuration.swift; sourceTree = "<group>"; };
 		A42E4080AB626C781D130679 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A4E54F9A787273F4370D8F77 /* SettingsBackedNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBackedNotificationService.swift; sourceTree = "<group>"; };
 		A50FFBE5AF55DB6DE0C0D124 /* WeatherSelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherSelectionTests.swift; sourceTree = "<group>"; };
@@ -1466,6 +1468,7 @@
 				4CD52DB0B2D671506C0FA58B /* DomainDateParser.swift */,
 				5106B25F6E79893EF6560704 /* MateDroidCurrencyFormatter.swift */,
 				6D680E625173307F71495928 /* ShortEntryFilter.swift */,
+				A40000000000000000000002 /* SleepDuration.swift */,
 				6FB23374EBBDD553701743A3 /* TripAggregator.swift */,
 				1920E2470948D1A22BDF9F01 /* TripDetector.swift */,
 				263ACCD002386F7CD719C1D5 /* TripPersistenceModels.swift */,
@@ -2155,6 +2158,7 @@
 				89D639AD9169540552DA481D /* AppRoute.swift in Sources */,
 				3CA7640D620CCB707675E089 /* AppSettings.swift in Sources */,
 				1A975ACBF6F8972B37DDE6FD /* AppText.swift in Sources */,
+				A40000000000000000000001 /* SleepDuration.swift in Sources */,
 				F1E1FAD44A9B7868291E8585 /* BackgroundRefreshWorkRunner.swift in Sources */,
 				7405CBCA4985CDC1C8E3993F /* BackgroundSyncScheduler.swift in Sources */,
 				6A137B8452DBF2B840484BD5 /* BatteryModels.swift in Sources */,

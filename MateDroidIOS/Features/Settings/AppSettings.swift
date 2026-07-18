@@ -34,16 +34,6 @@ public enum AppLanguage: String, CaseIterable, Codable, Equatable, Identifiable,
     }
 }
 
-public enum ServerAuthenticationMode: String, CaseIterable, Codable, Equatable, Identifiable, Sendable {
-    case automatic
-    case none
-    case bearerToken
-    case basic
-    case apiKeys
-
-    public var id: String { rawValue }
-}
-
 public struct BatteryCalibration: Codable, Equatable, Sendable {
     public var referenceRangeKm: Double?
     public var referenceCapacityKWh: Double?
@@ -66,6 +56,16 @@ public enum GeofenceKind: String, CaseIterable, Codable, Equatable, Identifiable
     case other
 
     public var id: String { rawValue }
+
+    public init(from decoder: Decoder) throws {
+        let value = try decoder.singleValueContainer().decode(String.self)
+        self = GeofenceKind(rawValue: value) ?? .other
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
 
     public func title(language: AppLanguage) -> String {
         switch self {
@@ -272,15 +272,11 @@ public struct AppSettings: Codable, Equatable, Sendable {
 
     public var serverURL: String
     public var secondaryServerURL: String
-    public var authenticationMode: ServerAuthenticationMode
-    public var usesCloudflareAccess: Bool
     public var acceptInvalidCerts: Bool
     public var currencyCode: String
     public var displayUnitSystem: DisplayUnitSystem
     public var formatPreferencesVersion: Int
     public var showShortDrivesCharges: Bool
-    public var mergeAdjacentDrives: Bool
-    public var adjacentDriveMergeMaximumGapMinutes: Int
     public var teslamateBaseURL: String
     public var lastSelectedCarId: Int?
     public var notificationPermissionAsked: Bool
@@ -290,12 +286,10 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public var batteryRecordingStartOdometerKm: Double?
     public var batteryCalibrations: [String: BatteryCalibration]
     public var chargePricingRules: [ChargePricingRule]
-    public var chargeTariffTemplates: [ChargeTariffTemplate]
     public var parkingFeeRules: [ParkingFeeRule]
     public var geofenceRules: [GeofenceRule]
     public var usesGeofencesForCommuteClassification: Bool
     public var driveAnnotations: [String: DriveAnnotation]
-    public var driveRouteLabelRules: [DriveRouteLabelRule]
     private var vehicleImageOverrides: [String: VehicleImageOverride]
     private var legacyVehicleImageVariants: [String: String]
     private var legacyVehicleImageWheels: [String: String]
@@ -308,15 +302,11 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public init(
         serverURL: String = "",
         secondaryServerURL: String = "",
-        authenticationMode: ServerAuthenticationMode = .none,
-        usesCloudflareAccess: Bool = false,
         acceptInvalidCerts: Bool = false,
         currencyCode: String = MateDroidCurrencyFormatter.automaticCode,
         displayUnitSystem: DisplayUnitSystem = .teslamate,
         formatPreferencesVersion: Int = AppSettings.currentFormatPreferencesVersion,
         showShortDrivesCharges: Bool = false,
-        mergeAdjacentDrives: Bool = true,
-        adjacentDriveMergeMaximumGapMinutes: Int = 30,
         teslamateBaseURL: String = "",
         lastSelectedCarId: Int? = nil,
         notificationPermissionAsked: Bool = false,
@@ -326,25 +316,19 @@ public struct AppSettings: Codable, Equatable, Sendable {
         batteryRecordingStartOdometerKm: Double? = nil,
         batteryCalibrations: [String: BatteryCalibration] = [:],
         chargePricingRules: [ChargePricingRule] = [],
-        chargeTariffTemplates: [ChargeTariffTemplate] = [],
         parkingFeeRules: [ParkingFeeRule] = [],
         geofenceRules: [GeofenceRule] = [],
         usesGeofencesForCommuteClassification: Bool = true,
         driveAnnotations: [String: DriveAnnotation] = [:],
-        driveRouteLabelRules: [DriveRouteLabelRule] = [],
         forceChineseLanguage: Bool? = nil
     ) {
         self.serverURL = serverURL
         self.secondaryServerURL = secondaryServerURL
-        self.authenticationMode = authenticationMode
-        self.usesCloudflareAccess = usesCloudflareAccess
         self.acceptInvalidCerts = acceptInvalidCerts
         self.currencyCode = currencyCode
         self.displayUnitSystem = displayUnitSystem
         self.formatPreferencesVersion = formatPreferencesVersion
         self.showShortDrivesCharges = showShortDrivesCharges
-        self.mergeAdjacentDrives = mergeAdjacentDrives
-        self.adjacentDriveMergeMaximumGapMinutes = min(max(adjacentDriveMergeMaximumGapMinutes, 5), 180)
         self.teslamateBaseURL = teslamateBaseURL
         self.lastSelectedCarId = lastSelectedCarId
         self.notificationPermissionAsked = notificationPermissionAsked
@@ -354,12 +338,10 @@ public struct AppSettings: Codable, Equatable, Sendable {
         self.batteryRecordingStartOdometerKm = batteryRecordingStartOdometerKm
         self.batteryCalibrations = batteryCalibrations
         self.chargePricingRules = chargePricingRules
-        self.chargeTariffTemplates = chargeTariffTemplates
         self.parkingFeeRules = parkingFeeRules
         self.geofenceRules = geofenceRules
         self.usesGeofencesForCommuteClassification = usesGeofencesForCommuteClassification
         self.driveAnnotations = driveAnnotations
-        self.driveRouteLabelRules = driveRouteLabelRules
         vehicleImageOverrides = [:]
         legacyVehicleImageVariants = [:]
         legacyVehicleImageWheels = [:]
@@ -368,15 +350,11 @@ public struct AppSettings: Codable, Equatable, Sendable {
     private enum CodingKeys: String, CodingKey {
         case serverURL
         case secondaryServerURL
-        case authenticationMode
-        case usesCloudflareAccess
         case acceptInvalidCerts
         case currencyCode
         case displayUnitSystem
         case formatPreferencesVersion
         case showShortDrivesCharges
-        case mergeAdjacentDrives
-        case adjacentDriveMergeMaximumGapMinutes
         case teslamateBaseURL
         case lastSelectedCarId
         case notificationPermissionAsked
@@ -386,12 +364,10 @@ public struct AppSettings: Codable, Equatable, Sendable {
         case batteryRecordingStartOdometerKm
         case batteryCalibrations
         case chargePricingRules
-        case chargeTariffTemplates
         case parkingFeeRules
         case geofenceRules
         case usesGeofencesForCommuteClassification
         case driveAnnotations
-        case driveRouteLabelRules
         case vehicleImageOverrides
         case vehicleImageOverrideVariants
         case vehicleImageOverrideWheels
@@ -404,18 +380,11 @@ public struct AppSettings: Codable, Equatable, Sendable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         serverURL = try container.decodeIfPresent(String.self, forKey: .serverURL) ?? ""
         secondaryServerURL = try container.decodeIfPresent(String.self, forKey: .secondaryServerURL) ?? ""
-        authenticationMode = try container.decodeIfPresent(ServerAuthenticationMode.self, forKey: .authenticationMode) ?? .automatic
-        usesCloudflareAccess = try container.decodeIfPresent(Bool.self, forKey: .usesCloudflareAccess) ?? false
         acceptInvalidCerts = try container.decodeIfPresent(Bool.self, forKey: .acceptInvalidCerts) ?? false
         currencyCode = try container.decodeIfPresent(String.self, forKey: .currencyCode) ?? MateDroidCurrencyFormatter.automaticCode
         displayUnitSystem = try container.decodeIfPresent(DisplayUnitSystem.self, forKey: .displayUnitSystem) ?? .teslamate
         formatPreferencesVersion = try container.decodeIfPresent(Int.self, forKey: .formatPreferencesVersion) ?? 0
         showShortDrivesCharges = try container.decodeIfPresent(Bool.self, forKey: .showShortDrivesCharges) ?? false
-        mergeAdjacentDrives = try container.decodeIfPresent(Bool.self, forKey: .mergeAdjacentDrives) ?? true
-        adjacentDriveMergeMaximumGapMinutes = min(
-            max(try container.decodeIfPresent(Int.self, forKey: .adjacentDriveMergeMaximumGapMinutes) ?? 30, 5),
-            180
-        )
         teslamateBaseURL = try container.decodeIfPresent(String.self, forKey: .teslamateBaseURL) ?? ""
         lastSelectedCarId = try container.decodeIfPresent(Int.self, forKey: .lastSelectedCarId)
         notificationPermissionAsked = try container.decodeIfPresent(Bool.self, forKey: .notificationPermissionAsked) ?? false
@@ -438,12 +407,10 @@ public struct AppSettings: Codable, Equatable, Sendable {
             )
         }
         chargePricingRules = try container.decodeIfPresent([ChargePricingRule].self, forKey: .chargePricingRules) ?? []
-        chargeTariffTemplates = try container.decodeIfPresent([ChargeTariffTemplate].self, forKey: .chargeTariffTemplates) ?? []
         parkingFeeRules = try container.decodeIfPresent([ParkingFeeRule].self, forKey: .parkingFeeRules) ?? []
         geofenceRules = try container.decodeIfPresent([GeofenceRule].self, forKey: .geofenceRules) ?? []
         usesGeofencesForCommuteClassification = try container.decodeIfPresent(Bool.self, forKey: .usesGeofencesForCommuteClassification) ?? true
         driveAnnotations = try container.decodeIfPresent([String: DriveAnnotation].self, forKey: .driveAnnotations) ?? [:]
-        driveRouteLabelRules = try container.decodeIfPresent([DriveRouteLabelRule].self, forKey: .driveRouteLabelRules) ?? []
         vehicleImageOverrides = try container.decodeIfPresent([String: VehicleImageOverride].self, forKey: .vehicleImageOverrides) ?? [:]
         legacyVehicleImageVariants = Self.legacyValues(
             from: container,
@@ -459,15 +426,11 @@ public struct AppSettings: Codable, Equatable, Sendable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(serverURL, forKey: .serverURL)
         try container.encode(secondaryServerURL, forKey: .secondaryServerURL)
-        try container.encode(authenticationMode, forKey: .authenticationMode)
-        try container.encode(usesCloudflareAccess, forKey: .usesCloudflareAccess)
         try container.encode(acceptInvalidCerts, forKey: .acceptInvalidCerts)
         try container.encode(currencyCode, forKey: .currencyCode)
         try container.encode(displayUnitSystem, forKey: .displayUnitSystem)
         try container.encode(formatPreferencesVersion, forKey: .formatPreferencesVersion)
         try container.encode(showShortDrivesCharges, forKey: .showShortDrivesCharges)
-        try container.encode(mergeAdjacentDrives, forKey: .mergeAdjacentDrives)
-        try container.encode(adjacentDriveMergeMaximumGapMinutes, forKey: .adjacentDriveMergeMaximumGapMinutes)
         try container.encode(teslamateBaseURL, forKey: .teslamateBaseURL)
         try container.encodeIfPresent(lastSelectedCarId, forKey: .lastSelectedCarId)
         try container.encode(notificationPermissionAsked, forKey: .notificationPermissionAsked)
@@ -477,12 +440,10 @@ public struct AppSettings: Codable, Equatable, Sendable {
         try container.encodeIfPresent(batteryRecordingStartOdometerKm, forKey: .batteryRecordingStartOdometerKm)
         try container.encode(batteryCalibrations, forKey: .batteryCalibrations)
         try container.encode(chargePricingRules, forKey: .chargePricingRules)
-        try container.encode(chargeTariffTemplates, forKey: .chargeTariffTemplates)
         try container.encode(parkingFeeRules, forKey: .parkingFeeRules)
         try container.encode(geofenceRules, forKey: .geofenceRules)
         try container.encode(usesGeofencesForCommuteClassification, forKey: .usesGeofencesForCommuteClassification)
         try container.encode(driveAnnotations, forKey: .driveAnnotations)
-        try container.encode(driveRouteLabelRules, forKey: .driveRouteLabelRules)
         try container.encode(vehicleImageOverrides, forKey: .vehicleImageOverrides)
         try container.encode(forceChineseLanguage, forKey: .forceChineseLanguage)
     }

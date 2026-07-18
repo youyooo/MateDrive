@@ -1,6 +1,127 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Replenishment" : {
+      "localizations" : {
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Recàrrega" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nachladen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Replenishment" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Recarga" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Ricarica" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "补能" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "補能" } }
+      }
+    },
+    "Home charging" : {
+      "localizations" : {
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Càrrega a casa" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Laden zu Hause" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Home charging" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Carga en casa" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Ricarica a casa" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "家庭充电" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "家庭充電" } }
+      }
+    },
+    "Work charging" : {
+      "localizations" : {
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Càrrega a la feina" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Laden am Arbeitsplatz" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Work charging" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Carga en el trabajo" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Ricarica al lavoro" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "工作地充电" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "工作地充電" } }
+      }
+    },
+    "Shopping" : {
+      "localizations" : {
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Compres" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Einkaufen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Shopping" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Compras" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Acquisti" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "购物" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "購物" } }
+      }
+    },
+    "Pickup or drop-off" : {
+      "localizations" : {
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Recollida o deixada" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Abholen oder Bringen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Pickup or drop-off" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Recogida o entrega" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Ritiro o accompagnamento" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "接送" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "接送" } }
+      }
+    },
+    "Parking" : {
+      "localizations" : {
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Aparcament" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Parken" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Parking" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Aparcamiento" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Parcheggio" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "停车" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "停車" } }
+      }
+    },
+    "Custom activity" : {
+      "localizations" : {
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Activitat personalitzada" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Benutzerdefinierte Aktivität" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Custom activity" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Actividad personalizada" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Attività personalizzata" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自定义活动" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自訂活動" } }
+      }
+    },
+    "Home" : {
+      "localizations" : {
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Casa" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zuhause" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Home" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Casa" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Casa" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "家" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "家" } }
+      }
+    },
+    "Work" : {
+      "localizations" : {
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Feina" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Arbeit" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Work" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Trabajo" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Lavoro" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "公司" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "公司" } }
+      }
+    },
+    "School or Pickup" : {
+      "localizations" : {
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Escola o recollida" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Schule oder Abholung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "School or Pickup" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Escuela o recogida" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Scuola o ritiro" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "学校或接送" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "學校或接送" } }
+      }
+    },
+    "Other" : {
+      "localizations" : {
+        "ca" : { "stringUnit" : { "state" : "translated", "value" : "Altres" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sonstiges" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Other" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Otro" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Altro" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "其他" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "其他" } }
+      }
+    },
     "Manual configuration" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Manual configuration" } },
