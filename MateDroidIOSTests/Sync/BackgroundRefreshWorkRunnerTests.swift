@@ -222,6 +222,74 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
         XCTAssertTrue(requestedPaths.contains { $0.hasPrefix("/api/v1/cars/7/states?") })
     }
 
+    func testDataPreloaderSkipsRepeatedRunInsideMinimumInterval() async {
+        let client = ActivityFreshnessHTTPClient()
+        let preloader = AppDataPreloader(
+            settingsStore: Task3PreloadSettingsStore(settings: AppSettings(
+                serverURL: "https://teslamate.example",
+                lastSelectedCarId: 7
+            )),
+            secretStore: Task3PreloadSecretStore(),
+            clientOverride: client,
+            minimumInterval: 300
+        )
+
+        let firstReport = await preloader.preload(force: true)
+        let firstRequestCount = await client.requestedPaths.count
+        let secondReport = await preloader.preload()
+        let secondRequestCount = await client.requestedPaths.count
+
+        XCTAssertTrue(firstReport.activitiesRefreshSucceeded)
+        XCTAssertTrue(firstReport.canIndexSmartActivities)
+        XCTAssertFalse(secondReport.didRun)
+        XCTAssertFalse(secondReport.activitiesRefreshSucceeded)
+        XCTAssertTrue(secondReport.canIndexSmartActivities)
+        XCTAssertEqual(secondRequestCount, firstRequestCount)
+    }
+
+    func testDataPreloaderRejectsIndexingWhenAllActivityRequestsFail() async {
+        let client = ActivityFreshnessHTTPClient(failedActivityCarIDs: [7])
+        let preloader = AppDataPreloader(
+            settingsStore: Task3PreloadSettingsStore(settings: AppSettings(
+                serverURL: "https://teslamate.example",
+                lastSelectedCarId: 7
+            )),
+            secretStore: Task3PreloadSecretStore(),
+            clientOverride: client
+        )
+
+        let report = await preloader.preload(force: true)
+
+        XCTAssertTrue(report.didRun)
+        XCTAssertFalse(report.activitiesRefreshSucceeded)
+        XCTAssertFalse(report.canIndexSmartActivities)
+        XCTAssertGreaterThan(report.successfulEndpointCount, 0)
+    }
+
+    func testDataPreloaderRequiresSuccessfulActivitiesResponseForEveryCar() async {
+        let client = ActivityFreshnessHTTPClient(
+            carIDs: [7, 8],
+            failedActivityCarIDs: [8]
+        )
+        let preloader = AppDataPreloader(
+            settingsStore: Task3PreloadSettingsStore(settings: AppSettings(
+                serverURL: "https://teslamate.example",
+                lastSelectedCarId: 7
+            )),
+            secretStore: Task3PreloadSecretStore(),
+            clientOverride: client
+        )
+
+        let report = await preloader.preload(force: true)
+        let requestedPaths = await client.requestedPaths
+
+        XCTAssertTrue(report.didRun)
+        XCTAssertFalse(report.activitiesRefreshSucceeded)
+        XCTAssertFalse(report.canIndexSmartActivities)
+        XCTAssertTrue(requestedPaths.contains("/api/v1/cars/7/activities?page=1&show=200"))
+        XCTAssertTrue(requestedPaths.contains("/api/v1/cars/8/activities?page=1&show=200"))
+    }
+
     func testDataPreloaderResumesIncompleteCachePastDuplicatePages() async {
         let client = PartialActivityRetryHTTPClient()
         let cache = ActivitiesStateCache(maximumAge: 60)
@@ -1145,6 +1213,43 @@ private actor EndlessDegradedActivityHTTPClient: HTTPClient {
             body = #"{"data":{"cars":[{"car_id":7,"name":"Test car 7"}]}}"#
         } else if url.path.hasSuffix("/activities"), let page {
             body = #"{"data":[{"id":\#(page),"type":"drive"}],"pagination":{"page":1,"limit":1,"totalPages":9999,"totalRecords":0}}"#
+        } else {
+            body = #"{}"#
+        }
+        return (
+            Data(body.utf8),
+            HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!
+        )
+    }
+}
+
+private actor ActivityFreshnessHTTPClient: HTTPClient {
+    private(set) var requestedPaths: [String] = []
+    private let carIDs: [Int]
+    private let failedActivityCarIDs: Set<Int>
+
+    init(carIDs: [Int] = [7], failedActivityCarIDs: Set<Int> = []) {
+        self.carIDs = carIDs
+        self.failedActivityCarIDs = failedActivityCarIDs
+    }
+
+    func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let url = request.url ?? URL(string: "https://teslamate.example")!
+        requestedPaths.append(url.path + (url.query.map { "?" + $0 } ?? ""))
+        let body: String
+        if url.path == "/api/v1/cars" {
+            let cars = carIDs.map { #"{"car_id":\#($0),"name":"Test car \#($0)"}"# }
+                .joined(separator: ",")
+            body = #"{"data":{"cars":[\#(cars)]}}"#
+        } else if url.path.hasSuffix("/activities"),
+                  let carID = url.path.split(separator: "/").dropLast().last.flatMap({ Int($0) }) {
+            if failedActivityCarIDs.contains(carID) {
+                throw APIError.httpStatus(503)
+            }
+            body = #"{"data":[],"pagination":{"page":1,"limit":200,"totalPages":1,"totalRecords":0}}"#
+        } else if url.path.hasSuffix("/status"),
+                  let carID = url.path.split(separator: "/").dropLast().last.flatMap({ Int($0) }) {
+            body = #"{"data":{"status":{"display_name":"Test car \#(carID)","battery_details":{"battery_level":60},"car_status":{"locked":true},"charging_details":{"charging_state":"Disconnected"}}}}"#
         } else {
             body = #"{}"#
         }

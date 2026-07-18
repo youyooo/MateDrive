@@ -4,11 +4,22 @@ public struct AppDataPreloadReport: Equatable, Sendable {
     public let didRun: Bool
     public let requestedEndpointCount: Int
     public let successfulEndpointCount: Int
+    public let activitiesRefreshSucceeded: Bool
 
-    public init(didRun: Bool, requestedEndpointCount: Int, successfulEndpointCount: Int) {
+    public init(
+        didRun: Bool,
+        requestedEndpointCount: Int,
+        successfulEndpointCount: Int,
+        activitiesRefreshSucceeded: Bool = false
+    ) {
         self.didRun = didRun
         self.requestedEndpointCount = requestedEndpointCount
         self.successfulEndpointCount = successfulEndpointCount
+        self.activitiesRefreshSucceeded = activitiesRefreshSucceeded
+    }
+
+    public var canIndexSmartActivities: Bool {
+        !didRun || activitiesRefreshSucceeded
     }
 
     public static let skipped = AppDataPreloadReport(
@@ -118,7 +129,9 @@ public actor AppDataPreloader {
         return AppDataPreloadReport(
             didRun: true,
             requestedEndpointCount: 1 + sleepResult.requestedCount + activitiesResult.requestedPageCount,
-            successfulEndpointCount: 1 + sleepResult.successfulCount + activitiesResult.successfulPageCount
+            successfulEndpointCount: 1 + sleepResult.successfulCount + activitiesResult.successfulPageCount,
+            activitiesRefreshSucceeded: !Task.isCancelled
+                && activitiesResult.successfulCarCount == orderedCars.count
         )
     }
 
@@ -183,7 +196,7 @@ public actor AppDataPreloader {
         cars: [CarData],
         api: TeslamateAPI,
         settings: AppSettings
-    ) async -> (requestedPageCount: Int, successfulPageCount: Int) {
+    ) async -> (requestedPageCount: Int, successfulPageCount: Int, successfulCarCount: Int) {
         let cache = activitiesCache
         let savedAt = now()
         return await withTaskGroup(of: (requested: Int, successful: Int).self) { group in
@@ -310,11 +323,15 @@ public actor AppDataPreloader {
 
             var requested = 0
             var successful = 0
+            var successfulCars = 0
             for await result in group {
                 requested += result.requested
                 successful += result.successful
+                if result.successful > 0 {
+                    successfulCars += 1
+                }
             }
-            return (requested, successful)
+            return (requested, successful, successfulCars)
         }
     }
 

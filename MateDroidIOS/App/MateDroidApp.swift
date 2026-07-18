@@ -60,8 +60,8 @@ struct MateDroidApp: App {
                     viewModel.state.selectedCarId != nil && viewModel.state.errorMessage == nil
                 }
                 guard statusRefreshed, !Task.isCancelled else { return false }
-                _ = await dataPreloader.preload()
-                return !Task.isCancelled
+                let preloadReport = await dataPreloader.preload()
+                return !Task.isCancelled && preloadReport.canIndexSmartActivities
             },
             rebuildSmartActivities: { carIds in
                 let report = await smartActivityIndexer.rebuild(carIds: carIds)
