@@ -224,7 +224,12 @@ final class ChargeCostResolverTests: XCTestCase {
             name: "Legacy User",
             pricePerKWh: 0.5
         )
-        let legacyStation = stationRule(id: "legacy-station", price: 0.8)
+        let legacyStation = ChargePricingRule(
+            id: "legacy-station",
+            name: "Station",
+            pricePerKWh: 0.8,
+            origin: .stationLearned
+        )
         var blankLegacyStation = stationRule(id: "blank-legacy-station", price: 0.9)
         blankLegacyStation.currencyCode = "   "
 
