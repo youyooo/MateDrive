@@ -345,21 +345,21 @@ private enum ActivityReconstructionFixtures {
                 type: "park",
                 startDate: "2026-07-18T10:30:00+08:00",
                 endDate: "2026-07-18T11:30:00+08:00",
+                endLatitude: 31.2304,
+                endLongitude: 121.4737,
                 soc: 50,
                 socDiff: 20,
-                endRangeKm: 320,
-                endLatitude: 31.2304,
-                endLongitude: 121.4737
+                endRangeKm: 320
             ),
             TeslaMateActivity(
                 id: 12,
                 type: "charge",
                 startDate: "2026-07-18T10:35:00+08:00",
                 endDate: "2026-07-18T11:25:00+08:00",
-                kwh: 14,
-                socDiff: 22,
                 startLatitude: 31.2304,
-                startLongitude: 121.4737
+                startLongitude: 121.4737,
+                kwh: 14,
+                socDiff: 22
             ),
             TeslaMateActivity(
                 id: 13,
@@ -397,10 +397,10 @@ private enum ActivityReconstructionFixtures {
                 type: "charge",
                 startDate: charge,
                 endDate: "2026-07-19T01:00:00+08:00",
-                kwh: 18,
-                socDiff: 25,
                 startLatitude: 31.2304,
-                startLongitude: 121.4737
+                startLongitude: 121.4737,
+                kwh: 18,
+                socDiff: 25
             ),
             TeslaMateActivity(
                 id: 33,
