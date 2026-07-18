@@ -53,6 +53,7 @@ public struct ActivitiesState: Codable, Equatable, Sendable {
     public var historyFullyLoaded = false
     public var historyLoadCapped = false
     public var loadedPageCount = 0
+    public var historyContinuityAnchorID: String?
     public var currencyCode = MateDroidCurrencyFormatter.systemCurrencyCode()
     public var units: UnitPreferences?
     public var isUsingCachedData = false

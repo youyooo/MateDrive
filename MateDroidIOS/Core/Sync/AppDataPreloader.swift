@@ -198,7 +198,8 @@ public actor AppDataPreloader {
                     )
                     let cachedHistoryIsComplete = cachedSnapshot?.state.historyFullyLoaded == true
                     let cachedLoadedPageCount = max(cachedSnapshot?.state.loadedPageCount ?? 0, 0)
-                    let cachedIDs = Set(cachedSnapshot?.state.items.map(\.stableID) ?? [])
+                    let cachedContinuityAnchorID = cachedSnapshot?.state.historyContinuityAnchorID
+                        ?? (cachedHistoryIsComplete ? cachedSnapshot?.state.items.first?.stableID : nil)
                     var page = 1
                     var requested = 0
                     var successful = 0
@@ -209,6 +210,8 @@ public actor AppDataPreloader {
                     var hasMore = true
                     var bridgedCachedHistory = false
                     var reachedServerEnd = false
+                    var validatedLoadedPageCount = cachedHistoryIsComplete ? 0 : cachedLoadedPageCount
+                    var previousPageIDs: Set<String>?
 
                     while hasMore, page <= maximumPages, !Task.isCancelled {
                         requested += 1
@@ -227,24 +230,30 @@ public actor AppDataPreloader {
                         }
 
                         let pageIDs = Set(response.data.map(\.stableID))
-                        let overlapsCachedHistory = !cachedIDs.isDisjoint(with: pageIDs)
+                        let traversesCachedPage = !cachedHistoryIsComplete && page <= cachedLoadedPageCount
+                        let repeatsPreviousFullPage = !pageIDs.isEmpty
+                            && previousPageIDs == pageIDs
+                            && response.data.count >= max(response.pagination?.limit ?? pageSize, 1)
+                        let advancesContinuousPages = !repeatsPreviousFullPage || traversesCachedPage
+                        if advancesContinuousPages {
+                            validatedLoadedPageCount = max(validatedLoadedPageCount, page)
+                        }
                         let newItems = response.data.filter { seenIDs.insert($0.stableID).inserted }
                         items.removeAll { pageIDs.contains($0.stableID) }
                         items.append(contentsOf: response.data)
-                        let reportedPages = response.pagination?.totalPages
-                        let responseMetadataIsDegraded = (reportedPages ?? 0) >= 9_999
-                            || (!response.data.isEmpty && response.pagination?.totalRecords == 0)
-                            || response.pagination?.page.map { $0 != page } == true
-                        let metadataIsReliable = !responseMetadataIsDegraded
-                            && (reportedPages.map { $0 > 0 && $0 < 9_999 } ?? false)
-                        let mustResumePastCachedPage = !cachedHistoryIsComplete && page <= cachedLoadedPageCount
-                        let bridgesCachedHistory = overlapsCachedHistory
-                            && (cachedHistoryIsComplete || page > cachedLoadedPageCount)
+                        let metadataIsReliable = Self.activityPaginationMetadataIsReliable(
+                            response,
+                            requestedPage: page
+                        )
+                        let responseMetadataIsDegraded = !metadataIsReliable || repeatsPreviousFullPage
+                        let bridgesCachedHistory = cachedContinuityAnchorID.map(pageIDs.contains) == true
                         paginationIsDegraded = paginationIsDegraded || responseMetadataIsDegraded
                         if bridgesCachedHistory {
                             bridgedCachedHistory = true
                             hasMore = false
-                        } else if metadataIsReliable, let reportedPages {
+                        } else if repeatsPreviousFullPage, !traversesCachedPage {
+                            hasMore = false
+                        } else if metadataIsReliable, let reportedPages = response.pagination?.totalPages {
                             hasMore = page < reportedPages
                             reachedServerEnd = !hasMore
                         } else {
@@ -255,12 +264,12 @@ public actor AppDataPreloader {
                                 hasMore = false
                                 reachedServerEnd = true
                             } else {
-                                hasMore = !newItems.isEmpty || mustResumePastCachedPage
+                                hasMore = !newItems.isEmpty || traversesCachedPage
                             }
                         }
+                        previousPageIDs = pageIDs
                         page += 1
 
-                        guard !items.isEmpty else { continue }
                         var state = ActivitiesState()
                         state.items = items.sorted {
                             let lhs = $0.startDate.flatMap(DomainDateParser.date(from:)) ?? .distantPast
@@ -272,9 +281,10 @@ public actor AppDataPreloader {
                         state.paginationIsDegraded = paginationIsDegraded
                         state.historyFullyLoaded = bridgedCachedHistory || reachedServerEnd
                         state.historyLoadCapped = !state.historyFullyLoaded && hasMore && page > maximumPages
-                        state.loadedPageCount = cachedHistoryIsComplete && !state.historyFullyLoaded
-                            ? successful
-                            : max(cachedLoadedPageCount, successful)
+                        state.loadedPageCount = validatedLoadedPageCount
+                        state.historyContinuityAnchorID = state.historyFullyLoaded
+                            ? state.items.first?.stableID
+                            : cachedContinuityAnchorID
                         state.currencyCode = settings.resolvedCurrencyCode()
                         state.units = units
                         await cache.save(
@@ -284,9 +294,6 @@ public actor AppDataPreloader {
                         )
                     }
 
-                    guard successful > 0, !items.isEmpty else {
-                        return (requested, successful)
-                    }
                     return (requested, successful)
                 }
             }
@@ -300,4 +307,36 @@ public actor AppDataPreloader {
             return (requested, successful)
         }
     }
+
+    private static func activityPaginationMetadataIsReliable(
+        _ response: TeslaMateActivitiesResponse,
+        requestedPage: Int
+    ) -> Bool {
+        guard let pagination = response.pagination,
+              let reportedPage = pagination.page,
+              let limit = pagination.limit,
+              let totalPages = pagination.totalPages,
+              let totalRecords = pagination.totalRecords,
+              reportedPage == requestedPage,
+              requestedPage > 0,
+              limit > 0,
+              totalPages > 0,
+              totalPages < 9_999,
+              totalRecords >= 0,
+              response.data.count <= limit,
+              response.data.count <= totalRecords
+        else { return false }
+
+        if totalRecords == 0 {
+            return totalPages == 1 && requestedPage == 1 && response.data.isEmpty
+        }
+
+        let expectedPages = totalRecords / limit + (totalRecords % limit == 0 ? 0 : 1)
+        guard expectedPages == totalPages, requestedPage <= totalPages else { return false }
+        let recordsBeforePage = (requestedPage - 1).multipliedReportingOverflow(by: limit)
+        guard !recordsBeforePage.overflow, recordsBeforePage.partialValue < totalRecords else { return false }
+        let expectedRecordCount = min(limit, totalRecords - recordsBeforePage.partialValue)
+        return response.data.count == expectedRecordCount
+    }
+
 }

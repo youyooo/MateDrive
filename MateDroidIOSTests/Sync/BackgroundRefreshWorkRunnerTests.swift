@@ -286,6 +286,37 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
         )
 
         _ = await preloader.preload(force: true)
+        _ = await preloader.preload(force: true)
+        let snapshot = await cache.load(serverURL: settings.serverURL, carId: 7, now: Date())
+        let activityRequests = await client.requestedPaths.filter { $0.contains("/activities?") }
+
+        XCTAssertEqual(activityRequests, [
+            "/api/v1/cars/7/activities?page=1&show=200",
+            "/api/v1/cars/7/activities?page=2&show=200",
+            "/api/v1/cars/7/activities?page=1&show=200",
+            "/api/v1/cars/7/activities?page=2&show=200"
+        ])
+        XCTAssertEqual(snapshot?.state.items.count, 200)
+        XCTAssertEqual(snapshot?.state.loadedPageCount, 1)
+        XCTAssertNil(snapshot?.state.historyContinuityAnchorID)
+        XCTAssertTrue(snapshot?.state.paginationIsDegraded == true)
+        XCTAssertFalse(snapshot?.state.hasMore == true)
+        XCTAssertFalse(snapshot?.state.historyFullyLoaded == true)
+        XCTAssertFalse(snapshot?.state.historyLoadCapped == true)
+    }
+
+    func testDataPreloaderRejectsContradictoryPositivePaginationMetadata() async {
+        let client = ContradictoryPositivePaginationHTTPClient()
+        let cache = ActivitiesStateCache(maximumAge: 60)
+        let settings = AppSettings(serverURL: "https://teslamate.example", lastSelectedCarId: 7)
+        let preloader = AppDataPreloader(
+            settingsStore: Task3PreloadSettingsStore(settings: settings),
+            secretStore: Task3PreloadSecretStore(),
+            clientOverride: client,
+            activitiesCache: cache
+        )
+
+        _ = await preloader.preload(force: true)
         let snapshot = await cache.load(serverURL: settings.serverURL, carId: 7, now: Date())
         let activityRequests = await client.requestedPaths.filter { $0.contains("/activities?") }
 
@@ -294,11 +325,9 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
             "/api/v1/cars/7/activities?page=2&show=200"
         ])
         XCTAssertEqual(snapshot?.state.items.count, 200)
-        XCTAssertEqual(snapshot?.state.loadedPageCount, 2)
+        XCTAssertEqual(snapshot?.state.loadedPageCount, 1)
         XCTAssertTrue(snapshot?.state.paginationIsDegraded == true)
-        XCTAssertFalse(snapshot?.state.hasMore == true)
         XCTAssertFalse(snapshot?.state.historyFullyLoaded == true)
-        XCTAssertFalse(snapshot?.state.historyLoadCapped == true)
     }
 
     func testDataPreloaderKeepsIncrementalHistoryPartialUntilItBridgesCompleteCache() async {
@@ -326,6 +355,7 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
 
         XCTAssertEqual(partial?.state.items.count, 201)
         XCTAssertEqual(partial?.state.loadedPageCount, 1)
+        XCTAssertEqual(partial?.state.historyContinuityAnchorID, "charge-1")
         XCTAssertTrue(partial?.state.hasMore == true)
         XCTAssertFalse(partial?.state.historyFullyLoaded == true)
 
@@ -341,8 +371,44 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
         ])
         XCTAssertEqual(complete?.state.items.count, 201)
         XCTAssertEqual(complete?.state.loadedPageCount, 2)
+        XCTAssertEqual(complete?.state.historyContinuityAnchorID, complete?.state.items.first?.stableID)
+        XCTAssertNotEqual(complete?.state.historyContinuityAnchorID, "charge-1")
         XCTAssertTrue(complete?.state.historyFullyLoaded == true)
         XCTAssertFalse(complete?.state.hasMore == true)
+    }
+
+    func testDataPreloaderPersistsTrustedEmptyHistoryForSmartActivityLoader() async {
+        let client = EmptyActivityHistoryHTTPClient()
+        let cache = ActivitiesStateCache(maximumAge: 60)
+        let settings = AppSettings(serverURL: "https://teslamate.example", lastSelectedCarId: 7)
+        let settingsStore = Task3PreloadSettingsStore(settings: settings)
+        let preloader = AppDataPreloader(
+            settingsStore: settingsStore,
+            secretStore: Task3PreloadSecretStore(),
+            clientOverride: client,
+            activitiesCache: cache
+        )
+
+        _ = await preloader.preload(force: true)
+        let cached = await cache.load(serverURL: settings.serverURL, carId: 7, now: Date())
+        let loader = CachedSmartActivitySourceLoader(
+            activitiesCache: cache,
+            sleepIntervalStore: Task3RecordingSleepIntervalStore(),
+            settingsStore: settingsStore,
+            chargeCostOverrideStore: EmptyChargeCostOverrideStore(),
+            tariffCatalog: {
+                RegionalChargingTariffCatalog(version: 1, generatedAt: "2026-07-18", regions: [])
+            }
+        )
+        let source = try? await loader.snapshot(carId: 7)
+
+        XCTAssertNotNil(cached)
+        XCTAssertTrue(cached?.state.items.isEmpty == true)
+        XCTAssertTrue(cached?.state.historyFullyLoaded == true)
+        XCTAssertNil(cached?.state.historyContinuityAnchorID)
+        XCTAssertNotNil(source)
+        XCTAssertTrue(source?.activities.isEmpty == true)
+        XCTAssertTrue(source?.historyFullyLoaded == true)
     }
 
     func testActivitiesCacheOnlyAllowsStrictMergedPartialToDowngradeCompleteHistory() async {
@@ -361,6 +427,7 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
         mergedPartial.items.append(TeslaMateActivity(id: 3, type: "park"))
         mergedPartial.loadedPageCount = 1
         mergedPartial.historyFullyLoaded = false
+        mergedPartial.historyContinuityAnchorID = "drive-1"
         await cache.save(ActivitiesCacheSnapshot(state: mergedPartial), serverURL: serverURL, carId: 7)
 
         var losingPartial = mergedPartial
@@ -375,6 +442,7 @@ final class BackgroundRefreshWorkRunnerTests: XCTestCase {
 
         XCTAssertEqual(Set(restored?.state.items.map(\.stableID) ?? []), ["drive-1", "charge-2", "park-3"])
         XCTAssertEqual(restored?.state.loadedPageCount, 1)
+        XCTAssertEqual(restored?.state.historyContinuityAnchorID, "drive-1")
         XCTAssertFalse(restored?.state.historyFullyLoaded == true)
     }
 
@@ -751,7 +819,7 @@ private actor PartialActivityRetryHTTPClient: HTTPClient {
             body = #"{"data":{"cars":[{"car_id":7,"name":"Test car 7"}]}}"#
             statusCode = 200
         } else if url.path.hasSuffix("/activities"), page == 1 {
-            body = #"{"data":[{"id":2,"type":"drive","startDate":"2026-07-02T00:00:00Z"}],"pagination":{"page":1,"limit":200,"totalPages":2,"totalRecords":2}}"#
+            body = #"{"data":[{"id":2,"type":"drive","startDate":"2026-07-02T00:00:00Z"}],"pagination":{"page":1,"limit":1,"totalPages":2,"totalRecords":2}}"#
             statusCode = 200
         } else if url.path.hasSuffix("/activities"), page == 2 {
             secondPageAttemptCount += 1
@@ -759,7 +827,7 @@ private actor PartialActivityRetryHTTPClient: HTTPClient {
                 body = #"{"error":"temporary failure"}"#
                 statusCode = 500
             } else {
-                body = #"{"data":[{"id":1,"type":"charge","startDate":"2026-07-01T00:00:00Z"}],"pagination":{"page":2,"limit":200,"totalPages":2,"totalRecords":2}}"#
+                body = #"{"data":[{"id":1,"type":"charge","startDate":"2026-07-01T00:00:00Z"}],"pagination":{"page":2,"limit":1,"totalPages":2,"totalRecords":2}}"#
                 statusCode = 200
             }
         } else {
@@ -821,6 +889,57 @@ private actor RepeatingDegradedActivityHTTPClient: HTTPClient {
                 .map { #"{"id":\#($0),"type":"drive"}"# }
                 .joined(separator: ",")
             body = #"{"data":[\#(activities)],"pagination":{"page":1,"limit":200,"totalPages":9999,"totalRecords":0}}"#
+        } else {
+            body = #"{}"#
+        }
+        return (
+            Data(body.utf8),
+            HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!
+        )
+    }
+}
+
+private actor ContradictoryPositivePaginationHTTPClient: HTTPClient {
+    private(set) var requestedPaths: [String] = []
+
+    func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let url = request.url ?? URL(string: "https://teslamate.example")!
+        requestedPaths.append(url.path + (url.query.map { "?" + $0 } ?? ""))
+        let page = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?
+            .first(where: { $0.name == "page" })?.value.flatMap(Int.init)
+        let body: String
+        let statusCode: Int
+        if url.path == "/api/v1/cars" {
+            body = #"{"data":{"cars":[{"car_id":7,"name":"Test car 7"}]}}"#
+            statusCode = 200
+        } else if url.path.hasSuffix("/activities"), page == 1 {
+            let activities = (1 ... 200)
+                .map { #"{"id":\#($0),"type":"drive"}"# }
+                .joined(separator: ",")
+            body = #"{"data":[\#(activities)],"pagination":{"page":1,"limit":200,"totalPages":1,"totalRecords":201}}"#
+            statusCode = 200
+        } else if url.path.hasSuffix("/activities"), page == 2 {
+            body = #"{"error":"temporary failure"}"#
+            statusCode = 500
+        } else {
+            body = #"{}"#
+            statusCode = 200
+        }
+        return (
+            Data(body.utf8),
+            HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: "HTTP/1.1", headerFields: nil)!
+        )
+    }
+}
+
+private actor EmptyActivityHistoryHTTPClient: HTTPClient {
+    func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let url = request.url ?? URL(string: "https://teslamate.example")!
+        let body: String
+        if url.path == "/api/v1/cars" {
+            body = #"{"data":{"cars":[{"car_id":7,"name":"Test car 7"}]}}"#
+        } else if url.path.hasSuffix("/activities") {
+            body = #"{"data":[],"pagination":{"page":1,"limit":200,"totalPages":1,"totalRecords":0}}"#
         } else {
             body = #"{}"#
         }

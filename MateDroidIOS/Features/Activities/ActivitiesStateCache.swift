@@ -74,20 +74,25 @@ public actor ActivitiesStateCache: ActivitiesStateCaching {
     public func save(_ snapshot: ActivitiesCacheSnapshot, serverURL: String, carId: Int) async {
         restoreFromDiskIfNeeded()
         let key = Self.key(serverURL: serverURL, carId: carId)
-        if let existing = snapshots[key], !snapshot.state.historyFullyLoaded {
+        let candidate = Self.normalized(snapshot)
+        if let existing = snapshots[key], !candidate.state.historyFullyLoaded {
             let existingIDs = Set(existing.state.items.map(\.stableID))
-            let candidateIDs = Set(snapshot.state.items.map(\.stableID))
+            let candidateIDs = Set(candidate.state.items.map(\.stableID))
+            let existingAnchor = Self.continuityAnchor(for: existing.state)
+            let preservesAnchor = existingAnchor == nil
+                || candidate.state.historyContinuityAnchorID == existingAnchor
             let isMergedPartialCheckpoint = existing.state.historyFullyLoaded
                 && existingIDs.isSubset(of: candidateIDs)
                 && candidateIDs.count > existingIDs.count
             if !existingIDs.isSubset(of: candidateIDs)
+                || !preservesAnchor
                 || (!isMergedPartialCheckpoint
                     && (existing.state.historyFullyLoaded
-                        || existing.state.loadedPageCount > snapshot.state.loadedPageCount)) {
+                        || existing.state.loadedPageCount > candidate.state.loadedPageCount)) {
                 return
             }
         }
-        snapshots[key] = snapshot
+        snapshots[key] = candidate
         persist()
     }
 
@@ -128,6 +133,21 @@ public actor ActivitiesStateCache: ActivitiesStateCaching {
         let canonical = serverURL.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         let digest = SHA256.hash(data: Data(canonical.utf8)).map { String(format: "%02x", $0) }.joined()
         return Key(serverDigest: digest, carId: carId)
+    }
+
+    private static func normalized(_ snapshot: ActivitiesCacheSnapshot) -> ActivitiesCacheSnapshot {
+        guard snapshot.state.historyFullyLoaded,
+              snapshot.state.historyContinuityAnchorID == nil,
+              let anchor = snapshot.state.items.first?.stableID
+        else { return snapshot }
+        var state = snapshot.state
+        state.historyContinuityAnchorID = anchor
+        return ActivitiesCacheSnapshot(state: state, savedAt: snapshot.savedAt)
+    }
+
+    private static func continuityAnchor(for state: ActivitiesState) -> String? {
+        state.historyContinuityAnchorID
+            ?? (state.historyFullyLoaded ? state.items.first?.stableID : nil)
     }
 
     private static var liveStorageURL: URL? {
