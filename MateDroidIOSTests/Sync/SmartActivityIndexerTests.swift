@@ -275,7 +275,8 @@ final class SmartActivityIndexerTests: XCTestCase {
         let first = Task { await indexer.rebuild(carIds: [1]) }
         await source.waitUntilFirstRequest()
         let second = Task { await indexer.rebuild(carIds: [1]) }
-        try await Task.sleep(for: .milliseconds(20))
+        let secondIsQueued = await waitUntilQueuedOperationCount(1, indexer: indexer)
+        XCTAssertTrue(secondIsQueued, "Second rebuild did not enter the operation queue")
         let requestCountBeforeRelease = await source.requestCount
         XCTAssertEqual(requestCountBeforeRelease, 1)
 
@@ -304,7 +305,8 @@ final class SmartActivityIndexerTests: XCTestCase {
         let rebuild = Task { await indexer.rebuild(carIds: [1]) }
         await source.waitUntilFirstRequest()
         let removal = Task { try await indexer.removeDerivedData() }
-        try await Task.sleep(for: .milliseconds(20))
+        let removalIsQueued = await waitUntilQueuedOperationCount(1, indexer: indexer)
+        XCTAssertTrue(removalIsQueued, "Removal did not enter the operation queue")
         let removeCountBeforeRelease = await store.removeAllCount
         XCTAssertEqual(removeCountBeforeRelease, 0)
 
@@ -451,13 +453,19 @@ final class SmartActivityIndexerTests: XCTestCase {
         XCTAssertEqual(finalSessions.first?.chargeCost?.amount, 3)
     }
 
+    @discardableResult
     private func waitUntilQueuedOperationCount(
         _ expectedCount: Int,
-        indexer: SmartActivityIndexer
-    ) async {
-        while await indexer.queuedOperationCount != expectedCount {
-            await Task.yield()
+        indexer: SmartActivityIndexer,
+        maximumIterations: Int = 1_000
+    ) async -> Bool {
+        for _ in 0..<maximumIterations {
+            if await indexer.queuedOperationCount == expectedCount {
+                return true
+            }
+            try? await Task.sleep(for: .milliseconds(1))
         }
+        return await indexer.queuedOperationCount == expectedCount
     }
 
     func testKnownDcChargeUsesDcRuleAndDoesNotUseResidentialTariff() async throws {
