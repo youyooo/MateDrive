@@ -561,6 +561,32 @@ final class ChargeCostResolverTests: XCTestCase {
         XCTAssertEqual(Set(rules.compactMap(\.stationKey)), ["station-one", "station-two"])
     }
 
+    func testStationRuleUpsertPreservesConcurrentSettingsEdit() async throws {
+        let observations = ResolverSuspendingObservationStore()
+        let overrides = ResolverTestCostOverrideStore()
+        let settings = ResolverTestSettingsStore(AppSettings(appLanguage: .english))
+        let service = ChargePricingObservationService(
+            observationStore: observations,
+            costOverrideStore: overrides,
+            settingsStore: settings
+        )
+
+        let value = futureConfirmation(chargeId: 43, stationKey: "station-concurrent", unitPrice: 1)
+        let confirmation = Task {
+            try await service.confirm(value)
+        }
+        await observations.waitUntilSaveStarts()
+        var concurrentlyEdited = await settings.load()
+        concurrentlyEdited.appLanguage = .chinese
+        await settings.save(concurrentlyEdited)
+        await observations.resumeSave()
+        try await confirmation.value
+
+        let saved = await settings.load()
+        XCTAssertEqual(saved.appLanguage, .chinese)
+        XCTAssertTrue(saved.chargePricingRules.contains { $0.stationKey == "station-concurrent" })
+    }
+
     func testConfirmationRejectsOutOfRangeMinutesAndInvalidCurrencyBeforeWrites() async {
         let observations = ResolverTestObservationStore()
         let overrides = ResolverTestCostOverrideStore()
@@ -744,6 +770,51 @@ private actor ResolverTestObservationStore: ChargePricingObservationStoring {
     }
 }
 
+private actor ResolverSuspendingObservationStore: ChargePricingObservationStoring {
+    private var values: [ChargePricingObservation] = []
+    private var saveStarted = false
+    private var saveMayContinue = false
+    private var startWaiters: [CheckedContinuation<Void, Never>] = []
+    private var resumeWaiters: [CheckedContinuation<Void, Never>] = []
+
+    func observations(carId: Int, stationKey: String) async throws -> [ChargePricingObservation] {
+        values.filter { $0.carId == carId && $0.stationKey == stationKey }
+    }
+
+    func save(_ value: ChargePricingObservation) async throws {
+        saveStarted = true
+        startWaiters.forEach { $0.resume() }
+        startWaiters.removeAll()
+        if !saveMayContinue {
+            await withCheckedContinuation { continuation in
+                resumeWaiters.append(continuation)
+            }
+        }
+        values.append(value)
+    }
+
+    func waitUntilSaveStarts() async {
+        guard !saveStarted else { return }
+        await withCheckedContinuation { continuation in
+            startWaiters.append(continuation)
+        }
+    }
+
+    func resumeSave() {
+        saveMayContinue = true
+        resumeWaiters.forEach { $0.resume() }
+        resumeWaiters.removeAll()
+    }
+
+    func remove(id: String) async throws {
+        values.removeAll { $0.id == id }
+    }
+
+    func removeAll() async throws {
+        values.removeAll()
+    }
+}
+
 private enum ResolverInjectedFailure: Error {
     case injected
 }
@@ -803,7 +874,7 @@ private actor ResolverFailingCostOverrideStore: ChargeCostOverriding {
     }
 }
 
-private actor ResolverFailingSettingsStore: SettingsStoring {
+private actor ResolverFailingSettingsStore: SettingsStoring, AtomicSettingsUpdating {
     private var settings: AppSettings
     private var failFirstSave: Bool
 
@@ -827,6 +898,18 @@ private actor ResolverFailingSettingsStore: SettingsStoring {
             throw ResolverInjectedFailure.injected
         }
     }
+
+    func updateAtomically(
+        _ transform: @Sendable (AppSettings) -> AppSettings
+    ) async throws -> AppSettings {
+        if failFirstSave {
+            failFirstSave = false
+            throw ResolverInjectedFailure.injected
+        }
+        let updated = transform(settings)
+        settings = updated
+        return updated
+    }
 }
 
 private actor ResolverTestCostOverrideStore: ChargeCostOverriding {
@@ -845,7 +928,7 @@ private actor ResolverTestCostOverrideStore: ChargeCostOverriding {
     }
 }
 
-private actor ResolverTestSettingsStore: SettingsStoring {
+private actor ResolverTestSettingsStore: SettingsStoring, AtomicSettingsUpdating {
     private var settings: AppSettings
 
     init(_ settings: AppSettings) {
@@ -858,5 +941,13 @@ private actor ResolverTestSettingsStore: SettingsStoring {
 
     func save(_ settings: AppSettings) async {
         self.settings = settings
+    }
+
+    func updateAtomically(
+        _ transform: @Sendable (AppSettings) -> AppSettings
+    ) async throws -> AppSettings {
+        let updated = transform(settings)
+        settings = updated
+        return updated
     }
 }

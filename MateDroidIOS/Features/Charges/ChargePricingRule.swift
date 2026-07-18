@@ -474,7 +474,9 @@ public enum ChargePricingRuleEngine {
                 )
             ]
         }
-        guard allocation.allSatisfy({ $0.cost.isFinite }) else {
+        guard allocation.allSatisfy({
+            $0.energyKWh.isFinite && $0.energyKWh >= 0 && $0.cost.isFinite
+        }) else {
             return nil
         }
         let energyCost = allocation.reduce(0) { $0 + $1.cost }

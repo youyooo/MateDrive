@@ -69,7 +69,7 @@ public enum ChargePricingObservationServiceError: Error, Equatable, Sendable {
 public actor ChargePricingObservationService: ChargePricingObservationServicing {
     private let observationStore: any ChargePricingObservationStoring
     private let costOverrideStore: any ChargeCostOverriding
-    private let settingsStore: any SettingsStoring
+    private let settingsStore: any SettingsStoring & AtomicSettingsUpdating
     private let now: @Sendable () -> Date
     private let idGenerator: @Sendable () -> String
     private var confirmationInProgress = false
@@ -78,7 +78,7 @@ public actor ChargePricingObservationService: ChargePricingObservationServicing 
     public init(
         observationStore: any ChargePricingObservationStoring,
         costOverrideStore: any ChargeCostOverriding,
-        settingsStore: any SettingsStoring,
+        settingsStore: any SettingsStoring & AtomicSettingsUpdating,
         now: @escaping @Sendable () -> Date = Date.init,
         idGenerator: @escaping @Sendable () -> String = { UUID().uuidString }
     ) {
@@ -151,20 +151,8 @@ public actor ChargePricingObservationService: ChargePricingObservationServicing 
             carId: value.carId,
             chargeId: value.chargeId
         )
-        let previousSettings: AppSettings?
-        let updatedSettings: AppSettings?
-        if let learnedRule {
-            let settings = await settingsStore.load()
-            previousSettings = settings
-            updatedSettings = Self.upserting(learnedRule, in: settings)
-        } else {
-            previousSettings = nil
-            updatedSettings = nil
-        }
-
         var observationAttempted = false
         var overrideAttempted = false
-        var settingsAttempted = false
         do {
             observationAttempted = true
             try await observationStore.save(observation)
@@ -176,14 +164,12 @@ public actor ChargePricingObservationService: ChargePricingObservationServicing 
                 cost: value.finalAmount
             )
 
-            if let updatedSettings {
-                settingsAttempted = true
-                try await settingsStore.saveThrowing(updatedSettings)
+            if let learnedRule {
+                try await settingsStore.updateAtomically { settings in
+                    Self.upserting(learnedRule, in: settings)
+                }
             }
         } catch {
-            if settingsAttempted, let previousSettings {
-                try? await settingsStore.saveThrowing(previousSettings)
-            }
             if overrideAttempted {
                 try? await costOverrideStore.saveCostOverride(
                     carId: value.carId,

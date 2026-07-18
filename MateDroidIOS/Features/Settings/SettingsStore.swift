@@ -6,13 +6,20 @@ public protocol SettingsStoring: Sendable {
     func saveThrowing(_ settings: AppSettings) async throws
 }
 
+public protocol AtomicSettingsUpdating: Sendable {
+    @discardableResult
+    func updateAtomically(
+        _ transform: @Sendable (AppSettings) -> AppSettings
+    ) async throws -> AppSettings
+}
+
 public extension SettingsStoring {
     func saveThrowing(_ settings: AppSettings) async throws {
         await save(settings)
     }
 }
 
-public actor UserDefaultsSettingsStore: SettingsStoring {
+public actor UserDefaultsSettingsStore: SettingsStoring, AtomicSettingsUpdating {
     private let defaults: UserDefaults
     private let key: String
     private let encoder = JSONEncoder()
@@ -63,6 +70,15 @@ public actor UserDefaultsSettingsStore: SettingsStoring {
             return
         }
         defaults.set(data, forKey: key)
+    }
+
+    public func updateAtomically(
+        _ transform: @Sendable (AppSettings) -> AppSettings
+    ) async throws -> AppSettings {
+        let updated = transform(currentSettings())
+        let data = try encoder.encode(updated)
+        defaults.set(data, forKey: key)
+        return updated
     }
 
     private func currentSettings() -> AppSettings {

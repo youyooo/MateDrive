@@ -698,6 +698,31 @@ final class ChargePricingRuleTests: XCTestCase {
         }
     }
 
+    func testPricingRejectsMergedComponentEnergyOverflow() {
+        let rule = ChargePricingRule(
+            name: "Zero-price segmented overflow",
+            pricePerKWh: 0,
+            timeSegments: [
+                ChargePricingTimeSegment(
+                    startMinuteOfDay: 0,
+                    endMinuteOfDay: 1_439,
+                    pricePerKWh: 0
+                )
+            ]
+        )
+        let input = ChargePricingInput(
+            startDate: "2026-07-01T10:00:00+08:00",
+            endDate: "2026-07-01T10:03:00+08:00",
+            address: nil,
+            latitude: nil,
+            longitude: nil,
+            energyAddedKWh: .greatestFiniteMagnitude,
+            isDc: false
+        )
+
+        XCTAssertNil(ChargePricingRuleEngine.estimateCost(for: input, rules: [rule]))
+    }
+
     func testEnergySamplesStayWithinSessionAndNeverExceedBilledEnergy() {
         let rule = ChargePricingRule(
             name: "Bounded samples",
