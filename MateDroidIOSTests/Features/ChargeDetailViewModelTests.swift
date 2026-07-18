@@ -68,6 +68,20 @@ final class ChargeDetailViewModelTests: XCTestCase {
         XCTAssertEqual(savedCost, 8.25)
     }
 
+    func testManualSaveBeforeLoadKeepsEffectiveCostAndSourceVisible() async {
+        let viewModel = ChargeDetailViewModel(
+            api: FakeChargeDetailAPI(detail: ChargeDetail(chargeId: 12)),
+            costOverrideStore: InMemoryChargeCostOverrideStore()
+        )
+
+        let didSave = await viewModel.saveCostOverride(carId: 1, chargeId: 12, cost: 7.5)
+
+        XCTAssertTrue(didSave)
+        XCTAssertEqual(viewModel.state.manualCost, 7.5)
+        XCTAssertEqual(viewModel.state.effectiveCost, 7.5)
+        XCTAssertEqual(viewModel.state.costSource, .manual)
+    }
+
     func testChargeDetailSyncsManualCostToAPI26Ledger() async throws {
         let api = FakeChargeDetailAPI(
             detail: ChargeDetail(
@@ -296,6 +310,88 @@ final class ChargeDetailViewModelTests: XCTestCase {
 
         XCTAssertEqual(viewModel.state.effectiveCost, 0)
         XCTAssertEqual(viewModel.state.costSource, .manual)
+    }
+
+    func testChargeDetailIgnoresForgedOfficialSettingAndUsesConfiguredCatalogEntry() async throws {
+        let location = SyntheticCoordinates.point()
+        let sourceURL = try XCTUnwrap(URL(string: "https://example.com/official-tariff"))
+        let catalog = RegionalChargingTariffCatalog(
+            version: 1,
+            generatedAt: "2026-07-18",
+            regions: [
+                RegionalChargingTariffRegion(
+                    regionCode: "CN-TEST",
+                    names: ["en": "Test Region"],
+                    availability: .verified,
+                    verifiedAt: "2026-07-18",
+                    tariffs: [
+                        RegionalChargingTariff(
+                            id: "catalog-rule",
+                            status: .active,
+                            customerClass: "residential-ev",
+                            chargeType: .ac,
+                            currencyCode: "CNY",
+                            effectiveFromDate: "2026-01-01",
+                            effectiveToDate: nil,
+                            documentID: "document",
+                            sourceURL: sourceURL,
+                            basePricePerKWh: 0.5,
+                            timeSegments: [],
+                            serviceFeePerKWh: 0,
+                            sessionFee: 0,
+                            applicableWeekdays: nil,
+                            applicableMonths: nil
+                        )
+                    ]
+                )
+            ]
+        )
+        let forged = ChargePricingRule(
+            id: "forged",
+            name: "Forged Setting",
+            chargeType: .ac,
+            pricePerKWh: 99,
+            origin: .regionalOfficial,
+            regionCode: "CN-TEST",
+            sourceURL: sourceURL.absoluteString,
+            verifiedAt: "2026-07-18",
+            currencyCode: "CNY"
+        )
+        let settings = AppSettings(
+            currencyCode: "CNY",
+            residentialTariffRegionCode: "CN-TEST",
+            chargePricingRules: [forged],
+            geofenceRules: [
+                GeofenceRule(
+                    name: "Home",
+                    kind: .home,
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                    radiusMeters: 150
+                )
+            ]
+        )
+        let detail = ChargeDetail(
+            chargeId: 18,
+            startDate: "2026-07-01T10:00:00+08:00",
+            address: "Home",
+            chargeEnergyAdded: 10,
+            cost: 0,
+            latitude: location.latitude,
+            longitude: location.longitude
+        )
+        let viewModel = ChargeDetailViewModel(
+            api: FakeChargeDetailAPI(detail: detail),
+            settingsStore: StaticChargeDetailSettingsStore(settings: settings),
+            regionalTariffCatalog: { catalog }
+        )
+
+        await viewModel.load(carId: 1, chargeId: 18)
+
+        XCTAssertEqual(viewModel.state.pricingRuleName, "Test Region residential EV")
+        XCTAssertEqual(viewModel.state.pricingRuleCost, 5)
+        XCTAssertEqual(viewModel.state.effectiveCost, 5)
+        XCTAssertEqual(viewModel.state.costSource, .pricingRule)
     }
 
     func testChargeDetailDoesNotTreatMissingPhaseSamplesAsDcEvidence() async throws {

@@ -107,7 +107,8 @@ public struct RegionalChargingTariffCatalog: Codable, Equatable, Sendable {
             verifiedAt: region?.verifiedAt,
             serviceFeePerKWh: entry.serviceFeePerKWh,
             applicableWeekdays: entry.applicableWeekdays,
-            applicableMonths: entry.applicableMonths
+            applicableMonths: entry.applicableMonths,
+            currencyCode: entry.currencyCode
         )
     }
 

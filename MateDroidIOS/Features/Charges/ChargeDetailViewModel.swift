@@ -98,6 +98,7 @@ public final class ChargeDetailViewModel: ObservableObject {
     private let settingsStore: (any SettingsStoring)?
     private let costOverrideStore: any ChargeCostOverriding
     private let tripMembershipManager: (any TripMembershipManaging)?
+    private let regionalTariffCatalog: @Sendable () throws -> RegionalChargingTariffCatalog
     private var costResolutionContext: ChargeCostResolutionContext?
 
     public init(
@@ -105,12 +106,16 @@ public final class ChargeDetailViewModel: ObservableObject {
         settingsStore: (any SettingsStoring)? = nil,
         costOverrideStore: any ChargeCostOverriding = EmptyChargeCostOverrideStore(),
         tripMembershipManager: (any TripMembershipManaging)? = nil,
+        regionalTariffCatalog: @escaping @Sendable () throws -> RegionalChargingTariffCatalog = {
+            try RegionalChargingTariffCatalog.load()
+        },
         initialState: ChargeDetailState = ChargeDetailState()
     ) {
         self.api = api
         self.settingsStore = settingsStore
         self.costOverrideStore = costOverrideStore
         self.tripMembershipManager = tripMembershipManager
+        self.regionalTariffCatalog = regionalTariffCatalog
         self.state = initialState
     }
 
@@ -135,7 +140,7 @@ public final class ChargeDetailViewModel: ObservableObject {
             let settings = await settingsStore.load()
             loadedSettings = settings
             state.currencySymbol = MateDroidCurrencyFormatter.symbol(for: settings.resolvedCurrencyCode())
-            pricingRules = settings.chargePricingRules
+            pricingRules = settings.chargePricingRules.filter { $0.origin != .regionalOfficial }
             state.hasPricingRules = !pricingRules.isEmpty
         }
 
@@ -184,10 +189,8 @@ public final class ChargeDetailViewModel: ObservableObject {
                     rules: $0.geofenceRules
                 )?.kind
             }
-            let regionalRule = ChargePricingRuleEngine.estimateCost(
-                for: pricingInput,
-                rules: pricingRules.filter { $0.origin == .regionalOfficial }
-            )?.rule
+            let regionalRule = regionalPricingRule(settings: loadedSettings, pricingInput: pricingInput)
+            state.hasPricingRules = !pricingRules.isEmpty || regionalRule != nil
             costResolutionContext = ChargeCostResolutionContext(
                 currencyCode: currencyCode,
                 isAC: !state.isDcCharge,
@@ -204,20 +207,18 @@ public final class ChargeDetailViewModel: ObservableObject {
                 geofenceKind: geofenceKind,
                 pricingInput: pricingInput,
                 rules: pricingRules,
-                regionalRule: nil
+                regionalRule: regionalRule
             ))
-            let pricingEstimate = ruleResolution?.ruleID.flatMap { ruleID in
-                pricingRules.first(where: { $0.id == ruleID }).flatMap {
-                    ChargePricingRuleEngine.estimateCost(for: pricingInput, rules: [$0])
-                }
+            let resolvedRule = ruleResolution?.ruleID.flatMap { ruleID in
+                (pricingRules + [regionalRule].compactMap { $0 }).first { $0.id == ruleID }
             }
             state.apiCost = detail.cost
             state.manualCost = manualCost
             state.costSyncState = Self.costSyncState(manualCost: manualCost, apiCost: detail.cost)
-            state.pricingRuleCost = pricingEstimate?.cost
-            state.pricingRuleName = pricingEstimate?.rule.name
-            state.pricingBreakdown = pricingEstimate?.components ?? []
-            state.pricingSessionFee = pricingEstimate?.sessionFee ?? 0
+            state.pricingRuleCost = ruleResolution?.amount
+            state.pricingRuleName = resolvedRule?.name
+            state.pricingBreakdown = ruleResolution?.components ?? []
+            state.pricingSessionFee = ruleResolution?.sessionFee ?? 0
             applyEffectiveCost()
             state.isLoading = false
         case let .failure(error):
@@ -238,6 +239,20 @@ public final class ChargeDetailViewModel: ObservableObject {
 
     private func loadMembership(carId: Int, chargeId: Int) async -> TripMembership? {
         try? await tripMembershipManager?.membership(carId: carId, leg: .charge(chargeId))
+    }
+
+    private func regionalPricingRule(
+        settings: AppSettings?,
+        pricingInput: ChargePricingInput
+    ) -> ChargePricingRule? {
+        guard let regionCode = settings?.residentialTariffRegionCode,
+              let startDate = pricingInput.startDate.flatMap(DomainDateParser.date(from:)),
+              let catalog = try? regionalTariffCatalog(),
+              let entry = catalog.entry(regionCode: regionCode, date: startDate)
+        else {
+            return nil
+        }
+        return catalog.makePricingRule(regionCode: regionCode, from: entry)
     }
 
     @discardableResult
@@ -293,12 +308,21 @@ public final class ChargeDetailViewModel: ObservableObject {
     }
 
     private func applyEffectiveCost() {
-        guard let resolution = costResolutionContext.flatMap({ context in
+        let resolution = costResolutionContext.flatMap({ context in
             ChargeCostResolver.resolve(context.input(
                 manualCost: state.manualCost,
                 apiCost: state.apiCost
             ))
-        }) else {
+        })
+        if resolution == nil,
+           let manualCost = state.manualCost,
+           manualCost.isFinite,
+           manualCost >= 0 {
+            state.effectiveCost = manualCost
+            state.costSource = .manual
+            return
+        }
+        guard let resolution else {
             state.effectiveCost = nil
             state.costSource = .none
             return

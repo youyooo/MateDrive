@@ -41,6 +41,7 @@ final class RegionalChargingTariffTests: XCTestCase {
         XCTAssertEqual(rule.sourceURL, entry.sourceURL.absoluteString)
         XCTAssertEqual(rule.verifiedAt, "2026-07-18")
         XCTAssertEqual(rule.serviceFeePerKWh, entry.serviceFeePerKWh)
+        XCTAssertEqual(rule.currencyCode, entry.currencyCode)
         XCTAssertEqual(rule.applicableWeekdays, entry.applicableWeekdays)
         XCTAssertEqual(rule.applicableMonths, entry.applicableMonths)
     }
@@ -96,6 +97,7 @@ final class RegionalChargingTariffTests: XCTestCase {
         XCTAssertEqual(rule.regionCode, "CN-43")
         XCTAssertEqual(rule.sourceURL, sourceURL.absoluteString)
         XCTAssertEqual(rule.verifiedAt, "2026-07-18")
+        XCTAssertEqual(rule.currencyCode, "CNY")
     }
 
     func testPricingRuleRoundTripPreservesRegionalApplicabilityAndProvenance() throws {
@@ -112,7 +114,9 @@ final class RegionalChargingTariffTests: XCTestCase {
             verifiedAt: "2026-07-18",
             serviceFeePerKWh: 0.2,
             applicableWeekdays: [2, 3, 4, 5, 6],
-            applicableMonths: [6, 7, 8]
+            applicableMonths: [6, 7, 8],
+            currencyCode: "CNY",
+            stationKey: "catalog-station"
         )
 
         let decoded = try JSONDecoder().decode(
@@ -135,6 +139,8 @@ final class RegionalChargingTariffTests: XCTestCase {
         XCTAssertEqual(rule.serviceFeePerKWh, 0)
         XCTAssertNil(rule.applicableWeekdays)
         XCTAssertNil(rule.applicableMonths)
+        XCTAssertNil(rule.currencyCode)
+        XCTAssertNil(rule.stationKey)
     }
 
     func testPricingRuleValidationRejectsInvalidRegionalFields() {
@@ -157,6 +163,7 @@ final class RegionalChargingTariffTests: XCTestCase {
         let rule = ChargePricingRule(
             name: "Shanghai Tuesday in July",
             pricePerKWh: 0.5,
+            origin: .regionalOfficial,
             applicableWeekdays: [3],
             applicableMonths: [7]
         )
@@ -176,6 +183,7 @@ final class RegionalChargingTariffTests: XCTestCase {
         let mondayRule = ChargePricingRule(
             name: "Shanghai Monday in July",
             pricePerKWh: 0.5,
+            origin: .regionalOfficial,
             applicableWeekdays: [2],
             applicableMonths: [7]
         )
@@ -188,6 +196,53 @@ final class RegionalChargingTariffTests: XCTestCase {
             isDc: false
         )
         XCTAssertNil(ChargePricingRuleEngine.estimateCost(for: input, rules: [mondayRule]))
+    }
+
+    func testUserAndOfficialApplicabilityUseDifferentLocalDateSemantics() {
+        let timestamp = "2025-06-30T23:30:00-07:00"
+        let userRule = ChargePricingRule(
+            name: "Local Monday in June",
+            startMinuteOfDay: 23 * 60,
+            endMinuteOfDay: 23 * 60 + 59,
+            effectiveToDate: "2025-06-30",
+            pricePerKWh: 1,
+            applicableWeekdays: [2],
+            applicableMonths: [6]
+        )
+        let officialRule = ChargePricingRule(
+            name: "Shanghai Tuesday in July",
+            startMinuteOfDay: 14 * 60,
+            endMinuteOfDay: 14 * 60 + 59,
+            effectiveFromDate: "2025-07-01",
+            pricePerKWh: 2,
+            origin: .regionalOfficial,
+            applicableWeekdays: [3],
+            applicableMonths: [7]
+        )
+        let input = ChargePricingInput(
+            startDate: timestamp,
+            address: nil,
+            latitude: nil,
+            longitude: nil,
+            energyAddedKWh: 1,
+            isDc: false
+        )
+
+        XCTAssertEqual(ChargePricingRuleEngine.estimateCost(for: input, rules: [userRule])?.cost, 1)
+        XCTAssertEqual(ChargePricingRuleEngine.estimateCost(for: input, rules: [officialRule])?.cost, 2)
+    }
+
+    func testResidentialTariffRegionSettingIsBackwardCompatibleAndNormalized() throws {
+        let legacyData = try XCTUnwrap(#"{"currencyCode":"CNY"}"#.data(using: .utf8))
+        let legacy = try JSONDecoder().decode(AppSettings.self, from: legacyData)
+        XCTAssertNil(legacy.residentialTariffRegionCode)
+
+        let configured = AppSettings(residentialTariffRegionCode: " cn-43 ")
+        let decoded = try JSONDecoder().decode(
+            AppSettings.self,
+            from: JSONEncoder().encode(configured)
+        )
+        XCTAssertEqual(decoded.residentialTariffRegionCode, "CN-43")
     }
 
     func testCatalogAndPricingRuleAgreeAtShanghaiEffectiveDateBoundaries() throws {

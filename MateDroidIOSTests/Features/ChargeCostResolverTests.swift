@@ -168,7 +168,11 @@ final class ChargeCostResolverTests: XCTestCase {
             chargeType: .ac,
             effectiveToDate: "2026-06-30",
             pricePerKWh: 0.5,
-            origin: .regionalOfficial
+            origin: .regionalOfficial,
+            regionCode: "CN-43",
+            sourceURL: "https://example.com/tariff",
+            verifiedAt: "2026-07-18",
+            currencyCode: "CNY"
         )
 
         XCTAssertNil(ChargeCostResolver.resolve(makeInput(
@@ -180,6 +184,57 @@ final class ChargeCostResolverTests: XCTestCase {
             currencyCode: "USD",
             geofenceKind: .home,
             regionalRule: regionalRule(price: 0.5)
+        )))
+    }
+
+    func testExplicitWrongCurrencyRuleIsRejectedWhileLegacyRuleCanUseSelectedCurrency() {
+        let wrongCurrency = ChargePricingRule(
+            id: "usd",
+            name: "USD",
+            pricePerKWh: 0.1,
+            priority: 200,
+            currencyCode: "usd"
+        )
+        let legacy = ChargePricingRule(
+            id: "legacy",
+            name: "Legacy",
+            pricePerKWh: 0.5
+        )
+
+        let result = ChargeCostResolver.resolve(makeInput(
+            currencyCode: "CNY",
+            rules: [wrongCurrency, legacy]
+        ))
+
+        XCTAssertEqual(wrongCurrency.currencyCode, "USD")
+        XCTAssertEqual(result?.ruleID, "legacy")
+        XCTAssertEqual(result?.currencyCode, "CNY")
+        XCTAssertNil(ChargeCostResolver.resolve(makeInput(
+            currencyCode: "CNY",
+            rules: [wrongCurrency]
+        )))
+    }
+
+    func testRegionalFallbackRequiresCompleteCatalogProvenance() {
+        var forged = regionalRule(price: 0.5)
+        forged.sourceURL = nil
+        XCTAssertNil(ChargeCostResolver.resolve(makeInput(
+            geofenceKind: .home,
+            regionalRule: forged
+        )))
+
+        forged = regionalRule(price: 0.5)
+        forged.verifiedAt = nil
+        XCTAssertNil(ChargeCostResolver.resolve(makeInput(
+            geofenceKind: .home,
+            regionalRule: forged
+        )))
+
+        forged = regionalRule(price: 0.5)
+        forged.currencyCode = "USD"
+        XCTAssertNil(ChargeCostResolver.resolve(makeInput(
+            geofenceKind: .home,
+            regionalRule: forged
         )))
     }
 
@@ -286,6 +341,198 @@ final class ChargeCostResolverTests: XCTestCase {
         XCTAssertEqual(learned.serviceFeePerKWh, 0.2)
         XCTAssertEqual(learned.sessionFee, 1)
         XCTAssertEqual(learned.priority, 100)
+        XCTAssertEqual(learned.currencyCode, "CNY")
+        XCTAssertEqual(learned.stationKey, stationKey)
+    }
+
+    func testNewestStationConfirmationReplacesPriorLearnedRuleAndResolvesCorrection() async throws {
+        let userRule = ChargePricingRule(id: "user", name: "User", pricePerKWh: 4, priority: 1)
+        let observations = ResolverTestObservationStore()
+        let overrides = ResolverTestCostOverrideStore()
+        let settings = ResolverTestSettingsStore(AppSettings(chargePricingRules: [userRule]))
+        let service = ChargePricingObservationService(
+            observationStore: observations,
+            costOverrideStore: overrides,
+            settingsStore: settings
+        )
+
+        try await service.confirm(futureConfirmation(chargeId: 21, stationKey: "station-a", unitPrice: 1))
+        try await service.confirm(futureConfirmation(chargeId: 22, stationKey: "station-a", unitPrice: 2))
+
+        let savedSettings = await settings.load()
+        XCTAssertTrue(savedSettings.chargePricingRules.contains(userRule))
+        let learned = savedSettings.chargePricingRules.filter { $0.origin == .stationLearned }
+        XCTAssertEqual(learned.count, 1)
+        XCTAssertEqual(learned.first?.pricePerKWh, 2)
+        XCTAssertEqual(learned.first?.stationKey, "station-a")
+
+        let result = ChargeCostResolver.resolve(makeInput(rules: learned))
+        XCTAssertEqual(result?.unitPricePerKWh, 2)
+        XCTAssertEqual(result?.amount, 20)
+    }
+
+    func testObservationFailureRemovesPartialObservationAndLeavesOtherStoresUnchanged() async {
+        let observations = ResolverFailingObservationStore(failFirstSave: true)
+        let overrides = ResolverFailingCostOverrideStore(initialValue: 4)
+        let originalSettings = AppSettings(chargePricingRules: [
+            ChargePricingRule(id: "user", name: "User", pricePerKWh: 0.5)
+        ])
+        let settings = ResolverFailingSettingsStore(originalSettings)
+        let service = ChargePricingObservationService(
+            observationStore: observations,
+            costOverrideStore: overrides,
+            settingsStore: settings
+        )
+
+        await assertConfirmationThrows(
+            service,
+            value: futureConfirmation(chargeId: 30, stationKey: "station-failure", unitPrice: 1)
+        )
+
+        let savedOverride = try? await overrides.costOverride(carId: 1, chargeId: 30)
+        let savedSettings = await settings.load()
+        let savedObservations = try? await observations.observations(carId: 1, stationKey: "station-failure")
+        XCTAssertEqual(savedOverride, 4)
+        XCTAssertEqual(savedSettings, originalSettings)
+        XCTAssertTrue(savedObservations?.isEmpty == true)
+    }
+
+    func testOverrideFailureRollsBackPartialOverrideAndObservation() async {
+        let observations = ResolverFailingObservationStore()
+        let overrides = ResolverFailingCostOverrideStore(initialValue: 4, failFirstSave: true)
+        let originalSettings = AppSettings(chargePricingRules: [
+            ChargePricingRule(id: "user", name: "User", pricePerKWh: 0.5)
+        ])
+        let settings = ResolverFailingSettingsStore(originalSettings)
+        let service = ChargePricingObservationService(
+            observationStore: observations,
+            costOverrideStore: overrides,
+            settingsStore: settings
+        )
+
+        await assertConfirmationThrows(
+            service,
+            value: futureConfirmation(chargeId: 30, stationKey: "station-failure", unitPrice: 1)
+        )
+
+        let savedOverride = try? await overrides.costOverride(carId: 1, chargeId: 30)
+        let savedSettings = await settings.load()
+        let savedObservations = try? await observations.observations(carId: 1, stationKey: "station-failure")
+        XCTAssertEqual(savedOverride, 4)
+        XCTAssertEqual(savedSettings, originalSettings)
+        XCTAssertTrue(savedObservations?.isEmpty == true)
+    }
+
+    func testSettingsFailureRestoresSettingsOverrideAndObservation() async {
+        let observations = ResolverFailingObservationStore()
+        let overrides = ResolverFailingCostOverrideStore(initialValue: 4)
+        let originalSettings = AppSettings(chargePricingRules: [
+            ChargePricingRule(id: "user", name: "User", pricePerKWh: 0.5)
+        ])
+        let settings = ResolverFailingSettingsStore(originalSettings, failFirstSave: true)
+        let service = ChargePricingObservationService(
+            observationStore: observations,
+            costOverrideStore: overrides,
+            settingsStore: settings
+        )
+
+        await assertConfirmationThrows(
+            service,
+            value: futureConfirmation(chargeId: 30, stationKey: "station-failure", unitPrice: 1)
+        )
+
+        let savedOverride = try? await overrides.costOverride(carId: 1, chargeId: 30)
+        let savedSettings = await settings.load()
+        let savedObservations = try? await observations.observations(carId: 1, stationKey: "station-failure")
+        XCTAssertEqual(savedOverride, 4)
+        XCTAssertEqual(savedSettings, originalSettings)
+        XCTAssertTrue(savedObservations?.isEmpty == true)
+    }
+
+    func testConcurrentConfirmationsDoNotLoseSettingsUpdates() async throws {
+        let observations = ResolverTestObservationStore()
+        let overrides = ResolverTestCostOverrideStore()
+        let userRule = ChargePricingRule(id: "user", name: "User", pricePerKWh: 0.5)
+        let settings = ResolverTestSettingsStore(AppSettings(chargePricingRules: [userRule]))
+        let service = ChargePricingObservationService(
+            observationStore: observations,
+            costOverrideStore: overrides,
+            settingsStore: settings
+        )
+
+        let firstValue = futureConfirmation(chargeId: 41, stationKey: "station-one", unitPrice: 1)
+        let secondValue = futureConfirmation(chargeId: 42, stationKey: "station-two", unitPrice: 2)
+        async let first: Void = service.confirm(firstValue)
+        async let second: Void = service.confirm(secondValue)
+        _ = try await (first, second)
+
+        let concurrentSettings = await settings.load()
+        let rules = concurrentSettings.chargePricingRules
+        XCTAssertTrue(rules.contains(userRule))
+        XCTAssertEqual(Set(rules.compactMap(\.stationKey)), ["station-one", "station-two"])
+    }
+
+    func testConfirmationRejectsOutOfRangeMinutesAndInvalidCurrencyBeforeWrites() async {
+        let observations = ResolverTestObservationStore()
+        let overrides = ResolverTestCostOverrideStore()
+        let settings = ResolverTestSettingsStore(AppSettings())
+        let service = ChargePricingObservationService(
+            observationStore: observations,
+            costOverrideStore: overrides,
+            settingsStore: settings
+        )
+
+        var invalidMinute = futureConfirmation(chargeId: 50, stationKey: "invalid", unitPrice: 1)
+        invalidMinute = ChargePricingConfirmation(
+            carId: invalidMinute.carId,
+            chargeId: invalidMinute.chargeId,
+            stationKey: invalidMinute.stationKey,
+            scope: invalidMinute.scope,
+            finalAmount: invalidMinute.finalAmount,
+            billedEnergyKWh: invalidMinute.billedEnergyKWh,
+            pricePerKWh: invalidMinute.pricePerKWh,
+            serviceFeePerKWh: invalidMinute.serviceFeePerKWh,
+            fixedFee: invalidMinute.fixedFee,
+            currencyCode: invalidMinute.currencyCode,
+            coordinates: invalidMinute.coordinates,
+            chargerIdentity: invalidMinute.chargerIdentity,
+            startMinute: -1,
+            endMinute: 1_440
+        )
+        do {
+            try await service.confirm(invalidMinute)
+            XCTFail("Expected invalid time window")
+        } catch {
+            XCTAssertEqual(error as? ChargePricingObservationServiceError, .invalidTimeWindow)
+        }
+
+        let invalidCurrency = ChargePricingConfirmation(
+            carId: 1,
+            chargeId: 51,
+            stationKey: "invalid",
+            scope: .sessionOnly,
+            finalAmount: 1,
+            billedEnergyKWh: 1,
+            pricePerKWh: 1,
+            serviceFeePerKWh: nil,
+            fixedFee: nil,
+            currencyCode: "US",
+            coordinates: nil,
+            chargerIdentity: .ac,
+            startMinute: nil,
+            endMinute: nil
+        )
+        do {
+            try await service.confirm(invalidCurrency)
+            XCTFail("Expected invalid currency")
+        } catch {
+            XCTAssertEqual(error as? ChargePricingObservationServiceError, .invalidCurrency)
+        }
+
+        let savedOverride = try? await overrides.costOverride(carId: 1, chargeId: 50)
+        let savedObservations = try? await observations.observations(carId: 1, stationKey: "invalid")
+        XCTAssertNil(savedOverride)
+        XCTAssertTrue(savedObservations?.isEmpty == true)
     }
 
     private func makeInput(
@@ -343,8 +590,47 @@ final class ChargeCostResolverTests: XCTestCase {
             effectiveFromDate: "2026-01-01",
             effectiveToDate: "2026-12-31",
             pricePerKWh: price,
-            origin: .regionalOfficial
+            origin: .regionalOfficial,
+            regionCode: "CN-43",
+            sourceURL: "https://example.com/tariff",
+            verifiedAt: "2026-07-18",
+            currencyCode: "CNY"
         )
+    }
+
+    private func futureConfirmation(
+        chargeId: Int,
+        stationKey: String,
+        unitPrice: Double
+    ) -> ChargePricingConfirmation {
+        ChargePricingConfirmation(
+            carId: 1,
+            chargeId: chargeId,
+            stationKey: stationKey,
+            scope: .futureAtStation,
+            finalAmount: unitPrice * 10,
+            billedEnergyKWh: 10,
+            pricePerKWh: unitPrice,
+            serviceFeePerKWh: nil,
+            fixedFee: nil,
+            currencyCode: "CNY",
+            coordinates: GeocodeLocation(latitude: 31.2304, longitude: 121.4737),
+            chargerIdentity: .ac,
+            startMinute: nil,
+            endMinute: nil
+        )
+    }
+
+    private func assertConfirmationThrows(
+        _ service: ChargePricingObservationService,
+        value: ChargePricingConfirmation
+    ) async {
+        do {
+            try await service.confirm(value)
+            XCTFail("Expected persistence failure")
+        } catch {
+            XCTAssertTrue(error is ResolverInjectedFailure)
+        }
     }
 }
 
@@ -359,8 +645,97 @@ private actor ResolverTestObservationStore: ChargePricingObservationStoring {
         values.append(value)
     }
 
+    func remove(id: String) async throws {
+        values.removeAll { $0.id == id }
+    }
+
     func removeAll() async throws {
         values.removeAll()
+    }
+}
+
+private enum ResolverInjectedFailure: Error {
+    case injected
+}
+
+private actor ResolverFailingObservationStore: ChargePricingObservationStoring {
+    private var values: [ChargePricingObservation] = []
+    private var failFirstSave: Bool
+
+    init(failFirstSave: Bool = false) {
+        self.failFirstSave = failFirstSave
+    }
+
+    func observations(carId: Int, stationKey: String) async throws -> [ChargePricingObservation] {
+        values.filter { $0.carId == carId && $0.stationKey == stationKey }
+    }
+
+    func save(_ value: ChargePricingObservation) async throws {
+        values.append(value)
+        if failFirstSave {
+            failFirstSave = false
+            throw ResolverInjectedFailure.injected
+        }
+    }
+
+    func remove(id: String) async throws {
+        values.removeAll { $0.id == id }
+    }
+
+    func removeAll() async throws {
+        values.removeAll()
+    }
+}
+
+private actor ResolverFailingCostOverrideStore: ChargeCostOverriding {
+    private var value: Double?
+    private var failFirstSave: Bool
+
+    init(initialValue: Double?, failFirstSave: Bool = false) {
+        value = initialValue
+        self.failFirstSave = failFirstSave
+    }
+
+    func costOverrides(carId _: Int) async throws -> [Int: Double] {
+        value.map { [30: $0] } ?? [:]
+    }
+
+    func costOverride(carId _: Int, chargeId _: Int) async throws -> Double? {
+        value
+    }
+
+    func saveCostOverride(carId _: Int, chargeId _: Int, cost: Double?) async throws {
+        value = cost
+        if failFirstSave {
+            failFirstSave = false
+            throw ResolverInjectedFailure.injected
+        }
+    }
+}
+
+private actor ResolverFailingSettingsStore: SettingsStoring {
+    private var settings: AppSettings
+    private var failFirstSave: Bool
+
+    init(_ settings: AppSettings, failFirstSave: Bool = false) {
+        self.settings = settings
+        self.failFirstSave = failFirstSave
+    }
+
+    func load() async -> AppSettings {
+        settings
+    }
+
+    func save(_ settings: AppSettings) async {
+        self.settings = settings
+    }
+
+    func saveThrowing(_ settings: AppSettings) async throws {
+        self.settings = settings
+        if failFirstSave {
+            failFirstSave = false
+            throw ResolverInjectedFailure.injected
+        }
     }
 }
 

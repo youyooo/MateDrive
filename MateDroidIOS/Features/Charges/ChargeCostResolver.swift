@@ -73,6 +73,10 @@ public struct ChargeCostResolutionInput: Sendable {
 
 public enum ChargeCostResolver {
     public static func resolve(_ input: ChargeCostResolutionInput) -> ChargeCostResolution? {
+        guard let selectedCurrency = ChargePricingCurrencyCode.normalized(input.currencyCode),
+              ChargePricingCurrencyCode.isValid(selectedCurrency) else {
+            return nil
+        }
         if let manualCost = input.manualCost,
            manualCost.isFinite,
            manualCost >= 0
@@ -80,7 +84,7 @@ public enum ChargeCostResolver {
             return ChargeCostResolution(
                 amount: manualCost,
                 source: .manual,
-                currencyCode: input.currencyCode,
+                currencyCode: selectedCurrency,
                 isEstimated: false,
                 isExplicitlyFree: manualCost == 0
             )
@@ -93,13 +97,13 @@ public enum ChargeCostResolver {
             return ChargeCostResolution(
                 amount: apiCost,
                 source: .api,
-                currencyCode: input.currencyCode,
+                currencyCode: selectedCurrency,
                 isEstimated: false,
                 isExplicitlyFree: false
             )
         }
 
-        if let estimate = bestUserOrStationEstimate(input) {
+        if let estimate = bestUserOrStationEstimate(input, currencyCode: selectedCurrency) {
             let source: SmartActivityChargeCostSource
             switch estimate.rule.origin {
             case .stationLearned:
@@ -109,14 +113,18 @@ public enum ChargeCostResolver {
             case .regionalOfficial:
                 return nil
             }
-            return resolution(from: estimate, source: source, input: input)
+            return resolution(
+                from: estimate,
+                source: source,
+                selectedCurrency: selectedCurrency,
+                input: input
+            )
         }
 
         guard input.isAC,
               input.geofenceKind == .home,
-              input.currencyCode.caseInsensitiveCompare("CNY") == .orderedSame,
               let regionalRule = input.regionalRule,
-              regionalRule.origin == .regionalOfficial,
+              isValidRegionalRule(regionalRule, currencyCode: selectedCurrency),
               let estimate = ChargePricingRuleEngine.estimateCost(
                   for: input.pricingInput,
                   rules: [regionalRule]
@@ -124,20 +132,58 @@ public enum ChargeCostResolver {
         else {
             return nil
         }
-        return resolution(from: estimate, source: .regionalTariff, input: input)
+        return resolution(
+            from: estimate,
+            source: .regionalTariff,
+            selectedCurrency: selectedCurrency,
+            input: input
+        )
     }
 
     private static func bestUserOrStationEstimate(
-        _ input: ChargeCostResolutionInput
+        _ input: ChargeCostResolutionInput,
+        currencyCode: String
     ) -> ChargePricingEstimate? {
         input.rules
-            .filter { $0.origin != .regionalOfficial }
+            .filter {
+                $0.origin != .regionalOfficial &&
+                    currencyMatches(rule: $0, selectedCurrency: currencyCode)
+            }
             .sorted(by: rulePrecedes)
             .lazy
             .compactMap {
                 ChargePricingRuleEngine.estimateCost(for: input.pricingInput, rules: [$0])
             }
             .first
+    }
+
+    private static func currencyMatches(
+        rule: ChargePricingRule,
+        selectedCurrency: String
+    ) -> Bool {
+        guard let ruleCurrency = rule.currencyCode else { return true }
+        return ruleCurrency == selectedCurrency
+    }
+
+    private static func isValidRegionalRule(
+        _ rule: ChargePricingRule,
+        currencyCode: String
+    ) -> Bool {
+        guard rule.origin == .regionalOfficial,
+              rule.regionCode?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false,
+              let source = rule.sourceURL.flatMap(URL.init(string:)),
+              ["http", "https"].contains(source.scheme?.lowercased() ?? ""),
+              let verifiedAt = rule.verifiedAt,
+              ChargePricingDate.isValid(verifiedAt),
+              let effectiveFromDate = rule.effectiveFromDate,
+              ChargePricingDate.isValid(effectiveFromDate),
+              let ruleCurrency = rule.currencyCode,
+              ChargePricingCurrencyCode.isValid(ruleCurrency),
+              ruleCurrency == currencyCode
+        else {
+            return false
+        }
+        return true
     }
 
     private static func rulePrecedes(_ lhs: ChargePricingRule, _ rhs: ChargePricingRule) -> Bool {
@@ -163,6 +209,7 @@ public enum ChargeCostResolver {
     private static func resolution(
         from estimate: ChargePricingEstimate,
         source: SmartActivityChargeCostSource,
+        selectedCurrency: String,
         input: ChargeCostResolutionInput
     ) -> ChargeCostResolution {
         let energy = input.pricingInput.energyAddedKWh
@@ -172,7 +219,7 @@ public enum ChargeCostResolver {
         return ChargeCostResolution(
             amount: estimate.cost,
             source: source,
-            currencyCode: input.currencyCode,
+            currencyCode: estimate.rule.currencyCode ?? selectedCurrency,
             ruleID: estimate.rule.id,
             unitPricePerKWh: unitPrice,
             serviceFee: estimate.serviceFee,

@@ -3,6 +3,13 @@ import Foundation
 public protocol SettingsStoring: Sendable {
     func load() async -> AppSettings
     func save(_ settings: AppSettings) async
+    func saveThrowing(_ settings: AppSettings) async throws
+}
+
+public extension SettingsStoring {
+    func saveThrowing(_ settings: AppSettings) async throws {
+        await save(settings)
+    }
 }
 
 public actor UserDefaultsSettingsStore: SettingsStoring {

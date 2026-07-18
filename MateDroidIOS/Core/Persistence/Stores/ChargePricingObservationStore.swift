@@ -3,6 +3,7 @@ import Foundation
 public protocol ChargePricingObservationStoring: Sendable {
     func observations(carId: Int, stationKey: String) async throws -> [ChargePricingObservation]
     func save(_ value: ChargePricingObservation) async throws
+    func remove(id: String) async throws
     func removeAll() async throws
 }
 
@@ -63,6 +64,13 @@ public struct ChargePricingObservationStore: ChargePricingObservationStoring {
         )
     }
 
+    public func remove(id: String) async throws {
+        try await database.run(
+            "DELETE FROM charge_pricing_observations WHERE observation_id = ?;",
+            bindings: [.text(id)]
+        )
+    }
+
     public func removeAll() async throws {
         try await database.run("DELETE FROM charge_pricing_observations;")
     }
@@ -82,6 +90,10 @@ public struct DatabaseBackedChargePricingObservationStore: ChargePricingObservat
 
     public func save(_ value: ChargePricingObservation) async throws {
         try await ChargePricingObservationStore(database: databaseProvider.database()).save(value)
+    }
+
+    public func remove(id: String) async throws {
+        try await ChargePricingObservationStore(database: databaseProvider.database()).remove(id: id)
     }
 
     public func removeAll() async throws {

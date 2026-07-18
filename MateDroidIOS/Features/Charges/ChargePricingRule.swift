@@ -29,6 +29,19 @@ public enum ChargePricingRuleOrigin: String, Codable, Equatable, Sendable {
     case regionalOfficial
 }
 
+public enum ChargePricingCurrencyCode {
+    public static func normalized(_ value: String?) -> String? {
+        guard let value else { return nil }
+        let normalized = value.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        return normalized.isEmpty ? nil : normalized
+    }
+
+    public static func isValid(_ value: String) -> Bool {
+        let scalars = value.unicodeScalars
+        return scalars.count == 3 && scalars.allSatisfy { (65...90).contains(Int($0.value)) }
+    }
+}
+
 public enum ChargePricingChargerIdentity: Equatable, Sendable {
     case ac
     case teslaSupercharger
@@ -100,6 +113,8 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
     public var parkingFeeRuleID: String?
     public var applicableWeekdays: [Int]?
     public var applicableMonths: [Int]?
+    public var currencyCode: String?
+    public var stationKey: String?
 
     public init(
         id: String = UUID().uuidString,
@@ -125,7 +140,9 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
         serviceFeePerKWh: Double = 0,
         parkingFeeRuleID: String? = nil,
         applicableWeekdays: [Int]? = nil,
-        applicableMonths: [Int]? = nil
+        applicableMonths: [Int]? = nil,
+        currencyCode: String? = nil,
+        stationKey: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -151,6 +168,8 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
         self.parkingFeeRuleID = parkingFeeRuleID
         self.applicableWeekdays = applicableWeekdays
         self.applicableMonths = applicableMonths
+        self.currencyCode = ChargePricingCurrencyCode.normalized(currencyCode)
+        self.stationKey = stationKey?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -178,6 +197,8 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
         case parkingFeeRuleID
         case applicableWeekdays
         case applicableMonths
+        case currencyCode
+        case stationKey
     }
 
     public init(from decoder: Decoder) throws {
@@ -206,6 +227,12 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
         parkingFeeRuleID = try container.decodeIfPresent(String.self, forKey: .parkingFeeRuleID)
         applicableWeekdays = try container.decodeIfPresent([Int].self, forKey: .applicableWeekdays)
         applicableMonths = try container.decodeIfPresent([Int].self, forKey: .applicableMonths)
+        currencyCode = ChargePricingCurrencyCode.normalized(
+            try container.decodeIfPresent(String.self, forKey: .currencyCode)
+        )
+        stationKey = try container.decodeIfPresent(String.self, forKey: .stationKey)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .nilIfEmpty
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -234,6 +261,8 @@ public struct ChargePricingRule: Codable, Equatable, Identifiable, Sendable {
         try container.encodeIfPresent(parkingFeeRuleID, forKey: .parkingFeeRuleID)
         try container.encodeIfPresent(applicableWeekdays, forKey: .applicableWeekdays)
         try container.encodeIfPresent(applicableMonths, forKey: .applicableMonths)
+        try container.encodeIfPresent(currencyCode, forKey: .currencyCode)
+        try container.encodeIfPresent(stationKey, forKey: .stationKey)
     }
 }
 
@@ -243,6 +272,7 @@ public enum ChargePricingValidationIssue: Equatable, Sendable {
     case invalidServiceFee
     case invalidApplicableWeekdays
     case invalidApplicableMonths
+    case invalidCurrency
     case incompleteLocation
     case invalidLocation
     case incompleteTimeWindow
@@ -269,6 +299,10 @@ public enum ChargePricingRuleValidator {
         }
         if !isValidApplicability(rule.applicableMonths, allowed: 1...12) {
             issues.append(.invalidApplicableMonths)
+        }
+        if let currencyCode = rule.currencyCode,
+           !ChargePricingCurrencyCode.isValid(currencyCode) {
+            issues.append(.invalidCurrency)
         }
 
         let locationValuesPresent = [rule.latitude != nil, rule.longitude != nil, rule.radiusMeters != nil]
@@ -408,7 +442,9 @@ public struct ChargePricingCostComponent: Equatable, Sendable {
 
 public enum ChargePricingRuleEngine {
     public static func estimateCost(for input: ChargePricingInput, rules: [ChargePricingRule]) -> ChargePricingEstimate? {
-        guard let energy = input.energyAddedKWh, energy > 0 else {
+        guard let energy = input.energyAddedKWh,
+              energy.isFinite,
+              energy >= 0 else {
             return nil
         }
 
@@ -422,15 +458,20 @@ public enum ChargePricingRuleEngine {
             }
             .first
             .map { rule in
-                let allocation = segmentedEnergyAllocation(for: rule, input: input) ?? [
-                    ChargePricingCostComponent(
-                        startMinuteOfDay: nil,
-                        endMinuteOfDay: nil,
-                        energyKWh: energy,
-                        pricePerKWh: pricePerKWh(for: rule, input: input),
-                        cost: energy * pricePerKWh(for: rule, input: input)
-                    )
-                ]
+                let allocation: [ChargePricingCostComponent]
+                if energy == 0 {
+                    allocation = []
+                } else {
+                    allocation = segmentedEnergyAllocation(for: rule, input: input) ?? [
+                        ChargePricingCostComponent(
+                            startMinuteOfDay: nil,
+                            endMinuteOfDay: nil,
+                            energyKWh: energy,
+                            pricePerKWh: pricePerKWh(for: rule, input: input),
+                            cost: energy * pricePerKWh(for: rule, input: input)
+                        )
+                    ]
+                }
                 let energyCost = allocation.reduce(0) { $0 + $1.cost }
                 let serviceFee = energy * rule.serviceFeePerKWh
                 return ChargePricingEstimate(
@@ -461,7 +502,12 @@ public enum ChargePricingRuleEngine {
         if rule.effectiveFromDate != nil || rule.effectiveToDate != nil ||
             rule.applicableWeekdays != nil || rule.applicableMonths != nil
         {
-            guard let components = input.startDate.flatMap(ChargePricingDate.mainlandComponents(from:)),
+            guard let date = input.startDate.flatMap(DomainDateParser.date(from:)) else {
+                return false
+            }
+            let calendar = pricingCalendar(for: rule, input: input)
+            let components = calendar.dateComponents([.year, .month, .day, .weekday], from: date)
+            guard
                   let chargeDate = ChargePricingDate.dateString(from: components)
             else {
                 return false
@@ -499,7 +545,7 @@ public enum ChargePricingRuleEngine {
             guard let date = input.startDate.flatMap(DomainDateParser.date(from:)) else {
                 return false
             }
-            let minute = minuteOfDay(for: date, timeZone: pricingTimeZone(for: input))
+            let minute = minuteOfDay(for: date, timeZone: pricingTimeZone(for: rule, input: input))
             guard minuteMatches(minute, startMinute: startMinute, endMinute: endMinute) else {
                 return false
             }
@@ -515,7 +561,7 @@ public enum ChargePricingRuleEngine {
             return rule.pricePerKWh
         }
 
-        let minute = minuteOfDay(for: date, timeZone: pricingTimeZone(for: input))
+        let minute = minuteOfDay(for: date, timeZone: pricingTimeZone(for: rule, input: input))
         let segment = rule.timeSegments
             .filter { $0.pricePerKWh >= 0 }
             .first {
@@ -533,23 +579,31 @@ public enum ChargePricingRuleEngine {
             return nil
         }
 
+        guard let totalEnergy = input.energyAddedKWh,
+              totalEnergy.isFinite,
+              totalEnergy > 0 else {
+            return nil
+        }
+        let sessionStart = input.startDate.flatMap(DomainDateParser.date(from:))
+        let sessionEnd = input.endDate.flatMap(DomainDateParser.date(from:))
         let samples = input.energySamples
             .compactMap { sample -> (Date, Double)? in
                 guard let date = sample.date.flatMap(DomainDateParser.date(from:)),
                       let energy = sample.cumulativeEnergyAddedKWh,
+                      energy.isFinite,
                       energy >= 0
                 else {
                     return nil
                 }
+                if let sessionStart, date < sessionStart { return nil }
+                if let sessionEnd, date > sessionEnd { return nil }
                 return (date, energy)
             }
             .sorted { $0.0 < $1.0 }
 
         if samples.isEmpty {
-            guard let totalEnergy = input.energyAddedKWh,
-                  totalEnergy > 0,
-                  let startDate = input.startDate.flatMap(DomainDateParser.date(from:)),
-                  let endDate = input.endDate.flatMap(DomainDateParser.date(from:))
+            guard let startDate = sessionStart,
+                  let endDate = sessionEnd
             else {
                 return nil
             }
@@ -558,36 +612,37 @@ public enum ChargePricingRuleEngine {
                 from: startDate,
                 to: max(endDate, startDate),
                 rule: rule,
-                timeZone: pricingTimeZone(for: input)
+                timeZone: pricingTimeZone(for: rule, input: input)
             )
         }
 
-        let timeZone = pricingTimeZone(for: input)
-        var previousDate = input.startDate.flatMap(DomainDateParser.date(from:)) ?? samples[0].0
+        let timeZone = pricingTimeZone(for: rule, input: input)
+        var previousDate = sessionStart ?? samples[0].0
         var previousEnergy = 0.0
         var allocation: [ChargePricingCostComponent] = []
         var allocatedEnergy = 0.0
 
         for sample in samples {
+            guard sample.1 >= previousEnergy else { continue }
             let deltaEnergy = sample.1 - previousEnergy
-            if deltaEnergy > 0 {
+            let acceptedEnergy = min(deltaEnergy, max(0, totalEnergy - allocatedEnergy))
+            if acceptedEnergy > 0 {
                 allocation.append(contentsOf: energyAllocation(
-                    forEnergy: deltaEnergy,
+                    forEnergy: acceptedEnergy,
                     from: previousDate,
                     to: max(sample.0, previousDate),
                     rule: rule,
                     timeZone: timeZone
                 ))
-                allocatedEnergy += deltaEnergy
+                allocatedEnergy += acceptedEnergy
             }
             previousDate = max(sample.0, previousDate)
-            previousEnergy = max(sample.1, previousEnergy)
+            previousEnergy = sample.1
+            if allocatedEnergy >= totalEnergy { break }
         }
 
-        if let totalEnergy = input.energyAddedKWh,
-           totalEnergy > allocatedEnergy
-        {
-            let endDate = input.endDate.flatMap(DomainDateParser.date(from:)) ?? previousDate
+        if totalEnergy > allocatedEnergy {
+            let endDate = sessionEnd ?? previousDate
             allocation.append(contentsOf: energyAllocation(
                 forEnergy: totalEnergy - allocatedEnergy,
                 from: previousDate,
@@ -684,8 +739,17 @@ public enum ChargePricingRuleEngine {
             .pricePerKWh ?? rule.pricePerKWh
     }
 
-    private static func pricingTimeZone(for input: ChargePricingInput) -> TimeZone {
-        timeZone(from: input.startDate) ?? timeZone(from: input.endDate) ?? .current
+    private static func pricingTimeZone(for rule: ChargePricingRule, input: ChargePricingInput) -> TimeZone {
+        if rule.origin == .regionalOfficial {
+            return ChargePricingDate.mainlandTimeZone
+        }
+        return timeZone(from: input.startDate) ?? timeZone(from: input.endDate) ?? .current
+    }
+
+    private static func pricingCalendar(for rule: ChargePricingRule, input: ChargePricingInput) -> Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = pricingTimeZone(for: rule, input: input)
+        return calendar
     }
 
     private static func minuteOfDay(for date: Date, timeZone: TimeZone) -> Int {
@@ -697,6 +761,9 @@ public enum ChargePricingRuleEngine {
     private static func timeZone(from value: String?) -> TimeZone? {
         guard let value = value?.trimmingCharacters(in: .whitespacesAndNewlines), !value.isEmpty else {
             return nil
+        }
+        if value.uppercased().hasSuffix("Z") {
+            return .gmt
         }
         let pattern = #"([+-])(\d{2}):?(\d{2})$"#
         guard let match = value.range(of: pattern, options: .regularExpression) else {
@@ -784,6 +851,10 @@ public enum ChargePricingDate {
         return mainlandCalendar.dateComponents([.year, .month, .day, .weekday], from: date)
     }
 
+    static var mainlandTimeZone: TimeZone {
+        TimeZone(identifier: "Asia/Shanghai") ?? TimeZone(secondsFromGMT: 8 * 60 * 60) ?? .gmt
+    }
+
     static func dateString(from components: DateComponents) -> String? {
         guard let year = components.year,
               let month = components.month,
@@ -796,7 +867,13 @@ public enum ChargePricingDate {
 
     private static var mainlandCalendar: Calendar {
         var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "Asia/Shanghai") ?? TimeZone(secondsFromGMT: 8 * 60 * 60) ?? .gmt
+        calendar.timeZone = mainlandTimeZone
         return calendar
+    }
+}
+
+private extension String {
+    var nilIfEmpty: String? {
+        isEmpty ? nil : self
     }
 }

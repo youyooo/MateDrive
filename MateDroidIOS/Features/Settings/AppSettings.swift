@@ -274,6 +274,7 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public var secondaryServerURL: String
     public var acceptInvalidCerts: Bool
     public var currencyCode: String
+    public var residentialTariffRegionCode: String?
     public var displayUnitSystem: DisplayUnitSystem
     public var formatPreferencesVersion: Int
     public var showShortDrivesCharges: Bool
@@ -304,6 +305,7 @@ public struct AppSettings: Codable, Equatable, Sendable {
         secondaryServerURL: String = "",
         acceptInvalidCerts: Bool = false,
         currencyCode: String = MateDroidCurrencyFormatter.automaticCode,
+        residentialTariffRegionCode: String? = nil,
         displayUnitSystem: DisplayUnitSystem = .teslamate,
         formatPreferencesVersion: Int = AppSettings.currentFormatPreferencesVersion,
         showShortDrivesCharges: Bool = false,
@@ -326,6 +328,10 @@ public struct AppSettings: Codable, Equatable, Sendable {
         self.secondaryServerURL = secondaryServerURL
         self.acceptInvalidCerts = acceptInvalidCerts
         self.currencyCode = currencyCode
+        self.residentialTariffRegionCode = residentialTariffRegionCode?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .uppercased()
+            .nilIfEmpty
         self.displayUnitSystem = displayUnitSystem
         self.formatPreferencesVersion = formatPreferencesVersion
         self.showShortDrivesCharges = showShortDrivesCharges
@@ -352,6 +358,7 @@ public struct AppSettings: Codable, Equatable, Sendable {
         case secondaryServerURL
         case acceptInvalidCerts
         case currencyCode
+        case residentialTariffRegionCode
         case displayUnitSystem
         case formatPreferencesVersion
         case showShortDrivesCharges
@@ -382,6 +389,10 @@ public struct AppSettings: Codable, Equatable, Sendable {
         secondaryServerURL = try container.decodeIfPresent(String.self, forKey: .secondaryServerURL) ?? ""
         acceptInvalidCerts = try container.decodeIfPresent(Bool.self, forKey: .acceptInvalidCerts) ?? false
         currencyCode = try container.decodeIfPresent(String.self, forKey: .currencyCode) ?? MateDroidCurrencyFormatter.automaticCode
+        residentialTariffRegionCode = try container.decodeIfPresent(String.self, forKey: .residentialTariffRegionCode)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .uppercased()
+            .nilIfEmpty
         displayUnitSystem = try container.decodeIfPresent(DisplayUnitSystem.self, forKey: .displayUnitSystem) ?? .teslamate
         formatPreferencesVersion = try container.decodeIfPresent(Int.self, forKey: .formatPreferencesVersion) ?? 0
         showShortDrivesCharges = try container.decodeIfPresent(Bool.self, forKey: .showShortDrivesCharges) ?? false
@@ -428,6 +439,7 @@ public struct AppSettings: Codable, Equatable, Sendable {
         try container.encode(secondaryServerURL, forKey: .secondaryServerURL)
         try container.encode(acceptInvalidCerts, forKey: .acceptInvalidCerts)
         try container.encode(currencyCode, forKey: .currencyCode)
+        try container.encodeIfPresent(residentialTariffRegionCode, forKey: .residentialTariffRegionCode)
         try container.encode(displayUnitSystem, forKey: .displayUnitSystem)
         try container.encode(formatPreferencesVersion, forKey: .formatPreferencesVersion)
         try container.encode(showShortDrivesCharges, forKey: .showShortDrivesCharges)
@@ -581,5 +593,11 @@ public struct AppSettings: Codable, Equatable, Sendable {
             }
         }
         return [:]
+    }
+}
+
+private extension String {
+    var nilIfEmpty: String? {
+        isEmpty ? nil : self
     }
 }

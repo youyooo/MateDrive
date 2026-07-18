@@ -31,6 +31,116 @@ final class ChargePricingRuleTests: XCTestCase {
         XCTAssertEqual(estimate?.rule.parkingFeeRuleID, "parking-1")
     }
 
+    func testTariffTemplateExcludesLocationDateAndPriorityFromPersistence() throws {
+        let point = SyntheticCoordinates.point()
+        let rule = ChargePricingRule(
+            id: "source",
+            name: "Source Rule",
+            chargeType: .otherDC,
+            addressKeyword: "Sample Network",
+            latitude: point.latitude,
+            longitude: point.longitude,
+            radiusMeters: 750,
+            effectiveFromDate: "2026-01-01",
+            effectiveToDate: "2026-12-31",
+            pricePerKWh: 1.8,
+            timeSegments: [
+                ChargePricingTimeSegment(id: "source-segment", startMinuteOfDay: 0, endMinuteOfDay: 479, pricePerKWh: 1.2),
+                ChargePricingTimeSegment(id: "source-segment-2", startMinuteOfDay: 480, endMinuteOfDay: 1_439, pricePerKWh: 1.8)
+            ],
+            sessionFee: 2,
+            priority: 9
+        )
+
+        let template = ChargeTariffTemplate(id: "template", name: "Public DC", rule: rule)
+        let object = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: JSONEncoder().encode(template)) as? [String: Any]
+        )
+
+        XCTAssertNil(object["addressKeyword"])
+        XCTAssertNil(object["latitude"])
+        XCTAssertNil(object["longitude"])
+        XCTAssertNil(object["radiusMeters"])
+        XCTAssertNil(object["effectiveFromDate"])
+        XCTAssertNil(object["effectiveToDate"])
+        XCTAssertNil(object["priority"])
+        XCTAssertEqual(template.chargeType, .otherDC)
+        XCTAssertEqual(template.timeSegments.count, 2)
+        XCTAssertTrue(template.validationIssues.isEmpty)
+    }
+
+    func testTariffTemplateCreatesIndependentLocationlessRule() {
+        let template = ChargeTariffTemplate(
+            id: "template",
+            name: "Night Rate",
+            chargeType: .ac,
+            startMinuteOfDay: 22 * 60,
+            endMinuteOfDay: 7 * 60,
+            pricePerKWh: 0.8,
+            timeSegments: [
+                ChargePricingTimeSegment(id: "template-segment", startMinuteOfDay: 22 * 60, endMinuteOfDay: 7 * 60, pricePerKWh: 0.4)
+            ],
+            sessionFee: 1
+        )
+
+        let rule = template.makeRule(id: "new-rule")
+
+        XCTAssertEqual(rule.id, "new-rule")
+        XCTAssertEqual(rule.name, "Night Rate")
+        XCTAssertEqual(rule.chargeType, .ac)
+        XCTAssertNil(rule.addressKeyword)
+        XCTAssertNil(rule.latitude)
+        XCTAssertNil(rule.longitude)
+        XCTAssertNil(rule.radiusMeters)
+        XCTAssertNil(rule.effectiveFromDate)
+        XCTAssertNil(rule.effectiveToDate)
+        XCTAssertEqual(rule.priority, 0)
+        XCTAssertNotEqual(rule.timeSegments.first?.id, template.timeSegments.first?.id)
+        XCTAssertTrue(ChargePricingRuleValidator.issues(for: rule).isEmpty)
+    }
+
+    func testApplyingTariffTemplatePreservesRuleScopeAndReplacesOnlyPricing() {
+        let point = SyntheticCoordinates.point()
+        let rule = ChargePricingRule(
+            id: "existing",
+            name: "Existing Place",
+            chargeType: .ac,
+            addressKeyword: "Sample Place",
+            latitude: point.latitude,
+            longitude: point.longitude,
+            radiusMeters: 500,
+            effectiveFromDate: "2026-01-01",
+            effectiveToDate: "2026-06-30",
+            pricePerKWh: 0.5,
+            priority: 7
+        )
+        let template = ChargeTariffTemplate(
+            name: "Fast Charging",
+            chargeType: .teslaSupercharger,
+            pricePerKWh: 2.2,
+            timeSegments: [
+                ChargePricingTimeSegment(startMinuteOfDay: 0, endMinuteOfDay: 1_439, pricePerKWh: 2.2)
+            ],
+            sessionFee: 3
+        )
+
+        let updated = template.applying(to: rule)
+
+        XCTAssertEqual(updated.id, rule.id)
+        XCTAssertEqual(updated.name, rule.name)
+        XCTAssertEqual(updated.addressKeyword, rule.addressKeyword)
+        XCTAssertEqual(updated.latitude, rule.latitude)
+        XCTAssertEqual(updated.longitude, rule.longitude)
+        XCTAssertEqual(updated.radiusMeters, rule.radiusMeters)
+        XCTAssertEqual(updated.effectiveFromDate, rule.effectiveFromDate)
+        XCTAssertEqual(updated.effectiveToDate, rule.effectiveToDate)
+        XCTAssertEqual(updated.priority, rule.priority)
+        XCTAssertEqual(updated.chargeType, .teslaSupercharger)
+        XCTAssertEqual(updated.pricePerKWh, 2.2)
+        XCTAssertEqual(updated.sessionFee, 3)
+        XCTAssertEqual(updated.timeSegments.count, 1)
+    }
+
     func testRuleValidatorRejectsIncompleteAndInvalidLocation() {
         let incomplete = ChargePricingRule(name: "Incomplete", latitude: SyntheticCoordinates.point().latitude, pricePerKWh: 1)
         let invalid = ChargePricingRule(name: "Invalid", latitude: SyntheticCoordinates.invalidLatitude, longitude: SyntheticCoordinates.point().longitude, radiusMeters: -1, pricePerKWh: 1)
@@ -51,6 +161,75 @@ final class ChargePricingRuleTests: XCTestCase {
         XCTAssertTrue(issues.contains(.invalidPrice))
         XCTAssertTrue(issues.contains(.invalidSessionFee))
         XCTAssertTrue(issues.contains(.incompleteTimeWindow))
+    }
+
+    func testRuleValidatorRejectsOutOfRangeRuleAndSegmentMinutes() {
+        let rule = ChargePricingRule(
+            name: "Invalid minutes",
+            startMinuteOfDay: -1,
+            endMinuteOfDay: 1_440,
+            pricePerKWh: 1,
+            timeSegments: [
+                ChargePricingTimeSegment(
+                    startMinuteOfDay: -1,
+                    endMinuteOfDay: 1_440,
+                    pricePerKWh: 1
+                )
+            ]
+        )
+
+        let issues = ChargePricingRuleValidator.issues(for: rule)
+        XCTAssertTrue(issues.contains(.invalidTimeWindow))
+        XCTAssertTrue(issues.contains(.invalidTimeSegment))
+    }
+
+    func testRuleCurrencyNormalizesAndRejectsMalformedExplicitCode() {
+        let normalized = ChargePricingRule(name: "USD", pricePerKWh: 1, currencyCode: " usd ")
+        let malformed = ChargePricingRule(name: "Bad", pricePerKWh: 1, currencyCode: "US1")
+
+        XCTAssertEqual(normalized.currencyCode, "USD")
+        XCTAssertFalse(ChargePricingRuleValidator.issues(for: normalized).contains(.invalidCurrency))
+        XCTAssertTrue(ChargePricingRuleValidator.issues(for: malformed).contains(.invalidCurrency))
+    }
+
+    func testEditorMetadataPreservationKeepsParkingCurrencyStationAndProvenance() {
+        let original = ChargePricingRule(
+            id: "learned",
+            name: "Original",
+            effectiveFromDate: "2026-01-01",
+            effectiveToDate: "2026-12-31",
+            pricePerKWh: 1,
+            origin: .stationLearned,
+            regionCode: "CN-43",
+            sourceURL: "https://example.com/source",
+            verifiedAt: "2026-07-18",
+            serviceFeePerKWh: 0.2,
+            parkingFeeRuleID: "parking-1",
+            applicableWeekdays: [2, 3],
+            applicableMonths: [7, 8],
+            currencyCode: "CNY",
+            stationKey: "station-a"
+        )
+        let editedDraft = ChargePricingRule(
+            id: original.id,
+            name: "Edited",
+            pricePerKWh: 2
+        )
+
+        let edited = editedDraft.preservingEditorMetadata(from: original)
+
+        XCTAssertEqual(edited.name, "Edited")
+        XCTAssertEqual(edited.pricePerKWh, 2)
+        XCTAssertEqual(edited.origin, original.origin)
+        XCTAssertEqual(edited.regionCode, original.regionCode)
+        XCTAssertEqual(edited.sourceURL, original.sourceURL)
+        XCTAssertEqual(edited.verifiedAt, original.verifiedAt)
+        XCTAssertEqual(edited.serviceFeePerKWh, original.serviceFeePerKWh)
+        XCTAssertEqual(edited.parkingFeeRuleID, original.parkingFeeRuleID)
+        XCTAssertEqual(edited.applicableWeekdays, original.applicableWeekdays)
+        XCTAssertEqual(edited.applicableMonths, original.applicableMonths)
+        XCTAssertEqual(edited.currencyCode, original.currencyCode)
+        XCTAssertEqual(edited.stationKey, original.stationKey)
     }
 
     func testRuleValidatorDetectsOverlapIncludingAcrossMidnight() {
@@ -437,6 +616,84 @@ final class ChargePricingRuleTests: XCTestCase {
         XCTAssertEqual(estimate?.cost ?? 0, 20, accuracy: 0.001)
         XCTAssertEqual(estimate?.components.count, 2)
         XCTAssertEqual(estimate?.components.reduce(0) { $0 + $1.energyKWh } ?? 0, 10, accuracy: 0.001)
+    }
+
+    func testPricingRejectsNegativeAndNonFiniteTotalEnergyButAllowsZeroSessionFee() {
+        let rule = ChargePricingRule(
+            name: "Fixed fee",
+            pricePerKWh: 2,
+            sessionFee: 3,
+            serviceFeePerKWh: 4
+        )
+
+        let invalidEnergies: [Double] = [-1, .nan, .infinity, -.infinity]
+        for energy in invalidEnergies {
+            let estimate = ChargePricingRuleEngine.estimateCost(
+                for: ChargePricingInput(
+                    startDate: "2026-07-01T10:00:00+08:00",
+                    address: nil,
+                    latitude: nil,
+                    longitude: nil,
+                    energyAddedKWh: energy,
+                    isDc: false
+                ),
+                rules: [rule]
+            )
+            XCTAssertNil(estimate, "energy=\(energy)")
+        }
+
+        let zero = ChargePricingRuleEngine.estimateCost(
+            for: ChargePricingInput(
+                startDate: "2026-07-01T10:00:00+08:00",
+                address: nil,
+                latitude: nil,
+                longitude: nil,
+                energyAddedKWh: 0,
+                isDc: false
+            ),
+            rules: [rule]
+        )
+        XCTAssertEqual(zero?.cost, 3)
+        XCTAssertEqual(zero?.serviceFee, 0)
+        XCTAssertEqual(zero?.components, [])
+    }
+
+    func testEnergySamplesStayWithinSessionAndNeverExceedBilledEnergy() {
+        let rule = ChargePricingRule(
+            name: "Bounded samples",
+            pricePerKWh: 50,
+            timeSegments: [
+                ChargePricingTimeSegment(startMinuteOfDay: 10 * 60, endMinuteOfDay: 10 * 60 + 29, pricePerKWh: 1),
+                ChargePricingTimeSegment(startMinuteOfDay: 10 * 60 + 30, endMinuteOfDay: 11 * 60, pricePerKWh: 100)
+            ],
+            serviceFeePerKWh: 2
+        )
+        let estimate = ChargePricingRuleEngine.estimateCost(
+            for: ChargePricingInput(
+                startDate: "2026-07-01T10:00:00+08:00",
+                endDate: "2026-07-01T11:00:00+08:00",
+                address: nil,
+                latitude: nil,
+                longitude: nil,
+                energyAddedKWh: 5,
+                energySamples: [
+                    ChargePricingEnergySample(date: "2026-07-01T09:30:00+08:00", cumulativeEnergyAddedKWh: 100),
+                    ChargePricingEnergySample(date: "2026-07-01T10:00:00+08:00", cumulativeEnergyAddedKWh: 0),
+                    ChargePricingEnergySample(date: "2026-07-01T10:10:00+08:00", cumulativeEnergyAddedKWh: 3),
+                    ChargePricingEnergySample(date: "2026-07-01T10:20:00+08:00", cumulativeEnergyAddedKWh: 2),
+                    ChargePricingEnergySample(date: "2026-07-01T10:30:00+08:00", cumulativeEnergyAddedKWh: 10),
+                    ChargePricingEnergySample(date: "2026-07-01T10:40:00+08:00", cumulativeEnergyAddedKWh: .infinity),
+                    ChargePricingEnergySample(date: "2026-07-01T11:30:00+08:00", cumulativeEnergyAddedKWh: 20)
+                ],
+                isDc: false
+            ),
+            rules: [rule]
+        )
+
+        let allocatedEnergy = estimate?.components.reduce(0) { $0 + $1.energyKWh } ?? 0
+        XCTAssertEqual(allocatedEnergy, 5, accuracy: 0.000_001)
+        XCTAssertEqual(estimate?.serviceFee, 10)
+        XCTAssertEqual(estimate?.cost ?? 0, 15, accuracy: 0.000_001)
     }
 
     func testTimeSegmentsSplitCostByDurationWhenEnergySamplesAreMissing() {

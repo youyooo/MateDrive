@@ -368,7 +368,7 @@ private struct ChargePricingRuleEditorView: View {
     }
 
     private func makeRule() -> ChargePricingRule {
-        ChargePricingRule(
+        let draft = ChargePricingRule(
             id: originalRule.id,
             name: name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? t("Pricing Rule", "价格规则") : name.trimmingCharacters(in: .whitespacesAndNewlines),
             isEnabled: isEnabled,
@@ -384,15 +384,9 @@ private struct ChargePricingRuleEditorView: View {
             pricePerKWh: parsedPricePerKWh ?? 0,
             timeSegments: parsedTimeSegments,
             sessionFee: Self.double(from: sessionFee) ?? 0,
-            priority: Int(priority.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0,
-            origin: originalRule.origin,
-            regionCode: originalRule.regionCode,
-            sourceURL: originalRule.sourceURL,
-            verifiedAt: originalRule.verifiedAt,
-            serviceFeePerKWh: originalRule.serviceFeePerKWh,
-            applicableWeekdays: originalRule.applicableWeekdays,
-            applicableMonths: originalRule.applicableMonths
+            priority: Int(priority.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
         )
+        return draft.preservingEditorMetadata(from: originalRule)
     }
 
     private var parsedTimeSegments: [ChargePricingTimeSegment] {
@@ -462,6 +456,8 @@ private struct ChargePricingRuleEditorView: View {
             return t("Applicable weekdays must use valid, unique calendar days.", "适用星期必须使用有效且不重复的日历值。")
         case .invalidApplicableMonths:
             return t("Applicable months must use valid, unique calendar months.", "适用月份必须使用有效且不重复的日历月份。")
+        case .invalidCurrency:
+            return t("Currency must use a three-letter code.", "币种必须使用三个字母的代码。")
         case .incompleteLocation:
             return t("Latitude, longitude, and radius must be entered together.", "纬度、经度和半径必须同时填写。")
         case .invalidLocation:
@@ -507,6 +503,23 @@ private struct ChargePricingRuleEditorView: View {
 
     private func t(_ english: String, _ chinese: String) -> String {
         AppText.localized(english, chinese, language: appLanguage)
+    }
+}
+
+extension ChargePricingRule {
+    func preservingEditorMetadata(from original: ChargePricingRule) -> ChargePricingRule {
+        var updated = self
+        updated.origin = original.origin
+        updated.regionCode = original.regionCode
+        updated.sourceURL = original.sourceURL
+        updated.verifiedAt = original.verifiedAt
+        updated.serviceFeePerKWh = original.serviceFeePerKWh
+        updated.parkingFeeRuleID = original.parkingFeeRuleID
+        updated.applicableWeekdays = original.applicableWeekdays
+        updated.applicableMonths = original.applicableMonths
+        updated.currencyCode = original.currencyCode
+        updated.stationKey = original.stationKey
+        return updated
     }
 }
 
