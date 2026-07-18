@@ -368,10 +368,11 @@ final class SmartActivityIndexerTests: XCTestCase {
         XCTAssertEqual(removeCarCount, 0)
     }
 
-    func testCancellationRestorationFailureKeepsFailedReportAndDoesNotNotify() async {
+    func testCancellationRestorationFailureNotifiesCommittedReplacementOnce() async throws {
         let notifications = IndexNotificationCounter()
+        let previous = Self.previousSession(carId: 1)
         let store = PostCommitGatedSmartActivitySessionStore(
-            sessions: [Self.previousSession(carId: 1)],
+            sessions: [previous],
             fingerprint: "original",
             failRestoration: true
         )
@@ -387,11 +388,23 @@ final class SmartActivityIndexerTests: XCTestCase {
         task.cancel()
         await store.releaseFirstReplace()
         let report = await task.value
-        let notifiedCarIds = await notifications.carIds
+        let committedSessions = try await store.sessions(carId: 1)
+        let committedFingerprint = try await store.derivationFingerprint(carId: 1)
+        let notificationsAfterFailure = await notifications.carIds
 
         XCTAssertEqual(report.failedCarIds, [1])
         XCTAssertTrue(report.completedCarIds.isEmpty)
-        XCTAssertTrue(notifiedCarIds.isEmpty)
+        XCTAssertNotEqual(committedSessions, [previous])
+        XCTAssertNotEqual(committedFingerprint, "original")
+        XCTAssertEqual(committedSessions.first?.derivationFingerprint, committedFingerprint)
+        XCTAssertEqual(notificationsAfterFailure, [1])
+
+        let retryReport = await indexer.rebuild(carIds: [1])
+        let notificationsAfterRetry = await notifications.carIds
+        XCTAssertEqual(retryReport.unchangedCarIds, [1])
+        XCTAssertTrue(retryReport.completedCarIds.isEmpty)
+        XCTAssertTrue(retryReport.failedCarIds.isEmpty)
+        XCTAssertEqual(notificationsAfterRetry, [1])
     }
 
     func testCancelledQueuedRebuildReturnsPromptlyWithoutReleasingActiveOperation() async throws {
@@ -414,16 +427,17 @@ final class SmartActivityIndexerTests: XCTestCase {
             cancelledReturned.fulfill()
             return report
         }
-        try await Task.sleep(for: .milliseconds(20))
+        await waitUntilQueuedOperationCount(1, indexer: indexer)
         second.cancel()
         await fulfillment(of: [cancelledReturned], timeout: 0.5)
         let cancelledReport = await second.value
+        await waitUntilQueuedOperationCount(0, indexer: indexer)
         let requestCountAfterCancellation = await source.requestCount
         XCTAssertEqual(cancelledReport.failedCarIds, [1])
         XCTAssertEqual(requestCountAfterCancellation, 1)
 
         let third = Task { await indexer.rebuild(carIds: [1]) }
-        try await Task.sleep(for: .milliseconds(20))
+        await waitUntilQueuedOperationCount(1, indexer: indexer)
         let requestCountWhileFirstIsActive = await source.requestCount
         XCTAssertEqual(requestCountWhileFirstIsActive, 1)
 
@@ -435,6 +449,15 @@ final class SmartActivityIndexerTests: XCTestCase {
         XCTAssertEqual(thirdReport.completedCarIds, [1])
         XCTAssertEqual(finalRequestCount, 2)
         XCTAssertEqual(finalSessions.first?.chargeCost?.amount, 3)
+    }
+
+    private func waitUntilQueuedOperationCount(
+        _ expectedCount: Int,
+        indexer: SmartActivityIndexer
+    ) async {
+        while await indexer.queuedOperationCount != expectedCount {
+            await Task.yield()
+        }
     }
 
     func testKnownDcChargeUsesDcRuleAndDoesNotUseResidentialTariff() async throws {

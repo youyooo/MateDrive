@@ -174,6 +174,8 @@ public actor SmartActivityIndexer: SmartActivityIndexing {
     private var operationInProgress = false
     private var operationWaiters: [OperationWaiter] = []
 
+    var queuedOperationCount: Int { operationWaiters.count }
+
     public init(
         source: any SmartActivitySourceLoading,
         sessionStore: any SmartActivitySessionStoring,
@@ -242,12 +244,14 @@ public actor SmartActivityIndexer: SmartActivityIndexing {
                 }
 
                 try Task.checkCancellation()
+                var replacementCommitted = false
                 do {
                     try await sessionStore.replace(
                         carId: carId,
                         sessions: derived.sessions,
                         derivationFingerprint: derived.fingerprint
                     )
+                    replacementCommitted = true
                     try Task.checkCancellation()
                 } catch {
                     if Task.isCancelled || error is CancellationError {
@@ -258,6 +262,9 @@ public actor SmartActivityIndexer: SmartActivityIndexing {
                                 derivationFingerprint: storedFingerprint
                             )
                         } catch {
+                            if replacementCommitted {
+                                await postChange(carId)
+                            }
                             throw SmartActivityIndexError.restorationFailed
                         }
                     }
