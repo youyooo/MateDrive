@@ -286,10 +286,24 @@ public enum ActivitySessionCardBuilder {
     }
 
     private static func sessionColor(_ session: SmartActivitySession) -> ActivitySessionCardSemanticColor {
-        if session.chargeCost?.isEstimated == true { return .orange }
-        if nonzero(session.parkingMetrics?.chargeGainPercent) != nil { return .green }
-        if session.eventReferences.contains(where: { $0.kind == .drive }) { return .blue }
+        let metricsNeedReview = session.parkingMetrics.map {
+            $0.quality == .estimated || $0.quality == .partial
+        } ?? false
+        let sessionNeedsReview = session.quality == .estimated || session.quality == .partial
+        if session.chargeCost?.isEstimated == true || metricsNeedReview || sessionNeedsReview { return .orange }
+
+        let purpose = session.classification?.purpose ?? session.provisionalKind
+        let isChargingSession = session.eventReferences.contains(where: { $0.kind == .charge })
+            || purpose == .replenishment
+            || purpose == .homeCharging
+            || purpose == .workCharging
+        if isChargingSession,
+           let chargeGain = session.parkingMetrics?.chargeGainPercent,
+           chargeGain > 0 {
+            return .green
+        }
         if let sleep = session.parkingMetrics?.sleepDuration, sleep.isFinite, sleep > 0 { return .indigo }
+        if session.eventReferences.contains(where: { $0.kind == .drive }) { return .blue }
         return .neutral
     }
 

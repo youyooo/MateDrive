@@ -1,6 +1,9 @@
+import SwiftUI
+import UIKit
 import XCTest
 @testable import MateDroidIOS
 
+@MainActor
 final class ActivitySessionCardTests: XCTestCase {
     func testMissingCostAndRangeAreAbsentWithoutSyntheticZeroes() {
         let presentation = makePresentation(
@@ -55,6 +58,7 @@ final class ActivitySessionCardTests: XCTestCase {
         XCTAssertEqual(metric.value, "¥6.60")
         XCTAssertEqual(metric.semanticColor, .orange)
         XCTAssertEqual(metric.sourceText, "Estimated · Regional tariff")
+        XCTAssertEqual(presentation.semanticColor, .orange)
     }
 
     func testVisualAndAccessibilityMetricsUseTheSameOrder() throws {
@@ -122,9 +126,82 @@ final class ActivitySessionCardTests: XCTestCase {
         XCTAssertEqual(costMetric.semanticColor, .green)
     }
 
+    func testSleepSessionRemainsIndigoWhenItIncludesDriveReferences() {
+        let arrival = SmartActivityEventReference(sourceActivity: TeslaMateActivity(
+            id: 42,
+            type: "drive",
+            startDate: "2026-07-18T00:30:00Z",
+            endDate: "2026-07-18T01:00:00Z",
+            endAddress: "Home"
+        ))
+        let presentation = makePresentation(
+            parkingMetrics: makeMetrics(),
+            eventReferences: [arrival],
+            provisionalKind: .parking
+        )
+
+        XCTAssertEqual(presentation.semanticColor, .indigo)
+    }
+
+    func testAccessibilityDynamicTypeProducesFiniteExpandedHostedLayout() {
+        let presentation = ActivitySessionCardPresentation(
+            title: "Overnight parking and charging activity",
+            placeText: "A deliberately long saved parking location name for constrained phone layout",
+            timeText: "July 18, 2026 at 1:00 AM - July 18, 2026 at 8:30 AM",
+            systemImage: "moon.zzz.fill",
+            semanticColor: .indigo,
+            metrics: [
+                ActivitySessionCardMetric(
+                    kind: .parkingDuration,
+                    title: "Parking duration",
+                    value: "7 hr 30 min",
+                    systemImage: "clock.fill",
+                    semanticColor: .indigo
+                ),
+                ActivitySessionCardMetric(
+                    kind: .standbyLoss,
+                    title: "Standby battery change",
+                    value: "-2%",
+                    systemImage: "moon.zzz.fill",
+                    semanticColor: .indigo
+                ),
+                ActivitySessionCardMetric(
+                    kind: .cost,
+                    title: "Charging cost",
+                    value: "$12.50",
+                    systemImage: "creditcard.fill",
+                    semanticColor: .green,
+                    sourceText: "Confirmed - Manual entry"
+                )
+            ]
+        )
+
+        let normalSize = hostedSize(
+            presentation: presentation,
+            dynamicTypeSize: .large,
+            width: 320
+        )
+        let accessibilitySize = hostedSize(
+            presentation: presentation,
+            dynamicTypeSize: .accessibility3,
+            width: 320
+        )
+
+        for size in [normalSize, accessibilitySize] {
+            XCTAssertTrue(size.width.isFinite)
+            XCTAssertTrue(size.height.isFinite)
+            XCTAssertGreaterThan(size.width, 0)
+            XCTAssertGreaterThan(size.height, 0)
+            XCTAssertLessThanOrEqual(size.width, 320)
+        }
+        XCTAssertGreaterThan(accessibilitySize.height, normalSize.height)
+    }
+
     private func makePresentation(
         parkingMetrics: ParkingIntervalMetrics?,
-        chargeCost: SmartActivityChargeCost? = nil
+        chargeCost: SmartActivityChargeCost? = nil,
+        eventReferences: [SmartActivityEventReference] = [],
+        provisionalKind: SmartActivityPurpose = .homeCharging
     ) -> ActivitySessionCardPresentation {
         ActivitySessionCardBuilder.presentation(
             session: SmartActivitySession(
@@ -136,11 +213,11 @@ final class ActivitySessionCardTests: XCTestCase {
                 latitude: 28.2,
                 longitude: 112.9,
                 geofenceID: "home",
-                provisionalKind: .homeCharging,
+                provisionalKind: provisionalKind,
                 classification: nil,
                 parkingMetrics: parkingMetrics,
                 chargeCost: chargeCost,
-                eventReferences: [],
+                eventReferences: eventReferences,
                 isOpen: false,
                 quality: .complete,
                 derivationVersion: 1,
@@ -153,6 +230,21 @@ final class ActivitySessionCardTests: XCTestCase {
             locale: Locale(identifier: "en_US_POSIX"),
             timeZone: TimeZone(secondsFromGMT: 0)!
         )
+    }
+
+    private func hostedSize(
+        presentation: ActivitySessionCardPresentation,
+        dynamicTypeSize: DynamicTypeSize,
+        width: CGFloat
+    ) -> CGSize {
+        let view = ActivitySessionCard(presentation: presentation)
+            .environment(\.dynamicTypeSize, dynamicTypeSize)
+        let controller = UIHostingController(rootView: view)
+        let fittingConstraint = CGSize(width: width, height: 10_000)
+        controller.view.bounds = CGRect(origin: .zero, size: fittingConstraint)
+        controller.view.setNeedsLayout()
+        controller.view.layoutIfNeeded()
+        return controller.sizeThatFits(in: fittingConstraint)
     }
 
     private func makeMetrics(
