@@ -5,7 +5,10 @@ on:
     branches: [main]
     paths:
       - "docs/support/**"
+      - "scripts/generate_review_demo_api.py"
       - ".github/workflows/pages.yml"
+  schedule:
+    - cron: "17 2 * * *"
   workflow_dispatch:
 
 permissions:
@@ -26,6 +29,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - name: Generate privacy-safe App Review demo API
+        run: python3 scripts/generate_review_demo_api.py
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs/support
