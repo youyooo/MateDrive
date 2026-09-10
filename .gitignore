@@ -1,9 +1,14 @@
 .matedrive-integration.env
-.matedroid-integration.env
-*.xcresult
+.build/
 .superpowers/
+tmp/
+*.xcresult
 DerivedData/
 build/
 __pycache__/
 *.py[cod]
 **/xcuserdata/
+docs/support/review-demo/
+*.ipa
+*.xcarchive/
+release/fnos/**/dist/

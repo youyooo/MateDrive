@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "platform": "linux/amd64",
+  "verification": "official manifest digest matched to proxy pull digest and local image architecture",
+  "images": [
+    {
+      "service": "teslamate",
+      "sourceTag": "teslamate/teslamate:4.0.1",
+      "repository": "teslamate/teslamate",
+      "pullRepository": "docker.m.daocloud.io/teslamate/teslamate",
+      "digest": "sha256:cfcd983684d181020cad412ed6f4c5048eacb6366fd90eb047be4b15db2c3c32",
+      "platform": "linux/amd64"
+    },
+    {
+      "service": "database",
+      "sourceTag": "postgres:18-trixie",
+      "repository": "postgres",
+      "pullRepository": "docker.m.daocloud.io/library/postgres",
+      "digest": "sha256:29ee7bb30d804447dc9a91fd0d74322ae1dc3a4072cc6346f70a5ed6e783b565",
+      "platform": "linux/amd64"
+    },
+    {
+      "service": "grafana",
+      "sourceTag": "teslamate/grafana:latest",
+      "repository": "teslamate/grafana",
+      "pullRepository": "docker.m.daocloud.io/teslamate/grafana",
+      "digest": "sha256:0f19d05b522f60c774389f36dd9bbcb52462639bb61d5e8d19345c6e1734bc68",
+      "platform": "linux/amd64"
+    },
+    {
+      "service": "mosquitto",
+      "sourceTag": "eclipse-mosquitto:2",
+      "repository": "eclipse-mosquitto",
+      "pullRepository": "docker.m.daocloud.io/library/eclipse-mosquitto",
+      "digest": "sha256:6dba0f1b2795ddcbe0d41bdfb8b8d56a423acca23ccde4342a4652be54639b11",
+      "platform": "linux/amd64"
+    },
+    {
+      "service": "teslamateapi",
+      "sourceTag": "mytesla/teslamateapi:2.6",
+      "repository": "mytesla/teslamateapi",
+      "pullRepository": "mytesla/teslamateapi",
+      "digest": "sha256:fabcaa6022e4975286d6105fd1624eb570f4eb4d1371820b8b0640b5ee7aeb6c",
+      "platform": "linux/amd64"
+    }
+  ]
+}

@@ -1,20 +1,16 @@
 # Legal Notices
 
-MateDrive is an independently branded iOS application maintained as its own open-source project.
+MateDrive is an independently implemented native iOS application for viewing
+data supplied by user-operated TeslaMate-compatible services.
 
-Portions of the application's behavior, localization baseline, data-model concepts, and vehicle image assets were adapted from the GPLv3-licensed MateDroid project:
+MateDrive does not bundle vehicle photography, manufacturer artwork, or vehicle
+renderings. Product and service names are used only to describe compatibility.
 
-- Source: https://github.com/vide/matedroid
-- License: GNU General Public License version 3
+MateDrive interoperates with independently maintained projects and services,
+including TeslaMate, TeslaMateApi, Open-Meteo, Apple MapKit, CloudKit, and
+geocoding services. Those projects, services, platform frameworks, and bundled
+software dependencies retain their own licenses and terms.
 
-The iOS implementation contains substantial original Swift and SwiftUI work. Distribution of the combined work remains subject to GNU GPLv3. The full license text is included in `LICENSE`.
-
-MateDrive also interoperates with independently maintained projects and services, including:
-
-- TeslaMate: https://github.com/teslamate-org/teslamate
-- TeslaMateApi: https://github.com/tobiasehlert/teslamateapi
-- MyTesS API documentation: https://cn.mytess.net/zh/docs/guide
-- Open-Meteo: https://open-meteo.com/
-- Apple MapKit and geocoding services
-
-MateDrive is not affiliated with, endorsed by, or sponsored by Tesla, Inc., TeslaMate, or the maintainers of the services listed above. Tesla and related product names are trademarks of their respective owners.
+MateDrive is not affiliated with, endorsed by, or sponsored by Tesla, Inc.,
+TeslaMate, or any third-party service provider. Tesla and related product names
+are trademarks of their respective owners.

@@ -1,0 +1,17 @@
+DEFINE SCHEMA
+
+RECORD TYPE MateDriveBackup (
+    "___createTime" TIMESTAMP QUERYABLE SORTABLE,
+    "___recordID" REFERENCE QUERYABLE,
+    createdAt TIMESTAMP SORTABLE,
+    kind STRING,
+    formatVersion INT64,
+    databaseSchemaVersion INT64,
+    appVersion STRING,
+    databaseByteCount INT64,
+    databaseSHA256 STRING,
+    databaseAsset ASSET,
+    settingsData ENCRYPTED BYTES,
+    GRANT READ, WRITE TO "_creator",
+    GRANT CREATE TO "_icloud"
+);

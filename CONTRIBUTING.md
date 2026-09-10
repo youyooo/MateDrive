@@ -1,6 +1,6 @@
 # Contributing to MateDrive
 
-感谢你改进 MateDrive。提交贡献代表你同意按仓库的 GNU GPLv3 许可证发布该贡献，并确认你有权提交相关代码和素材。
+感谢你改进 MateDrive。提交贡献代表你同意按仓库的 MIT License 发布该贡献，并确认你有权提交相关代码和素材。
 
 ## 开发环境
 

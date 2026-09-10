@@ -1,0 +1,1674 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%.0f%% utilization</key>
+	<string>利用率 %.0f%%</string>
+	<key>%.1f hard brakes/100 km</key>
+	<string>每百公里 %.1f 次急煞</string>
+	<key>%@ days</key>
+	<string>%@ 天</string>
+	<key>%@ hidden</key>
+	<string>%@ 已隱藏</string>
+	<key>%@ is %@ %@, below %@ %@</key>
+	<string>%@ 當前 %@ %@，低於 %@ %@</string>
+	<key>%d adjacent-drive groups; original record counts are retained.</key>
+	<string>已合併 %d 組相鄰行程；原始記錄數量保持不變。</string>
+	<key>%d days</key>
+	<string>%d 天</string>
+	<key>%d days installed</key>
+	<string>已安裝 %d 天</string>
+	<key>%d min</key>
+	<string>%d 分鐘</string>
+	<key>%d min stops</key>
+	<string>停留 %d 分鐘</string>
+	<key>%d parking records unmatched</key>
+	<string>%d 筆停車記錄未匹配</string>
+	<key>%d segments</key>
+	<string>%d 段行程</string>
+	<key>%d/%d drives recorded</key>
+	<string>%d/%d 次行程有記錄</string>
+	<key>, </key>
+	<string>、</string>
+	<key>1 parking record unmatched</key>
+	<string>1 筆停車記錄未匹配</string>
+	<key>30 Days</key>
+	<string>30 天</string>
+	<key>6 Months</key>
+	<string>6 個月</string>
+	<key>7 Days</key>
+	<string>7 天</string>
+	<key>90 Days</key>
+	<string>90 天</string>
+	<key>A valid place is required for future activities.</key>
+	<string>此地點的未來活動需要有效地點。</string>
+	<key>AC</key>
+	<string>交流</string>
+	<key>AC / DC</key>
+	<string>交流 / 直流</string>
+	<key>AC Charge</key>
+	<string>交流充電</string>
+	<key>AC charger</key>
+	<string>交流充电桩</string>
+	<key>AC charging was recorded</key>
+	<string>記錄到交流充電</string>
+	<key>API Cache Cleared</key>
+	<string>API 缓存已清除</string>
+	<key>API Cache Size</key>
+	<string>API 缓存大小</string>
+	<key>API Capabilities</key>
+	<string>API 能力</string>
+	<key>API Cost</key>
+	<string>API 價格</string>
+	<key>API Token</key>
+	<string>API 令牌</string>
+	<key>API tokens and authentication secrets are stored in the iOS Keychain and are not included in diagnostics or exports.</key>
+	<string>接口令牌和认证密钥保存在 iOS 钥匙串中，不会写入诊断信息或导出文件。</string>
+	<key>Accent</key>
+	<string>強調色</string>
+	<key>Accept Invalid Certificates</key>
+	<string>接受無效證書</string>
+	<key>Achievement Card</key>
+	<string>成就卡片</string>
+	<key>Achievement Share Card</key>
+	<string>成就分享卡片</string>
+	<key>Active</key>
+	<string>活躍</string>
+	<key>Active Time</key>
+	<string>生效時間</string>
+	<key>Activities</key>
+	<string>活動</string>
+	<key>Activity</key>
+	<string>动态</string>
+	<key>Activity Detail</key>
+	<string>动态详情</string>
+	<key>Activity Labels</key>
+	<string>动态标签</string>
+	<key>Activity Purpose</key>
+	<string>活動用途</string>
+	<key>Activity Recap</key>
+	<string>活動回顧</string>
+	<key>Activity actions</key>
+	<string>动态操作</string>
+	<key>Activity classification runs on this device from vehicle coordinates recorded by your TeslaMate server. MateDrive does not request the phone's location.</key>
+	<string>动态分类仅在本机根据 TeslaMate 服务器记录的车辆坐标运行，MateDrive 不会请求手机定位。</string>
+	<key>Activity detail unavailable</key>
+	<string>动态详情不可用</string>
+	<key>Activity filter</key>
+	<string>动态筛选</string>
+	<key>Activity location</key>
+	<string>动态位置</string>
+	<key>Add Pricing Rule</key>
+	<string>新增電價規則</string>
+	<key>Add Segment</key>
+	<string>新增時段</string>
+	<key>Add rules to estimate charging cost by location, time, and charger type.</key>
+	<string>新增規則後，可按位置、時間和充電型別估算電費。</string>
+	<key>Address Keyword</key>
+	<string>地址關鍵詞</string>
+	<key>Advanced Connection Options</key>
+	<string>進階連線選項</string>
+	<key>All</key>
+	<string>全部</string>
+	<key>All Time</key>
+	<string>全部時間</string>
+	<key>All dates</key>
+	<string>全部日期</string>
+	<key>All day</key>
+	<string>全天</string>
+	<key>Allow Open-Meteo Route Weather</key>
+	<string>允許 Open-Meteo 路線天氣</string>
+	<key>Already Correct</key>
+	<string>費用已正確</string>
+	<key>Also learns a reusable rule for future charging at this location.</key>
+	<string>同时学习此地点以后充电可复用的价格规则。</string>
+	<key>Any</key>
+	<string>任意</string>
+	<key>Any location</key>
+	<string>任意位置</string>
+	<key>Anyone receiving this image can see the selected achievement details.</key>
+	<string>收到圖片的人都能看到已選擇的成就資訊。</string>
+	<key>Anyone receiving this image can see the selected battery history details.</key>
+	<string>收到圖片的人都能看到已選擇的電池歷史資訊。</string>
+	<key>Anyone receiving this image can see the selected period details.</key>
+	<string>收到圖片的人都能看到已選擇的週期資訊。</string>
+	<key>Anyone receiving this image can see the selected trip details.</key>
+	<string>收到圖片的人都能看到已選擇的行程資訊。</string>
+	<key>Apple map and geocoding services process map locations. Route weather stays off until you enable it. When enabled, one representative precise route coordinate and the drive time are sent to Open-Meteo. Open-Meteo may retain request logs for up to 90 days and states that it does not link them to user identities or use them for tracking.</key>
+	<string>蘋果地圖和地理編碼服務會處理地圖位置。路線天氣預設關閉，只有你主動啟用後，應用程式才會向 Open-Meteo 傳送一個代表性的精確路線座標和行程時間。該服務可能將請求日誌保留最長 90 天，並聲明不會將其關聯至使用者身分或用於追蹤。</string>
+	<key>Apple map and geocoding services process map locations. When route weather is requested, precise route coordinates are sent to Open-Meteo for app functionality. Open-Meteo may retain request logs for up to 90 days and states that it does not link them to user identities or use them for tracking.</key>
+	<string>苹果地图和地理编码服务会处理地图位置。请求沿途天气时，应用会将精确路线坐标发送给第三方开放气象服务以提供天气功能。该服务可能将请求日志保留最长 90 天，并声明不会将其关联到用户身份或用于跟踪。</string>
+	<key>Applies to</key>
+	<string>应用范围</string>
+	<key>Apply To</key>
+	<string>套用範圍</string>
+	<key>At 100%</key>
+	<string>滿電估算</string>
+	<key>Audit History</key>
+	<string>審計記錄</string>
+	<key>Authentication</key>
+	<string>身份驗證</string>
+	<key>Automatic</key>
+	<string>自動</string>
+	<key>Available</key>
+	<string>可用</string>
+	<key>Available only for localhost, LAN, private, or Tailscale HTTPS addresses. Public servers always require a valid certificate.</key>
+	<string>僅適用於本機、區域網路、私人網路或加密組網的安全位址；公網伺服器始終必須使用有效憑證。</string>
+	<key>Average</key>
+	<string>平均</string>
+	<key>Average Gap</key>
+	<string>平均間隔</string>
+	<key>Average Speed</key>
+	<string>平均速度</string>
+	<key>Avg Duration</key>
+	<string>平均時長</string>
+	<key>Avg Efficiency</key>
+	<string>平均效率</string>
+	<key>Avg Speed</key>
+	<string>平均速度</string>
+	<key>Base</key>
+	<string>基準</string>
+	<key>Base Charge</key>
+	<string>基準充電</string>
+	<key>Basic Password</key>
+	<string>基礎認證密碼</string>
+	<key>Basic Username</key>
+	<string>基礎認證使用者名稱</string>
+	<key>Battery</key>
+	<string>電池</string>
+	<key>Battery %@, limit %@</key>
+	<string>電量 %@，上限 %@</string>
+	<key>Battery Calibration</key>
+	<string>電池校準</string>
+	<key>Battery Health</key>
+	<string>電池健康</string>
+	<key>Battery Health Note</key>
+	<string>如果 TeslaMate 是車輛行駛很久後才開始記錄，請填入新車滿電額定續航；電池健康會用當前估算滿電續航和該參考值計算。</string>
+	<key>Battery History</key>
+	<string>電池歷史</string>
+	<key>Battery Report</key>
+	<string>電池報告</string>
+	<key>Battery Share Card</key>
+	<string>電池分享卡片</string>
+	<key>Battery Trend</key>
+	<string>電池趨勢</string>
+	<key>Battery level</key>
+	<string>電池電量</string>
+	<key>Battery percentage gain</key>
+	<string>电池电量增加</string>
+	<key>Battery retention is calculated from data recorded by TeslaMate, not from the vehicle's full lifetime. Enter a verified new-car usable capacity or rated range in Settings to calculate absolute health.</key>
+	<string>目前保持率根據 TeslaMate 記錄期資料計算，並不代表整車壽命健康度。請在設定中填寫已確認的新車可用容量或額定續航後計算絕對健康度。</string>
+	<key>Battery unavailable</key>
+	<string>電池資料不可用</string>
+	<key>Bill</key>
+	<string>账单</string>
+	<key>Billed energy</key>
+	<string>计费电量</string>
+	<key>Billed energy is optional. When entered, it must come from your bill or charger meter and be greater than zero.</key>
+	<string>计费电量可留空；填写时应来自账单或充电桩表计，并且必须大于 0。</string>
+	<key>Billed energy must be greater than zero.</key>
+	<string>计费电量必须大于 0。</string>
+	<key>Blue</key>
+	<string>藍色</string>
+	<key>Braking Smoothness</key>
+	<string>煞車平穩度</string>
+	<key>Business</key>
+	<string>商務</string>
+	<key>Cached API Responses</key>
+	<string>API 响应缓存</string>
+	<key>Cached activity unavailable</key>
+	<string>缓存动态不可用</string>
+	<key>Calculated only from available TeslaMate API samples. Missing metrics are excluded instead of scored as zero; this is not Tesla's Safety Score.</key>
+	<string>僅使用伺服器已記錄的有效樣本計算；缺少的指標會被排除，不會按 0 分處理。本評分並非特斯拉官方安全評分。</string>
+	<key>Cancel</key>
+	<string>取消</string>
+	<key>Capacity Loss</key>
+	<string>容量損失</string>
+	<key>Capacity New</key>
+	<string>新車容量</string>
+	<key>Capacity Now</key>
+	<string>當前容量</string>
+	<key>Car Image</key>
+	<string>車輛圖片</string>
+	<key>Catalog Version</key>
+	<string>目录版本</string>
+	<key>Charge</key>
+	<string>充電</string>
+	<key>Charge Cost</key>
+	<string>充電費用</string>
+	<key>Charge Curves</key>
+	<string>充電曲線</string>
+	<key>Charge Detail</key>
+	<string>充電詳情</string>
+	<key>Charge Energy</key>
+	<string>充入電量</string>
+	<key>Charge Pricing</key>
+	<string>充電電價</string>
+	<key>Charge Starting</key>
+	<string>充電啟動中</string>
+	<key>Charge Stops</key>
+	<string>充電次數</string>
+	<key>Charge energy coverage: %d/%d</key>
+	<string>充電電量覆蓋：%d/%d</string>
+	<key>Charge gain</key>
+	<string>充电增加</string>
+	<key>Charge unavailable</key>
+	<string>充電不可用</string>
+	<key>Charged</key>
+	<string>已充電</string>
+	<key>Charged Energy</key>
+	<string>充入能量</string>
+	<key>Charger</key>
+	<string>充电桩</string>
+	<key>Charger Type</key>
+	<string>充電型別</string>
+	<key>Charger type</key>
+	<string>充电桩类型</string>
+	<key>Charges</key>
+	<string>充電記錄</string>
+	<key>Charges only</key>
+	<string>僅充電</string>
+	<key>Charging</key>
+	<string>充電</string>
+	<key>Charging Prices</key>
+	<string>充电价格</string>
+	<key>Charging Trend</key>
+	<string>充電趨勢</string>
+	<key>Charging complete</key>
+	<string>充電完成</string>
+	<key>Charging cost</key>
+	<string>充电费用</string>
+	<key>Charging cost estimates</key>
+	<string>充电费用估算</string>
+	<key>Charging location</key>
+	<string>充电地点</string>
+	<key>Check all four tyres; the recorded pressure difference is larger than 0.25 bar.</key>
+	<string>檢查四輪胎壓，記錄到的胎壓差已達到 0.25 巴。</string>
+	<key>Choose the vehicle shown by this widget.</key>
+	<string>選擇此小元件顯示的車輛。</string>
+	<key>Clear</key>
+	<string>清除</string>
+	<key>Clear API Cache</key>
+	<string>清除 API 缓存</string>
+	<key>Clear Cached API Responses</key>
+	<string>清除 API 响应缓存</string>
+	<key>Clear Learned Labels &amp; Prices</key>
+	<string>清除学习标签与价格</string>
+	<key>Clear Learned Suggestions</key>
+	<string>清除学习建议</string>
+	<key>Clear Manual Cost</key>
+	<string>清除手動價格</string>
+	<key>Clear Offline Data</key>
+	<string>清除离线数据</string>
+	<key>Clear Offline Snapshots</key>
+	<string>清除離線快照</string>
+	<key>Clear Offline Vehicle Data</key>
+	<string>清除離線車輛資料</string>
+	<key>Clear Route Weather</key>
+	<string>清除路線天氣</string>
+	<key>Clear Saved Route Weather</key>
+	<string>清除已儲存路線天氣</string>
+	<key>Clear all cached API responses?</key>
+	<string>清除全部 API 响应缓存？</string>
+	<key>Clear all offline vehicle snapshots?</key>
+	<string>清除全部離線車輛快照？</string>
+	<key>Clear all saved route weather?</key>
+	<string>清除全部已儲存路線天氣？</string>
+	<key>Clear learned suggestions?</key>
+	<string>清除学习建议？</string>
+	<key>Cloudflare Access Client ID</key>
+	<string>Cloudflare 訪問客戶端標識</string>
+	<key>Cloudflare Access Client Secret</key>
+	<string>Cloudflare 訪問客戶端金鑰</string>
+	<key>Color</key>
+	<string>顏色</string>
+	<key>Combined Summary</key>
+	<string>合併彙總</string>
+	<key>Commute</key>
+	<string>通勤</string>
+	<key>Compare</key>
+	<string>比較</string>
+	<key>Compare Charges</key>
+	<string>比較充電</string>
+	<key>Compare Drives</key>
+	<string>比較行程</string>
+	<key>Comparing drives</key>
+	<string>正在比較行程</string>
+	<key>Complete every price segment with valid times and a non-negative price.</key>
+	<string>請完整填寫每個分時時段、有效時間和非負電價。</string>
+	<key>Complete history</key>
+	<string>完整歷史記錄</string>
+	<key>Confidence %d%% · %d recent drives</key>
+	<string>可信度 %d%% · 近期 %d 次行程</string>
+	<key>Configure vehicle image</key>
+	<string>設定車輛圖片</string>
+	<key>Confirm</key>
+	<string>确认</string>
+	<key>Confirm charging price</key>
+	<string>确认充电价格</string>
+	<key>Confirmed</key>
+	<string>已确认</string>
+	<key>Confirmed activity labels and charging prices are included in MateDrive iCloud backups. Keychain credentials are never included.</key>
+	<string>已确认的动态标签和充电价格会包含在 MateDrive 的 iCloud 备份中，钥匙串凭据永远不会包含在内。</string>
+	<key>Confirmed by you</key>
+	<string>由你確認</string>
+	<key>Confirmed place-label rules and charging price observations will be removed. Original activities, charges, and drives stay unchanged.</key>
+	<string>将清除已学习的地点标签规则和充电价格观察，原始动态、充电和行程数据不会改变。</string>
+	<key>Connect TeslaMate</key>
+	<string>連接 TeslaMate</string>
+	<key>Connect server</key>
+	<string>連接伺服器</string>
+	<key>Connect your TeslaMate server</key>
+	<string>連接你的 TeslaMate 伺服器</string>
+	<key>Connection Test</key>
+	<string>連線測試</string>
+	<key>Cost</key>
+	<string>費用</string>
+	<key>Cost Changes</key>
+	<string>費用變更</string>
+	<key>Cost Source</key>
+	<string>費用來源</string>
+	<key>Costs hidden</key>
+	<string>費用已隱藏</string>
+	<key>Could Not Clear Data</key>
+	<string>无法清除数据</string>
+	<key>Could Not Save Settings</key>
+	<string>無法儲存設定</string>
+	<key>Could not access saved credentials. Your previous server settings were kept.</key>
+	<string>無法存取已儲存的認證憑證，已保留之前的伺服器設定。</string>
+	<key>Could not save credentials. Your previous server settings were kept.</key>
+	<string>無法儲存認證憑證，已保留之前的伺服器設定。</string>
+	<key>Could not save this permission. Try again.</key>
+	<string>無法儲存此授權，請再試一次。</string>
+	<key>Countries</key>
+	<string>國家或地區</string>
+	<key>Countries Visited</key>
+	<string>訪問過的國家</string>
+	<key>Create Trip</key>
+	<string>建立路程</string>
+	<key>Create a new rule from this template</key>
+	<string>使用此範本新增規則</string>
+	<key>Credentials</key>
+	<string>认证凭据</string>
+	<key>Currency</key>
+	<string>貨幣</string>
+	<key>Current</key>
+	<string>當前</string>
+	<key>Current Alerts</key>
+	<string>當前警報</string>
+	<key>Current Charge</key>
+	<string>當前充電</string>
+	<key>Current SOC</key>
+	<string>當前電量</string>
+	<key>Current session in progress</key>
+	<string>當前會話進行中</string>
+	<key>Current vehicle location</key>
+	<string>車輛目前位置</string>
+	<key>Custom</key>
+	<string>自訂</string>
+	<key>Custom Name</key>
+	<string>自訂名稱</string>
+	<key>Custom activity</key>
+	<string>自定义活动</string>
+	<key>Custom activity name is required.</key>
+	<string>自訂活動名稱不可為空。</string>
+	<key>DC</key>
+	<string>直流</string>
+	<key>DC Charge</key>
+	<string>直流充電</string>
+	<key>DC fast charging was recorded</key>
+	<string>記錄到直流快充</string>
+	<key>Dark</key>
+	<string>深色</string>
+	<key>Dashboard</key>
+	<string>儀表盤</string>
+	<key>Data Flow</key>
+	<string>数据流向</string>
+	<key>Data Quality</key>
+	<string>資料品質</string>
+	<key>Data coverage</key>
+	<string>資料覆蓋</string>
+	<key>Data leaves the app only when you explicitly export or share it. Review addresses, routes, notes, and other personal details before sharing.</key>
+	<string>只有在你主动导出或分享时，数据才会离开应用。分享前请检查地址、路线、备注和其他个人信息。</string>
+	<key>Date</key>
+	<string>日期</string>
+	<key>Day Trip</key>
+	<string>日間行程</string>
+	<key>Deep Blue</key>
+	<string>深藍</string>
+	<key>Default Price per kWh</key>
+	<string>預設每度價格</string>
+	<key>Delete</key>
+	<string>刪除</string>
+	<key>Delete Learned Data</key>
+	<string>删除学习数据</string>
+	<key>Delete Trip</key>
+	<string>刪除路程</string>
+	<key>Delete learned labels and charging prices?</key>
+	<string>删除学习标签和充电价格？</string>
+	<key>Derived activity sessions and dashboard, activity, software-update, and widget snapshots will be cleared. Synchronized drive, charging, and location history, confirmed labels, prices, server settings, and Keychain credentials will remain.</key>
+	<string>衍生動態以及首頁、動態、軟體更新和小工具快照會被清除。已同步的行程、充電和位置記錄、已確認標籤、價格、伺服器設定和鑰匙圈憑證會保留。</string>
+	<key>Derived activity sessions will be cleared, but confirmed labels, charging prices, server settings, and Keychain credentials will not be removed.</key>
+	<string>派生动态会被清除，但已确认的标签、充电价格、服务器设置和钥匙串凭据不会被删除。</string>
+	<key>Detected at %@</key>
+	<string>偵測位置：%@</string>
+	<key>Detected configuration</key>
+	<string>偵測到的設定</string>
+	<key>Direct TeslaMate data</key>
+	<string>TeslaMate 原始資料</string>
+	<key>Disabled</key>
+	<string>已停用</string>
+	<key>Distance</key>
+	<string>距離</string>
+	<key>Distance Recorded</key>
+	<string>已記錄里程</string>
+	<key>Distance coverage: %d/%d</key>
+	<string>里程覆蓋：%d/%d</string>
+	<key>Done</key>
+	<string>完成</string>
+	<key>Drive</key>
+	<string>行程</string>
+	<key>Drive Detail</key>
+	<string>行程詳情</string>
+	<key>Drive Distance</key>
+	<string>行程里程</string>
+	<key>Drive Insights</key>
+	<string>行程洞察</string>
+	<key>Drive Summary</key>
+	<string>行程摘要</string>
+	<key>Drive endpoint</key>
+	<string>行程终点</string>
+	<key>Drive unavailable</key>
+	<string>行程不可用</string>
+	<key>Drives</key>
+	<string>行程</string>
+	<key>Drives only</key>
+	<string>僅行程</string>
+	<key>Driving</key>
+	<string>行駛</string>
+	<key>Driving Energy</key>
+	<string>行駛能量</string>
+	<key>Driving Time</key>
+	<string>駕駛時長</string>
+	<key>Driving energy coverage: %d/%d</key>
+	<string>行駛能量覆蓋：%d/%d</string>
+	<key>Duration</key>
+	<string>時長</string>
+	<key>Edit</key>
+	<string>編輯</string>
+	<key>Edit Activity Label</key>
+	<string>編輯活動標籤</string>
+	<key>Edit activity label</key>
+	<string>编辑动态标签</string>
+	<key>Efficiency</key>
+	<string>效率</string>
+	<key>Elevation</key>
+	<string>海拔</string>
+	<key>Enable Route Weather</key>
+	<string>啟用路線天氣</string>
+	<key>Enabled</key>
+	<string>已啟用</string>
+	<key>Enabling Route Weather</key>
+	<string>正在啟用路線天氣</string>
+	<key>End</key>
+	<string>結束</string>
+	<key>End Time</key>
+	<string>結束時間</string>
+	<key>Ends</key>
+	<string>结束</string>
+	<key>Energy</key>
+	<string>能量</string>
+	<key>Energy Added</key>
+	<string>充入電量</string>
+	<key>Energy Change</key>
+	<string>能量变化</string>
+	<key>Energy price per kilowatt-hour.</key>
+	<string>每千瓦时的电费单价。</string>
+	<key>Energy unit price</key>
+	<string>电费单价</string>
+	<key>English</key>
+	<string>英語</string>
+	<key>Enter a finite final amount of zero or more.</key>
+	<string>最终金额必须是大于或等于 0 的有效数字。</string>
+	<key>Enter a unit price, or enough bill data to derive one for future charges.</key>
+	<string>请填写单价，或填写足够的账单数据以计算此地点以后的单价。</string>
+	<key>Enter a valid non-negative default price.</key>
+	<string>請輸入有效且不小於零的預設電價。</string>
+	<key>Enter a valid rule time in HH:mm format.</key>
+	<string>請輸入有效的規則時間，例如 08:30。</string>
+	<key>Enter both the start and end of the time window.</key>
+	<string>时间段必须同时包含开始和结束时间。</string>
+	<key>Enter energy from the user's bill or charger meter, not TeslaMate vehicle energy.</key>
+	<string>填写用户账单或充电桩表计电量，不是 TeslaMate 车辆侧电量。</string>
+	<key>Enter valid coordinates and a radius greater than zero.</key>
+	<string>請輸入有效座標和大於零的半徑。</string>
+	<key>Error</key>
+	<string>錯誤</string>
+	<key>Estimated</key>
+	<string>估算</string>
+	<key>Estimated battery health</key>
+	<string>估算電池健康度</string>
+	<key>Exact dates and costs hidden</key>
+	<string>精確日期和費用已隱藏</string>
+	<key>Exact dates hidden</key>
+	<string>精確日期已隱藏</string>
+	<key>Exact match</key>
+	<string>精確配對</string>
+	<key>Exact recording dates and start odometer hidden</key>
+	<string>精確記錄日期和起始里程已隱藏</string>
+	<key>Exact recording dates hidden</key>
+	<string>精確記錄日期已隱藏</string>
+	<key>Export Audit CSV</key>
+	<string>匯出審計記錄</string>
+	<key>Export Diagnostics</key>
+	<string>匯出診斷報告</string>
+	<key>Export Failed</key>
+	<string>匯出失敗</string>
+	<key>Failed</key>
+	<string>失敗</string>
+	<key>Fallback</key>
+	<string>預設</string>
+	<key>Fallback match</key>
+	<string>備用配對</string>
+	<key>Final amount</key>
+	<string>最终金额</string>
+	<key>Finding location</key>
+	<string>正在查詢位置</string>
+	<key>First Visit</key>
+	<string>首次到訪</string>
+	<key>Fixed fee</key>
+	<string>固定费</string>
+	<key>Follow Device Region</key>
+	<string>跟隨裝置地區</string>
+	<key>Follow System</key>
+	<string>跟隨系統</string>
+	<key>Follow TeslaMate</key>
+	<string>跟隨 TeslaMate</string>
+	<key>Free</key>
+	<string>免費</string>
+	<key>From</key>
+	<string>自</string>
+	<key>Front Left</key>
+	<string>左前輪</string>
+	<key>Front Right</key>
+	<string>右前輪</string>
+	<key>Future activities at this place</key>
+	<string>此地点以后的动态</string>
+	<key>Future activities here</key>
+	<string>此地點以後</string>
+	<key>Future charges here</key>
+	<string>此地点以后</string>
+	<key>Generated</key>
+	<string>生成日期</string>
+	<key>Generation</key>
+	<string>世代</string>
+	<key>Geofence match</key>
+	<string>圍欄匹配</string>
+	<key>Geofences</key>
+	<string>地理围栏</string>
+	<key>Goal</key>
+	<string>目標</string>
+	<key>Green</key>
+	<string>綠色</string>
+	<key>Hard-braking frequency or regenerative-utilization samples are required. Missing data is not converted into a score.</key>
+	<string>至少需要急煞頻率或能量回收利用率樣本；缺少的資料不會被轉換為評分。</string>
+	<key>Has Cost</key>
+	<string>有費用</string>
+	<key>Health Confidence</key>
+	<string>健康可信度</string>
+	<key>Help &amp; Legal</key>
+	<string>協助與法律</string>
+	<key>High Confidence</key>
+	<string>高可信度</string>
+	<key>History</key>
+	<string>歷史</string>
+	<key>History Span</key>
+	<string>歷史跨度</string>
+	<key>Home charging</key>
+	<string>家庭充电</string>
+	<key>Home rule</key>
+	<string>家庭规则</string>
+	<key>Idle</key>
+	<string>空閒</string>
+	<key>Imperial (mi, °F, psi)</key>
+	<string>英制（英里、華氏度、磅力每平方英寸）</string>
+	<key>In Progress</key>
+	<string>進行中</string>
+	<key>Include classification</key>
+	<string>包含行程分類</string>
+	<key>Include costs</key>
+	<string>包含費用</string>
+	<key>Include date and time</key>
+	<string>包含日期和時間</string>
+	<key>Include exact activity dates</key>
+	<string>包含精確活動日期</string>
+	<key>Include exact dates</key>
+	<string>包含精確日期</string>
+	<key>Include exact recording dates</key>
+	<string>包含精確記錄日期</string>
+	<key>Include place names</key>
+	<string>包含地點名稱</string>
+	<key>Include progress details</key>
+	<string>包含進度細節</string>
+	<key>Include recording start odometer</key>
+	<string>包含開始記錄時里程</string>
+	<key>Include route shape</key>
+	<string>包含路線形狀</string>
+	<key>Include start and destination</key>
+	<string>包含起點和終點</string>
+	<key>Include start and end locations</key>
+	<string>包含起點和終點</string>
+	<key>Include unlock dates</key>
+	<string>包含解鎖日期</string>
+	<key>Increase following distance and anticipate slowing traffic to reduce hard braking.</key>
+	<string>增加跟車距離並提前觀察減速車流，減少急煞。</string>
+	<key>Independent App</key>
+	<string>獨立應用聲明</string>
+	<key>Indigo</key>
+	<string>靛藍色</string>
+	<key>Inferred match</key>
+	<string>推斷配對</string>
+	<key>Inside</key>
+	<string>車內</string>
+	<key>Inside a saved charging geofence</key>
+	<string>位於已儲存的充電圍欄內</string>
+	<key>Inside a saved school geofence</key>
+	<string>位於已儲存的學校圍欄內</string>
+	<key>Inside a saved shopping geofence</key>
+	<string>位於已儲存的商場圍欄內</string>
+	<key>Inside the saved Home geofence</key>
+	<string>位於已儲存的家庭圍欄內</string>
+	<key>Inside the saved Work geofence</key>
+	<string>位於已儲存的公司圍欄內</string>
+	<key>Intermediate Stops</key>
+	<string>中途停留</string>
+	<key>Known Charge Cost</key>
+	<string>已知充電費用</string>
+	<key>Language</key>
+	<string>語言</string>
+	<key>Last 6 Days</key>
+	<string>最近 6 天</string>
+	<key>Last Cache Update</key>
+	<string>缓存最近更新</string>
+	<key>Latitude</key>
+	<string>緯度</string>
+	<key>Latitude, longitude, and radius must be entered together.</key>
+	<string>緯度、經度和半徑必須同時填寫。</string>
+	<key>Learned Data Cleared</key>
+	<string>学习数据已清除</string>
+	<key>Learned pattern</key>
+	<string>學習到的規律</string>
+	<key>Learned suggestions cleared.</key>
+	<string>学习建议已清除。</string>
+	<key>Legs</key>
+	<string>分段</string>
+	<key>Leisure</key>
+	<string>休閒遊玩</string>
+	<key>Lifetime</key>
+	<string>累計</string>
+	<key>Lifetime health unavailable</key>
+	<string>壽命健康度無法取得</string>
+	<key>Light</key>
+	<string>淺色</string>
+	<key>Limit to a time window</key>
+	<string>限制時段</string>
+	<key>Limited</key>
+	<string>受限</string>
+	<key>Loading</key>
+	<string>正在載入</string>
+	<key>Loading battery</key>
+	<string>正在載入電池</string>
+	<key>Loading charge</key>
+	<string>正在載入充電</string>
+	<key>Loading charges</key>
+	<string>正在載入充電記錄</string>
+	<key>Loading comparison</key>
+	<string>正在載入比較</string>
+	<key>Loading countries</key>
+	<string>正在載入國家</string>
+	<key>Loading current charge</key>
+	<string>正在載入當前充電</string>
+	<key>Loading dashboard</key>
+	<string>正在載入儀表盤</string>
+	<key>Loading drive</key>
+	<string>正在載入行程</string>
+	<key>Loading drives</key>
+	<string>正在載入行程</string>
+	<key>Loading mileage</key>
+	<string>正在載入里程</string>
+	<key>Loading regions</key>
+	<string>正在載入地區</string>
+	<key>Loading sentry history</key>
+	<string>正在載入哨兵歷史</string>
+	<key>Loading stats</key>
+	<string>正在載入統計</string>
+	<key>Loading trip</key>
+	<string>正在載入路程</string>
+	<key>Loading trips</key>
+	<string>正在載入路程</string>
+	<key>Loading updates</key>
+	<string>正在載入更新</string>
+	<key>Loading weather</key>
+	<string>正在載入天氣</string>
+	<key>Local Data</key>
+	<string>本地数据</string>
+	<key>Local manual price</key>
+	<string>本地手動價格</string>
+	<key>Location</key>
+	<string>位置</string>
+	<key>Location and time pricing rules are not configured yet</key>
+	<string>暫未配置按位置和時間匹配的電價規則</string>
+	<key>Location filter applied</key>
+	<string>已套用地點篩選</string>
+	<key>Location unavailable</key>
+	<string>位置無法使用</string>
+	<key>Locations hidden</key>
+	<string>地點已隱藏</string>
+	<key>Lock</key>
+	<string>門鎖</string>
+	<key>Locked</key>
+	<string>已鎖定</string>
+	<key>Longest</key>
+	<string>最長</string>
+	<key>Longest Drive</key>
+	<string>最長行程</string>
+	<key>Longitude</key>
+	<string>經度</string>
+	<key>Low Confidence</key>
+	<string>低可信度</string>
+	<key>Maintenance</key>
+	<string>维护</string>
+	<key>Manual Cost</key>
+	<string>手動價格</string>
+	<key>Manual Costs Protected</key>
+	<string>已保護手動費用</string>
+	<key>Manual configuration</key>
+	<string>手動設定</string>
+	<key>Manual entry</key>
+	<string>手动录入</string>
+	<key>Manual match</key>
+	<string>手動配對</string>
+	<key>Maps &amp; Weather</key>
+	<string>地图与天气服务</string>
+	<key>Matched</key>
+	<string>符合記錄</string>
+	<key>Matched a repeated route</key>
+	<string>符合重複路線</string>
+	<key>Matched a weekday commute window</key>
+	<string>符合工作日通勤時段</string>
+	<key>Matched directly from the vehicle details.</key>
+	<string>根據車輛資訊直接配對。</string>
+	<key>Matched from vehicle details with catalog defaults where data was unavailable.</key>
+	<string>根據車輛資訊配對，缺少資料時使用目錄預設值。</string>
+	<key>Matched the typical stay duration</key>
+	<string>符合典型停留時長</string>
+	<key>MateDrive</key>
+	<string>MateDrive</string>
+	<key>MateDrive Page</key>
+	<string>MateDrive 頁面</string>
+	<key>MateDrive Vehicle</key>
+	<string>MateDrive 車輛</string>
+	<key>MateDrive groups the display only. TeslaMate records remain unchanged, and every original segment stays available below.</key>
+	<string>MateDrive 只合併顯示，不會修改 TeslaMate 記錄；下方仍可查看每一段原始行程。</string>
+	<key>MateDrive has no developer-operated analytics or vehicle-data backend and does not track you across apps.</key>
+	<string>MateDrive 不接入开发者运营的分析或车辆数据后台，也不会跨应用跟踪你。</string>
+	<key>MateDrive inferred this activity from the available trip, place, time and charging evidence.</key>
+	<string>MateDrive 根據可用的行程、地點、時間和充電證據推斷此動態。</string>
+	<key>MateDrive is an independently developed, unofficial iOS app. It is not affiliated with, sponsored by, or endorsed by Tesla, Inc., TeslaMate, or any other service provider. Product and service names are used only to describe compatibility.</key>
+	<string>MateDrive 是獨立開發的非官方 iOS 應用，與特斯拉公司、TeslaMate 或其他服務提供方不存在隸屬、贊助或官方認可關係。產品與服務名稱僅用於說明相容性，相關商標歸各自權利人所有。</string>
+	<key>MateDrive verifies server and data access before saving.</key>
+	<string>儲存前，MateDrive 會驗證伺服器和資料存取。</string>
+	<key>Max Speed</key>
+	<string>最高速度</string>
+	<key>Maximum stop</key>
+	<string>最長停留</string>
+	<key>Medium Confidence</key>
+	<string>中等可信度</string>
+	<key>Merge adjacent drives</key>
+	<string>合併相鄰行程</string>
+	<key>Merged Drive</key>
+	<string>合併行程</string>
+	<key>Metric (km, °C, bar)</key>
+	<string>公制（公里、攝氏度、巴）</string>
+	<key>Midnight Cherry</key>
+	<string>午夜櫻桃</string>
+	<key>Midnight Silver</key>
+	<string>午夜銀</string>
+	<key>Mileage</key>
+	<string>里程</string>
+	<key>Mileage by Day</key>
+	<string>按日裡程</string>
+	<key>Mileage by Month</key>
+	<string>按月里程</string>
+	<key>Mileage by Year</key>
+	<string>按年裡程</string>
+	<key>Missing Cost</key>
+	<string>缺少費用</string>
+	<key>Missing hours: %@</key>
+	<string>尚缺時段：%@ 點</string>
+	<key>Most Efficient</key>
+	<string>最高效行程</string>
+	<key>Name</key>
+	<string>名稱</string>
+	<key>Needs calibration</key>
+	<string>需要校準</string>
+	<key>Net battery change</key>
+	<string>电量净变化</string>
+	<key>New Battery Rated Range</key>
+	<string>新車滿電額定續航</string>
+	<key>New Blank Rule</key>
+	<string>新增空白規則</string>
+	<key>New from Template</key>
+	<string>從範本新增</string>
+	<key>Newest</key>
+	<string>最新</string>
+	<key>No Active Charge</key>
+	<string>沒有正在充電</string>
+	<key>No Cost</key>
+	<string>無費用</string>
+	<key>No Developer Collection</key>
+	<string>开发者不收集数据</string>
+	<key>No Matching Rule</key>
+	<string>未符合規則</string>
+	<key>No cached activity</key>
+	<string>暂无缓存动态</string>
+	<key>No charge history</key>
+	<string>沒有充電歷史</string>
+	<key>No charge point data</key>
+	<string>沒有充電點資料</string>
+	<key>No comparable charges</key>
+	<string>暫無可比較充電</string>
+	<key>No comparable drives</key>
+	<string>暫無可比較行程</string>
+	<key>No cost recorded</key>
+	<string>未記錄費用</string>
+	<key>No countries recorded</key>
+	<string>沒有國家記錄</string>
+	<key>No curve data</key>
+	<string>暫無曲線資料</string>
+	<key>No data</key>
+	<string>無資料</string>
+	<key>No drive history</key>
+	<string>沒有行程歷史</string>
+	<key>No matching activity</key>
+	<string>沒有符合篩選的動態</string>
+	<key>No mileage data</key>
+	<string>沒有里程資料</string>
+	<key>No pricing changes</key>
+	<string>沒有需要寫入的費用</string>
+	<key>No pricing rule matched this charge</key>
+	<string>沒有電價規則匹配本次充電</string>
+	<key>No pricing rules</key>
+	<string>暫無電價規則</string>
+	<key>No recorded locations</key>
+	<string>暂无已记录位置</string>
+	<key>No regions recorded</key>
+	<string>沒有地區記錄</string>
+	<key>No reliable data</key>
+	<string>暫無可靠資料</string>
+	<key>No route coordinates</key>
+	<string>沒有路線座標</string>
+	<key>No saved activity labels</key>
+	<string>暂无已保存的动态标签</string>
+	<key>No sentry alerts recorded</key>
+	<string>沒有哨兵警報記錄</string>
+	<key>No software updates found</key>
+	<string>未找到軟體更新</string>
+	<key>No source references are available.</key>
+	<string>暂无来源引用。</string>
+	<key>No trips found</key>
+	<string>暫無路程</string>
+	<key>No weather samples</key>
+	<string>沒有天氣樣本</string>
+	<key>Not classified</key>
+	<string>暫未分類</string>
+	<key>Not configured</key>
+	<string>未设置</string>
+	<key>Notifications</key>
+	<string>通知</string>
+	<key>OK</key>
+	<string>確定</string>
+	<key>Odometer</key>
+	<string>里程錶</string>
+	<key>Off</key>
+	<string>關閉</string>
+	<key>Official source references are available.</key>
+	<string>已包含官方来源引用。</string>
+	<key>Offline Activity Timelines</key>
+	<string>離線活動時間軸</string>
+	<key>Offline Dashboard Snapshots</key>
+	<string>离线首页快照</string>
+	<key>Offline Data Cleared</key>
+	<string>离线数据已清除</string>
+	<key>Offline Snapshots Cleared</key>
+	<string>離線快照已清除</string>
+	<key>Oldest</key>
+	<string>最舊</string>
+	<key>On</key>
+	<string>開啟</string>
+	<key>On-device classification</key>
+	<string>设备端分类</string>
+	<key>One-time fixed fee for this charging session.</key>
+	<string>本次充电的一次性固定费用。</string>
+	<key>Ongoing</key>
+	<string>进行中</string>
+	<key>Only charger type and pricing schedule are saved. Location, effective dates, and priority stay with each rule.</key>
+	<string>範本只儲存充電類型和價格時段；位置、生效日期和優先順序仍由每條規則單獨設定。</string>
+	<key>Only derived activity sessions will be removed and regenerated. Original activities, charges, and drives stay unchanged.</key>
+	<string>仅删除并重新生成派生动态，原始动态、充电和行程数据不会改变。</string>
+	<key>Open ${destination}</key>
+	<string>開啟${destination}</string>
+	<key>Open MateDrive Page</key>
+	<string>開啟 MateDrive 頁面</string>
+	<key>Open details</key>
+	<string>開啟詳細資料</string>
+	<key>Open recent driving map</key>
+	<string>開啟近期行駛地圖</string>
+	<key>Opens a selected MateDrive page for the current vehicle.</key>
+	<string>為目前車輛開啟所選的 MateDrive 頁面。</string>
+	<key>Orange</key>
+	<string>橙色</string>
+	<key>Original Drive Segments</key>
+	<string>原始行程分段</string>
+	<key>Other DC</key>
+	<string>其他直流樁</string>
+	<key>Other DC charger</key>
+	<string>其他直流充电桩</string>
+	<key>Outside</key>
+	<string>車外</string>
+	<key>Outside Temperature</key>
+	<string>車外溫度</string>
+	<key>Overnight windows are supported, for example 22:00 to 06:00.</key>
+	<string>支援跨午夜，例如 22:00 至 06:00。</string>
+	<key>Page</key>
+	<string>頁面</string>
+	<key>Pages will request fresh data from your server the next time they open. Server settings and Keychain credentials will not be removed.</key>
+	<string>下次打开页面时会重新从服务器获取数据。服务器设置和钥匙串凭据不会被删除。</string>
+	<key>Palette</key>
+	<string>調色盤</string>
+	<key>Park</key>
+	<string>停车</string>
+	<key>Parked</key>
+	<string>停車</string>
+	<key>Parking</key>
+	<string>停车</string>
+	<key>Parking Detail</key>
+	<string>停車詳情</string>
+	<key>Parking location</key>
+	<string>停车地点</string>
+	<key>Parking only</key>
+	<string>僅停車</string>
+	<key>Partial history</key>
+	<string>歷史記錄不完整</string>
+	<key>Peak</key>
+	<string>峰值</string>
+	<key>Peak Power</key>
+	<string>峰值功率</string>
+	<key>Pearl White</key>
+	<string>珍珠白</string>
+	<key>Period Recap Share Card</key>
+	<string>週期回顧分享卡片</string>
+	<key>Personal</key>
+	<string>個人</string>
+	<key>Pickup or drop-off</key>
+	<string>接送</string>
+	<key>Pink</key>
+	<string>粉紅色</string>
+	<key>Power</key>
+	<string>功率</string>
+	<key>Power Curve</key>
+	<string>功率曲線</string>
+	<key>Precondition the battery before cold-weather drives when regeneration is limited.</key>
+	<string>低溫且能量回收受限時，建議出發前預熱電池。</string>
+	<key>Preferences</key>
+	<string>偏好設定</string>
+	<key>Price</key>
+	<string>價格</string>
+	<key>Price Segments</key>
+	<string>分時價格</string>
+	<key>Price components</key>
+	<string>价格组成</string>
+	<key>Price coverage: %d/%d</key>
+	<string>價格覆蓋：%d/%d</string>
+	<key>Price per kWh</key>
+	<string>每度價格</string>
+	<key>Price scope</key>
+	<string>价格范围</string>
+	<key>Price segments cannot overlap.</key>
+	<string>分時時段不能重疊。</string>
+	<key>Pricing Preview</key>
+	<string>費用預覽</string>
+	<key>Pricing Rule</key>
+	<string>電價規則</string>
+	<key>Pricing Rules</key>
+	<string>電價規則</string>
+	<key>Pricing basis energy</key>
+	<string>计价采用电量</string>
+	<key>Pricing rule</key>
+	<string>電價規則</string>
+	<key>Priority</key>
+	<string>優先順序</string>
+	<key>Privacy &amp; Local Data</key>
+	<string>隐私与本地数据</string>
+	<key>Privacy Policy</key>
+	<string>隱私政策</string>
+	<key>Private route</key>
+	<string>隱私行程</string>
+	<key>Progress</key>
+	<string>進度</string>
+	<key>Purpose</key>
+	<string>用途</string>
+	<key>Quicksilver</key>
+	<string>極速銀</string>
+	<key>Radius Meters</key>
+	<string>半徑（米）</string>
+	<key>Range</key>
+	<string>續航</string>
+	<key>Range Change</key>
+	<string>续航变化</string>
+	<key>Range Loss</key>
+	<string>續航損失</string>
+	<key>Range New</key>
+	<string>新車續航</string>
+	<key>Range Now</key>
+	<string>當前續航</string>
+	<key>Rated Range</key>
+	<string>額定續航</string>
+	<key>Rated range</key>
+	<string>額定續航</string>
+	<key>Rated-range change</key>
+	<string>表显续航变化</string>
+	<key>Read-only responses remain available for up to 30 days. Pages show cached data immediately and refresh it in the background, including after the app restarts. Cache filenames contain only a one-way hash, and files use iOS data protection.</key>
+	<string>只读响应最多保留 30 天。页面会立即显示缓存并在后台更新，应用重启后同样有效。缓存文件名只包含单向哈希，文件使用 iOS 数据保护。</string>
+	<key>Ready</key>
+	<string>就緒</string>
+	<key>Rear Left</key>
+	<string>左後輪</string>
+	<key>Rear Right</key>
+	<string>右後輪</string>
+	<key>Rebuild</key>
+	<string>重建</string>
+	<key>Rebuild Derived Activities</key>
+	<string>重建派生动态</string>
+	<key>Rebuild derived activities?</key>
+	<string>重建派生动态？</string>
+	<key>Recent Driving Score</key>
+	<string>近期駕駛評分</string>
+	<key>Recent dashboard status, complete activity timelines, and aggregated widget trends are stored so pages remain available during a temporary server outage. Widget trends exclude locations and exact event times. Snapshots are isolated by server and vehicle.</key>
+	<string>最近首頁狀態、完整活動時間軸和小元件彙總趨勢會儲存在本機，以便伺服器暫時離線時繼續查看。小元件趨勢不包含位置和事件精確時間，快照依伺服器和車輛隔離。</string>
+	<key>Recent recorded metrics are balanced. Keep the same smooth driving pattern.</key>
+	<string>近期已記錄指標較均衡，保持目前平順駕駛方式。</string>
+	<key>Recommendations</key>
+	<string>駕駛建議</string>
+	<key>Reconstructed from power samples</key>
+	<string>由功率取樣重建</string>
+	<key>Record more complete drives before treating this score as a stable trend.</key>
+	<string>繼續累積完整行程後，再將該評分視為穩定趨勢。</string>
+	<key>Recorded Capacity Retention</key>
+	<string>記錄期容量保持率</string>
+	<key>Recorded Range Retention</key>
+	<string>記錄期續航保持率</string>
+	<key>Recorded charging location</key>
+	<string>已记录充电地点</string>
+	<key>Recorded event</key>
+	<string>已记录事件</string>
+	<key>Recorded location</key>
+	<string>已记录位置</string>
+	<key>Recorded range: %@ – %@</key>
+	<string>記錄範圍：%@ – %@</string>
+	<key>Recording Start Odometer</key>
+	<string>開始記錄時里程錶</string>
+	<key>Recording start odometer hidden</key>
+	<string>開始記錄時里程已隱藏</string>
+	<key>Recording-period retention does not represent lifetime battery health. Add a verified new-car reference before drawing a degradation conclusion.</key>
+	<string>記錄期保持率不代表整車壽命健康度；填寫已確認的新車參考值後，才能判斷長期衰減。</string>
+	<key>Records</key>
+	<string>記錄</string>
+	<key>Red</key>
+	<string>紅色</string>
+	<key>Refresh</key>
+	<string>重新整理</string>
+	<key>Regeneration</key>
+	<string>能量回收</string>
+	<key>Region</key>
+	<string>地区</string>
+	<key>Regional tariff</key>
+	<string>地区电价</string>
+	<key>Regions</key>
+	<string>地區</string>
+	<key>Regions Visited</key>
+	<string>訪問過的地區</string>
+	<key>Release the accelerator earlier and more smoothly to use more regenerative braking.</key>
+	<string>更早、更平順地鬆開加速踏板，提高能量回收利用率。</string>
+	<key>Rename</key>
+	<string>重新命名</string>
+	<key>Repeated at a similar time</key>
+	<string>多次出現在相近時段</string>
+	<key>Replace Recorded Cost</key>
+	<string>取代已有費用</string>
+	<key>Replenishment</key>
+	<string>补能</string>
+	<key>Required</key>
+	<string>需要补充</string>
+	<key>Residential Tariff</key>
+	<string>住宅电价</string>
+	<key>Restore the original TeslaMate API costs for every successful write?</key>
+	<string>恢復本次成功寫入記錄原有的 TeslaMate API 費用？</string>
+	<key>Restored</key>
+	<string>已恢復</string>
+	<key>Reusable Tariff Template</key>
+	<string>可重複使用電價範本</string>
+	<key>Road Trip</key>
+	<string>長途行程</string>
+	<key>Roll Back</key>
+	<string>回復</string>
+	<key>Roll Back Costs?</key>
+	<string>回復費用？</string>
+	<key>Route Drives</key>
+	<string>路線行程</string>
+	<key>Route Weather</key>
+	<string>路線天氣</string>
+	<key>Route Weather Cleared</key>
+	<string>路線天氣已清除</string>
+	<key>Route shape</key>
+	<string>路線形狀</string>
+	<key>Rule</key>
+	<string>規則</string>
+	<key>Rule unit price</key>
+	<string>规则采用单价</string>
+	<key>Rules</key>
+	<string>规则</string>
+	<key>SOC</key>
+	<string>電量</string>
+	<key>SOC Change</key>
+	<string>电量变化</string>
+	<key>Save</key>
+	<string>儲存</string>
+	<key>Save Cost</key>
+	<string>儲存費用</string>
+	<key>Save Pricing as Template</key>
+	<string>將價格儲存為範本</string>
+	<key>Save Trip</key>
+	<string>儲存路程</string>
+	<key>Saved Open-Meteo results will be removed from this device. Your route-weather permission and TeslaMate data will not change.</key>
+	<string>本機儲存的 Open-Meteo 天氣結果將被刪除。路線天氣授權狀態和 TeslaMate 資料不會改變。</string>
+	<key>Saved place</key>
+	<string>已保存地点</string>
+	<key>Saved place rule</key>
+	<string>常用地點規則</string>
+	<key>Saves the confirmed result for this charge.</key>
+	<string>只保存本次充电的确认结果。</string>
+	<key>Saving</key>
+	<string>正在儲存</string>
+	<key>Secondary Server URL</key>
+	<string>備用伺服器 URL</string>
+	<key>Segments</key>
+	<string>行程段數</string>
+	<key>Segments %d-%d: %d min stop, endpoints %d m apart</key>
+	<string>第 %d-%d 段：停留 %d 分鐘，銜接點相距 %d 公尺</string>
+	<key>Segments %d-%d: %d min stop, matching endpoint address</key>
+	<string>第 %d-%d 段：停留 %d 分鐘，銜接點地址一致</string>
+	<key>Selected</key>
+	<string>已選取</string>
+	<key>Sensitive details selected</key>
+	<string>已選擇敏感資訊</string>
+	<key>Sentry</key>
+	<string>哨兵模式</string>
+	<key>Sentry Alert</key>
+	<string>哨兵警報</string>
+	<key>Sentry active</key>
+	<string>哨兵模式已開啟</string>
+	<key>Sentry mode detected activity</key>
+	<string>哨兵模式檢測到活動</string>
+	<key>Server</key>
+	<string>伺服器</string>
+	<key>Server Statistics</key>
+	<string>服務端統計</string>
+	<key>Server URL</key>
+	<string>伺服器 URL</string>
+	<key>Server Version</key>
+	<string>伺服器版本</string>
+	<key>Server settings and Keychain credentials will not be removed.</key>
+	<string>服务器设置和钥匙串凭据不会被删除。</string>
+	<key>Service fee</key>
+	<string>服务费</string>
+	<key>Service fee per kilowatt-hour.</key>
+	<string>每千瓦时的服务费。</string>
+	<key>Session</key>
+	<string>會話</string>
+	<key>Session Fee</key>
+	<string>服務費</string>
+	<key>Session fee must be a non-negative number.</key>
+	<string>單次服務費必須是有效且不小於零的數字。</string>
+	<key>Settings</key>
+	<string>設定</string>
+	<key>Share Achievement</key>
+	<string>分享成就</string>
+	<key>Share Battery Report</key>
+	<string>分享電池報告</string>
+	<key>Share Card</key>
+	<string>分享卡片</string>
+	<key>Share Drive</key>
+	<string>分享行程</string>
+	<key>Share Image</key>
+	<string>分享圖片</string>
+	<key>Share Period Recap</key>
+	<string>分享週期回顧</string>
+	<key>Share Trip Report</key>
+	<string>分享路程報告</string>
+	<key>Sharing</key>
+	<string>分享</string>
+	<key>Shopping</key>
+	<string>购物</string>
+	<key>Show battery level</key>
+	<string>顯示電池電量</string>
+	<key>Show list</key>
+	<string>显示列表</string>
+	<key>Show map</key>
+	<string>显示地图</string>
+	<key>Show rated range</key>
+	<string>顯示額定續航</string>
+	<key>Showing saved drives. Pull to refresh when the server is available.</key>
+	<string>正在顯示已儲存的行程；伺服器恢復後下拉重新整理。</string>
+	<key>Shows 30-day charging energy and known cost totals.</key>
+	<string>顯示最近 30 天的充電電量和已知費用合計。</string>
+	<key>Shows a privacy-safe battery capacity or range trend.</key>
+	<string>顯示保護隱私的電池容量或續航趨勢。</string>
+	<key>Shows the latest read-only car status.</key>
+	<string>顯示最新的只讀車輛狀態。</string>
+	<key>Similar Charges</key>
+	<string>相近充電</string>
+	<key>Smart Activities</key>
+	<string>智能动态</string>
+	<key>Smart Activity Privacy</key>
+	<string>智能动态隐私</string>
+	<key>Smart suggestion</key>
+	<string>智能建議</string>
+	<key>Solid Black</key>
+	<string>純黑</string>
+	<key>Sort</key>
+	<string>排序</string>
+	<key>Speed</key>
+	<string>速度</string>
+	<key>Standby change</key>
+	<string>待机变化</string>
+	<key>Start</key>
+	<string>開始</string>
+	<key>Start Time</key>
+	<string>開始時間</string>
+	<key>Start and end time must be entered together.</key>
+	<string>開始時間和結束時間必須同時填寫。</string>
+	<key>Start and end times are both required.</key>
+	<string>開始和結束時間必須同時填寫。</string>
+	<key>Starts</key>
+	<string>开始</string>
+	<key>Station</key>
+	<string>地点</string>
+	<key>Station rule</key>
+	<string>充电站规则</string>
+	<key>Stats</key>
+	<string>統計</string>
+	<key>Stealth Grey</key>
+	<string>隱形灰</string>
+	<key>Succeeded</key>
+	<string>成功</string>
+	<key>Summary</key>
+	<string>摘要</string>
+	<key>Support &amp; Feedback</key>
+	<string>支援與意見回饋</string>
+	<key>Surface</key>
+	<string>表面色</string>
+	<key>Tariff Templates</key>
+	<string>電價範本</string>
+	<key>Tariff and charging-cost results are estimates for reference, not invoices. Confirm them against the charger operator's bill.</key>
+	<string>电价与充电费用结果仅供估算参考，不是账单；请以充电运营商账单为准。</string>
+	<key>Teal</key>
+	<string>青綠色</string>
+	<key>Temperature</key>
+	<string>溫度</string>
+	<key>Template Name</key>
+	<string>範本名稱</string>
+	<key>Template Saved</key>
+	<string>範本已儲存</string>
+	<key>Templates reuse pricing schedules without copying locations or effective dates.</key>
+	<string>範本只重複使用價格時段，不會複製位置或生效日期。</string>
+	<key>Tesla Supercharger</key>
+	<string>特斯拉超充</string>
+	<key>TeslaMate</key>
+	<string>TeslaMate</string>
+	<key>TeslaMate API price</key>
+	<string>TeslaMate API 價格</string>
+	<key>TeslaMate has not published the active charge yet.</key>
+	<string>TeslaMate 尚未釋出當前充電資料。</string>
+	<key>Test Connection</key>
+	<string>測試連線</string>
+	<key>Testing Connection</key>
+	<string>正在測試連線</string>
+	<key>The car is not currently charging.</key>
+	<string>車輛當前未在充電。</string>
+	<key>The currency code is invalid.</key>
+	<string>币种代码无效。</string>
+	<key>The effective start date must not be after the end date.</key>
+	<string>生效開始日期不能晚於結束日期。</string>
+	<key>The energy unit price cannot be negative.</key>
+	<string>电费单价不能为负数。</string>
+	<key>The final amount on the user's bill.</key>
+	<string>用户账单上的最终金额。</string>
+	<key>The fixed fee cannot be negative.</key>
+	<string>固定费不能为负数。</string>
+	<key>The model year falls outside the catalog range. Check the detected generation.</key>
+	<string>車款年份超出目錄範圍，請檢查偵測到的世代。</string>
+	<key>The model year is unavailable, so the generation was inferred.</key>
+	<string>車款年份無法取得，因此世代為推斷結果。</string>
+	<key>The report excludes server addresses, credentials, vehicle identifiers, and coordinates.</key>
+	<string>報告不會包含伺服器位址、認證憑據、車輛識別或座標。</string>
+	<key>The reported wheels conflict with the detected factory trim. Choose the configuration that matches your vehicle.</key>
+	<string>回報的輪圈與偵測到的原廠車型版本衝突，請選擇符合車輛的設定。</string>
+	<key>The saved configuration is no longer available. Automatic matching has been restored.</key>
+	<string>已儲存的設定已無法使用，已恢復自動配對。</string>
+	<key>The service fee cannot be negative.</key>
+	<string>服务费不能为负数。</string>
+	<key>The time window is saved with future rules and may cross midnight.</key>
+	<string>时间段会随地点规则保存，并且可以跨越午夜。</string>
+	<key>The vehicle left soon after charging</key>
+	<string>充電後不久車輛即離開</string>
+	<key>The vehicle model was not recognized. Choose a catalog generation manually.</key>
+	<string>無法識別車輛型號，請手動選擇目錄世代。</string>
+	<key>These evaluations come directly from TeslaMate API and remain separate from MateDrive's transparent recent-driving score.</key>
+	<string>以下評價直接來自 TeslaMate API，並與 MateDrive 的透明近期駕駛評分分開顯示。</string>
+	<key>This activity</key>
+	<string>僅本次</string>
+	<key>This activity only</key>
+	<string>仅本次动态</string>
+	<key>This charge only</key>
+	<string>仅本次</string>
+	<key>This feature is temporarily unavailable.</key>
+	<string>此功能暫不可用。</string>
+	<key>This is a suggestion. Use Edit activity label to correct it; your choice will take priority.</key>
+	<string>這是智能建議。可透過「編輯動態標籤」更正，你的選擇會被優先採用。</string>
+	<key>This is an estimate from TeslaMate records and your calibration reference, not a physical battery diagnosis.</key>
+	<string>該結果根據 TeslaMate 記錄和你的校準參考值估算，並非電池物理檢測結論。</string>
+	<key>This permanently deletes confirmed activity labels and charging-price observations, then clears derived activity sessions. Original TeslaMate data, server settings, and Keychain credentials are not removed.</key>
+	<string>此操作会永久删除已确认的动态标签和充电价格观察，并清除派生动态。TeslaMate 原始数据、服务器设置和钥匙串凭据不会被删除。</string>
+	<key>This recap uses loaded records only and marks totals as partial.</key>
+	<string>此回顧僅使用已載入記錄，並將彙總標記為不完整。</string>
+	<key>Through</key>
+	<string>至</string>
+	<key>Tier %d</key>
+	<string>第 %d 級</string>
+	<key>Time</key>
+	<string>時間</string>
+	<key>Time must be between 00:00 and 23:59.</key>
+	<string>時間必須介於 00:00 與 23:59 之間。</string>
+	<key>Time unavailable</key>
+	<string>时间不可用</string>
+	<key>Time values must be between 00:00 and 23:59.</key>
+	<string>时间必须在 00:00 到 23:59 之间。</string>
+	<key>Time window</key>
+	<string>时间段</string>
+	<key>Timeline</key>
+	<string>时间线</string>
+	<key>To load weather for this drive, MateDrive sends one representative precise route coordinate and the drive time to Open-Meteo. Open-Meteo may retain request logs for up to 90 days. You can turn this off and clear saved weather in Privacy &amp; Local Data.</key>
+	<string>如需載入本次行程天氣，MateDrive 會向 Open-Meteo 傳送一個代表性的精確路線座標和行程時間。Open-Meteo 可能將請求日誌保留最長 90 天。你可以隨時在「隱私與本機資料」中關閉並清除已儲存天氣。</string>
+	<key>Today</key>
+	<string>今天</string>
+	<key>Total Cost</key>
+	<string>總費用</string>
+	<key>Total Distance</key>
+	<string>總距離</string>
+	<key>Totals reflect loaded records only.</key>
+	<string>彙總僅反映已載入的記錄。</string>
+	<key>Trim</key>
+	<string>車型版本</string>
+	<key>Trip Detail</key>
+	<string>路程詳情</string>
+	<key>Trip Report</key>
+	<string>路程報告</string>
+	<key>Trip Report Share Card</key>
+	<string>路程報告分享卡片</string>
+	<key>Trip name</key>
+	<string>路程名稱</string>
+	<key>Trip not found</key>
+	<string>未找到路程</string>
+	<key>Trips</key>
+	<string>路程</string>
+	<key>Turning this off stops future Open-Meteo requests. Previously saved weather remains on this device until you clear it below.</key>
+	<string>關閉後將停止後續 Open-Meteo 請求。先前儲存的天氣仍保留在本機，直到你在下方清除。</string>
+	<key>Type</key>
+	<string>型別</string>
+	<key>Tyre Pressure</key>
+	<string>胎壓</string>
+	<key>Ultra Red</key>
+	<string>烈焰紅</string>
+	<key>Unable to create share image.</key>
+	<string>無法產生分享圖片。</string>
+	<key>Unable to update vehicle image. Please try again.</key>
+	<string>無法更新車輛圖片，請再試一次。</string>
+	<key>Unavailable</key>
+	<string>不可用</string>
+	<key>Unclassified</key>
+	<string>未分類</string>
+	<key>Unified Activities</key>
+	<string>統一活動</string>
+	<key>Units</key>
+	<string>單位</string>
+	<key>Unknown</key>
+	<string>未知</string>
+	<key>Unknown DC charger</key>
+	<string>未知直流充电桩</string>
+	<key>Unknown install date</key>
+	<string>安裝日期未知</string>
+	<key>Unlocked</key>
+	<string>已解鎖</string>
+	<key>Updates</key>
+	<string>更新</string>
+	<key>Updates per Month</key>
+	<string>每月更新</string>
+	<key>Use automatic match</key>
+	<string>使用自動配對</string>
+	<key>Use this configuration</key>
+	<string>使用此設定</string>
+	<key>Use this time window</key>
+	<string>使用此时间段</string>
+	<key>User confirmed</key>
+	<string>使用者已確認</string>
+	<key>Using the closest available catalog image.</key>
+	<string>正在使用目錄中最接近的圖片。</string>
+	<key>Using your saved vehicle image configuration.</key>
+	<string>正在使用已儲存的車輛圖片設定。</string>
+	<key>Variant</key>
+	<string>車型版本</string>
+	<key>Vehicle</key>
+	<string>車輛</string>
+	<key>Vehicle image</key>
+	<string>車輛圖片</string>
+	<key>Vehicle image unavailable</key>
+	<string>車輛圖片不可用</string>
+	<key>Vehicle location</key>
+	<string>車輛位置</string>
+	<key>Vehicle, drive, charging, battery, and location data are read directly from the server you configure.</key>
+	<string>车辆、行程、充电、电池和位置数据直接读取自你配置的服务器。</string>
+	<key>Vehicle-reported energy</key>
+	<string>车辆上报电量</string>
+	<key>Verified Regions</key>
+	<string>已核验地区</string>
+	<key>Verify &amp; Continue</key>
+	<string>驗證並繼續</string>
+	<key>Version</key>
+	<string>版本</string>
+	<key>View Charge</key>
+	<string>檢視充電</string>
+	<key>View Drive</key>
+	<string>檢視行程</string>
+	<key>View Standby Drain</key>
+	<string>查看待机损耗</string>
+	<key>Voltage</key>
+	<string>電壓</string>
+	<key>Weather Along The Way</key>
+	<string>沿途天氣</string>
+	<key>Wheels</key>
+	<string>輪圈</string>
+	<key>Where Was I</key>
+	<string>我在哪裡</string>
+	<key>Why MateDrive classified this activity</key>
+	<string>動態判斷依據</string>
+	<key>Why These Drives Were Merged</key>
+	<string>合併依據</string>
+	<key>Widget</key>
+	<string>小元件</string>
+	<key>Widget Vehicle Snapshots</key>
+	<string>小元件車輛快照</string>
+	<key>Work charging</key>
+	<string>工作地充电</string>
+	<key>Working</key>
+	<string>正在处理</string>
+	<key>Write</key>
+	<string>寫入</string>
+	<key>Write Costs?</key>
+	<string>寫入費用？</string>
+	<key>Write Selected Costs</key>
+	<string>寫入所選費用</string>
+	<key>Write the selected rule estimates to TeslaMate API? Existing API costs are changed only when explicitly selected.</key>
+	<string>將所選規則估算寫入 TeslaMate API？已有介面費用僅在明確勾選後才會更改。</string>
+	<key>Writeback Results</key>
+	<string>寫入結果</string>
+	<key>Year</key>
+	<string>年</string>
+	<key>Your TeslaMate Server</key>
+	<string>你的 TeslaMate 服务器</string>
+	<key>Your confirmed label takes priority over automatic classification.</key>
+	<string>你確認的標籤優先於自動判斷。</string>
+	<key>costs</key>
+	<string>費用</string>
+	<key>dates</key>
+	<string>日期</string>
+	<key>drive</key>
+	<string>行程</string>
+	<key>drives</key>
+	<string>次行程</string>
+	<key>failed</key>
+	<string>失敗</string>
+	<key>iCloud backup</key>
+	<string>iCloud 备份</string>
+	<key>locations</key>
+	<string>地點</string>
+	<key>min</key>
+	<string>分钟</string>
+	<key>minutes</key>
+	<string>分鐘</string>
+	<key>place names</key>
+	<string>地點名稱</string>
+	<key>progress details</key>
+	<string>進度細節</string>
+	<key>rolled back</key>
+	<string>已回復</string>
+	<key>route</key>
+	<string>路線</string>
+	<key>segments</key>
+	<string>時段</string>
+	<key>succeeded</key>
+	<string>成功</string>
+	<key>trip</key>
+	<string>路程</string>
+	<key>unlock dates</key>
+	<string>解鎖日期</string>
+	<key>vehicle.color.deep-blue</key>
+	<string>深海藍</string>
+	<key>vehicle.color.pearl-white</key>
+	<string>珍珠白</string>
+	<key>vehicle.color.stainless</key>
+	<string>不鏽鋼</string>
+	<key>vehicle.color.stealth-grey</key>
+	<string>隱形灰</string>
+	<key>vehicle.generation.cybertruck-awd</key>
+	<string>Cybertruck 全輪驅動</string>
+	<key>vehicle.generation.cybertruck-cyberbeast</key>
+	<string>Cybertruck Cyberbeast</string>
+	<key>vehicle.generation.model-3-early</key>
+	<string>Model 3（2017-2020）</string>
+	<key>vehicle.generation.model-3-highland</key>
+	<string>Model 3 Highland</string>
+	<key>vehicle.generation.model-3-highland-performance</key>
+	<string>Model 3 Highland Performance</string>
+	<key>vehicle.generation.model-3-refresh</key>
+	<string>Model 3 煥新版</string>
+	<key>vehicle.generation.model-3-refresh-performance</key>
+	<string>Model 3 煥新版 Performance</string>
+	<key>vehicle.generation.model-s-facelift</key>
+	<string>Model S（改款）</string>
+	<key>vehicle.generation.model-s-nosecone</key>
+	<string>Model S（經典車頭）</string>
+	<key>vehicle.generation.model-s-plaid</key>
+	<string>Model S Plaid</string>
+	<key>vehicle.generation.model-s-refresh</key>
+	<string>Model S 煥新版</string>
+	<key>vehicle.generation.model-x-legacy</key>
+	<string>Model X 經典版</string>
+	<key>vehicle.generation.model-x-plaid</key>
+	<string>Model X Plaid</string>
+	<key>vehicle.generation.model-x-refresh</key>
+	<string>Model X 煥新版</string>
+	<key>vehicle.generation.model-y-juniper-performance</key>
+	<string>Model Y Juniper Performance</string>
+	<key>vehicle.generation.model-y-juniper-premium</key>
+	<string>Model Y Juniper 進階版</string>
+	<key>vehicle.generation.model-y-juniper-standard</key>
+	<string>Model Y Juniper 標準版</string>
+	<key>vehicle.generation.model-y-legacy</key>
+	<string>Model Y 經典版</string>
+	<key>vehicle.generation.model-y-legacy-performance</key>
+	<string>Model Y 經典版 Performance</string>
+	<key>vehicle.generation.roadster-1</key>
+	<string>Roadster（2008-2012）</string>
+	<key>vehicle.trim.awd</key>
+	<string>全輪驅動</string>
+	<key>vehicle.trim.base</key>
+	<string>基礎版</string>
+	<key>vehicle.trim.cyberbeast</key>
+	<string>Cyberbeast</string>
+	<key>vehicle.trim.dual-motor</key>
+	<string>雙馬達</string>
+	<key>vehicle.trim.legacy</key>
+	<string>經典版</string>
+	<key>vehicle.trim.performance</key>
+	<string>高性能版</string>
+	<key>vehicle.trim.plaid</key>
+	<string>Plaid</string>
+	<key>vehicle.trim.premium</key>
+	<string>進階版</string>
+	<key>vehicle.trim.sport</key>
+	<string>運動版</string>
+	<key>vehicle.trim.standard</key>
+	<string>標準版</string>
+	<key>vehicle.wheel.aero-18</key>
+	<string>18 吋 Aero 輪圈</string>
+	<key>vehicle.wheel.all-season-20</key>
+	<string>20 吋全季節輪圈</string>
+	<key>vehicle.wheel.all-terrain-20</key>
+	<string>20 吋全地形輪圈</string>
+	<key>vehicle.wheel.arachnid-21</key>
+	<string>21 吋 Arachnid 輪圈</string>
+	<key>vehicle.wheel.crossflow-19</key>
+	<string>19 吋 Crossflow 輪圈</string>
+	<key>vehicle.wheel.cyberstream-20</key>
+	<string>20 吋 Cyberstream 輪圈</string>
+	<key>vehicle.wheel.directional-16-17</key>
+	<string>前 16 / 後 17 吋定向輪圈</string>
+	<key>vehicle.wheel.gemini-19</key>
+	<string>19 吋 Gemini 輪圈</string>
+	<key>vehicle.wheel.performance-20</key>
+	<string>20 吋 Performance 輪圈</string>
+	<key>vehicle.wheel.photon-18</key>
+	<string>18 吋 Photon 輪圈</string>
+	<key>vehicle.wheel.slipstream-20</key>
+	<string>20 吋 Slipstream 輪圈</string>
+	<key>vehicle.wheel.tempest-19</key>
+	<string>19 吋 Tempest 輪圈</string>
+	<key>vehicle.wheel.turbine-22</key>
+	<string>22 吋 Turbine 輪圈</string>
+	<key>vehicle.wheel.uberturbine-20</key>
+	<string>20 吋 Überturbine 輪圈</string>
+	<key>vehicle.wheel.uberturbine-21</key>
+	<string>21 吋 Überturbine 輪圈</string>
+</dict>
+</plist>

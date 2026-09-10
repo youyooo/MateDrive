@@ -17,10 +17,10 @@
 
 ```bash
 xcodegen generate
-open MateDroidIOS.xcodeproj
+open MateDrive.xcodeproj
 ```
 
-在 Xcode 中依次选择 `MateDroidIOS` 和 `MateDroidWidget` target：
+在 Xcode 中依次选择 `MateDriveApp` 和 `MateDriveWidget` target：
 
 1. 打开 `Signing & Capabilities`。
 2. 勾选 `Automatically manage signing`。
@@ -66,6 +66,8 @@ make install-device
 4. 点击“测试连接”，确认车辆、状态、行程、充电、设置和诊断能力均通过。
 5. 检查首页、行程能耗、充电费用、电池健康、地图、单位、语言和 Widget。
 
+需要外网访问时，首选地址应使用可信 HTTPS 入口；只在同一局域网使用时，可把 Mac mini 的稳定 Bonjour 主机名（例如 `http://youyooodemac-mini.local:3030`）作为备用。`.ts.net` 地址依赖 Mac 和 iPhone 同时在线并登录 Tailscale；如果 Mac mini 的 Tailscale 节点离线，TeslaMate API 本身仍可能健康，但 iPhone 无法到达它。
+
 真实凭据只填入手机或本机被忽略的 `.matedrive-integration.env`，不要写进源码、Issue 或截图。
 
 ## 常见问题
@@ -75,3 +77,4 @@ make install-device
 - Bundle ID 不可用：改用自己控制的唯一反向域名，并同步 App、Widget、App Group 和后台任务标识。
 - App Group 权限失败：确认付费开发团队已启用 App Groups，App 与 Widget 使用同一 Team 和同一 Group。
 - 安装后无法连接：从 iPhone Safari 访问 API 域名，检查 DNS、HTTPS 证书、反向代理、防火墙与认证。
+- 使用 `.ts.net` 地址时持续超时：先确认 Tailscale 中 Mac mini 节点在线；若 iPhone 与 Mac 在同一 Wi-Fi，优先切换到稳定的 `.local` 主机名或 DHCP 保留地址。

@@ -1,6 +1,6 @@
 # MyTesS Competitive Parity Roadmap
 
-Source reviewed: `https://cn.mytess.net/zh` on 2026-07-12. This roadmap tracks observable product capabilities, not marketing wording or visual copying.
+Source reviewed: `https://cn.mytess.net/zh/docs/guide` on 2026-07-16. This roadmap tracks observable product capabilities, not marketing wording or visual copying.
 
 MateDrive product position:
 
@@ -17,29 +17,29 @@ MateDrive product position:
 | Live vehicle dashboard | Implemented | Vehicle identity, battery, range, locks, climate, Sentry, location, TPMS, offline snapshot and widget. Continue multi-car isolation testing. |
 | Battery health and history | Implemented with calibration | Capacity/range trends, confidence and late-recording baseline. Late-history best-observed capacity/range is never treated as a new-car baseline. Add model-specific verified reference library only when source evidence is available. |
 | Drive maps and telemetry | Implemented | Route, replay, speed, traction/regen power, battery/heating, elevation, temperature and four-wheel pressure. Add richer behavior explanations. |
-| Drive insights | Partial | Commute clusters, records and measured metrics exist. Missing a transparent, user-auditable driving score and actionable recommendations. |
-| Multi-drive trips | Implemented | Automatic/manual grouping, weather, route, timeline, countries, charge stops and persistence. Photos and story-style share output remain missing. |
-| Charging history and live charge | Implemented | SOC, power, energy, voltage, duration, cost, curves, comparisons and notifications. Live Activity and Dynamic Island remain missing. |
-| Time/location charging prices | Implemented | Geofence/type/time/effective-date rules, synchronized charger identity, safe batch preview, selected-history API 2.6 writeback, per-record results, rollback evidence, vehicle-scoped persistent audit history and privacy-safe CSV export. Tariff-template sharing is the next quality bar. |
+| Drive insights | Implemented | Commute clusters, records, measured metrics, transparent safety/regen score components, confidence, missing-sample exclusion and actionable recommendations. Expand only with server-validated inputs. |
+| Multi-drive trips | Implemented | Automatic/manual grouping, weather, route, timeline, countries, charge stops, persistence and local 1080 x 1350 trip reports. Reports preserve missing-energy coverage and hide dates, locations, route shape, costs and custom trip names by default. Photos and richer story layouts remain missing. |
+| Charging history and live charge | Implemented | SOC, power, energy, voltage, duration, cost, curves, comparisons, notifications and a read-only local Live Activity/Dynamic Island view. Remote push updates remain out of scope until a privacy-preserving design exists. |
+| Time/location charging prices | Implemented | Geofence/type/time/effective-date rules, synchronized charger identity, safe batch preview, selected-history API 2.6 writeback, per-record results, rollback evidence, vehicle-scoped persistent audit history, privacy-safe CSV export and reusable local tariff templates that exclude locations and effective dates. Privacy-reviewed template file sharing is the next quality bar. |
 | Place insights | Implemented | Server smart places plus complete-history fallback, charging, parking, cost quality and standby drain. |
 | Parking costs | Implemented | Free time, increments, fixed/hourly/monthly fees, caps, priorities and unmatched coverage. |
-| Statistics and cost review | Implemented | Driving, energy, charging, parking, calendar heatmap, records and API 2.6 cost review. Add shareable recaps. |
-| Activity history | Implemented | Complete paging, filters, map/list, summaries and parking detail. Adjacent-drive merge and recap sharing remain missing. |
+| Statistics and cost review | Implemented | Driving, energy, charging, parking, calendar heatmap, records and API 2.6 cost review. Activity-period recap sharing is implemented; dedicated cost-review and heatmap cards remain missing. |
+| Activity history | Implemented | Complete paging, filters, map/list, summaries, parking detail, configurable adjacent-drive display grouping and local period-recap posters. Recaps preserve missing-data coverage, mark partial history and hide exact dates and costs by default. |
 | Notifications | Partial | Local charging, Sentry and tyre alerts exist. Remote APNs, navigation synchronization, parking status and richer multi-car naming remain missing. |
-| Widgets | Implemented, single selected car | Read-only status widget with per-car data isolation. Add configurable multi-car widgets and App Shortcuts. |
-| Drive classification and notes | Partial | Notes, purpose, passengers and export exist. Add commute/road-trip/custom classification workflows and bulk filtering. |
-| Achievements | Implemented | Server achievements and linked drives. Mosaic exploration and personalized visual rewards remain missing. |
-| Sharing | Major gap | CSV export exists. Native share cards for drives, battery, trips, achievements and period recaps are not implemented. |
-| Offline context | Implemented | Vehicle-scoped recent dashboard snapshot and cached routes. Expand explicit cache age and purge controls. |
+| Widgets and App Shortcuts | Implemented | Read-only status, battery trend and 30-day charging trend widgets can be configured per vehicle using opaque server-scoped identities; localized shortcuts open Dashboard, Current Charge, Charges, Drives and Activities with safe vehicle fallback. Trend snapshots exclude locations and exact event times. |
+| Drive classification and notes | Implemented | Commute, personal, business, road-trip and custom classifications, notes, passengers and export exist. Add activity-list classification filters and bulk editing only after real-device workflow validation. |
+| Achievements | Implemented | Server achievements, linked drives and local 1080 x 1350 achievement cards. Cards default-hide unlock dates, place names and progress details, and never include raw coordinates or related drive IDs. Mosaic exploration and personalized visual rewards remain missing. |
+| Sharing | Partial | Native drive, activity-period, battery, achievement and multi-drive trip report cards render locally. Trip reports omit custom names and default-hide exact dates, locations, route shape and costs; battery reports never present late-recording retention as lifetime health; achievement cards default-hide unlock dates, place names and progress details. All cards preserve missing-value coverage and warn before sensitive fields are enabled. CSV export remains available. Dedicated cost-review/heatmap cards and richer layouts remain missing. |
+| Offline context | Implemented | Vehicle-scoped dashboard snapshots, cached routes and summaries, 30-day protected API-response cache, coalesced foreground/background full sync, per-page activity checkpoints, bounded detail loading, cache-age display and explicit purge controls. Page caches warm before expensive history details, while iOS background refresh and processing tasks resume incomplete work when the system grants execution time. Continue multi-car and long-offline device QA. |
 | Deployment and diagnostics | Partial | Connection diagnostics, API capability checks and privacy-safe in-app text export exist. Add optional backup/upgrade guidance without handling database credentials. |
 
 ## Priority Order
 
 1. App Store and device readiness: signing, physical-device QA, support/privacy URLs, screenshots and review notes.
-2. Cost accuracy: searchable regional currency, explicit units, batch charging-cost writeback and persisted/exportable audit history are implemented; next add reusable tariff templates and privacy-reviewed template sharing.
-3. Native iOS experience: Live Activity, Dynamic Island, configurable widgets and App Shortcuts.
-4. Explainable insights: documented score inputs, confidence, missing-sample handling and recommendations.
-5. Sharing: privacy-reviewed native cards with selectable fields and map redaction.
-6. Global reach: Traditional Chinese is implemented. German, Spanish, Italian and Catalan now pass both feature-specific coverage gates and a full-catalog English-equivalent allowlist; only approved brands, technical abbreviations, official Tesla color names and genuinely identical words may match English. Add Japanese, Korean and French only after each locale passes equivalent coverage.
+2. Cost accuracy: searchable regional currency, explicit units, batch charging-cost writeback, persisted/exportable audit history and reusable privacy-scoped tariff templates are implemented; next add privacy-reviewed template file sharing.
+3. Native iOS experience: Live Activity, Dynamic Island, localized App Shortcuts, configurable multi-car widgets, battery trends and 30-day charging trends are implemented; next validate Lock Screen/accessory widget variants only after privacy and real-device QA.
+4. Explainable insights: score inputs, confidence, missing-sample handling and recommendations are implemented; next validate richer inputs against real server evidence.
+5. Sharing: privacy-safe drive, activity-period recap, battery, achievement and multi-drive trip report cards are implemented with selectable sensitive fields, explicit missing-data coverage and calibration disclosure; next add dedicated cost-review/heatmap cards and richer privacy-reviewed layouts.
+6. Global reach: Simplified Chinese, Traditional Chinese, and English are implemented. Add Japanese, Korean, French, and other locales only after each locale passes equivalent feature and full-catalog coverage gates.
 
 Features are marked complete only after the feature matrix, manual checklist, automated tests and real API integration all agree.

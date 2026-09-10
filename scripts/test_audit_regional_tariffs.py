@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 AUDIT = ROOT / "scripts/audit_regional_tariffs.py"
-CATALOG = ROOT / "MateDroidIOS/Resources/RegionalChargingTariffs.json"
+CATALOG = ROOT / "MateDriveApp/Resources/RegionalChargingTariffs.json"
 
 
 class RegionalTariffAuditTests(unittest.TestCase):

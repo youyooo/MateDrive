@@ -5,7 +5,7 @@
 公开仓库地址：`https://github.com/youyooo/MateDrive`
 
 - `README.md`：项目入口、功能、构建和文档索引。
-- `LICENSE`：GNU GPLv3 完整许可证。
+- `LICENSE`：MIT License 完整许可证。
 - `NOTICE.md`：第三方来源、商标和法律声明。
 - `CONTRIBUTING.md`：贡献流程和数据准确性约定。
 - `SECURITY.md`：私密漏洞报告流程。

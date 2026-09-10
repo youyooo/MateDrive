@@ -179,7 +179,7 @@ def validate_applicability(value: object, allowed: range, label: str) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--catalog", type=Path, default=Path("MateDroidIOS/Resources/RegionalChargingTariffs.json"))
+    parser.add_argument("--catalog", type=Path, default=Path("MateDriveApp/Resources/RegionalChargingTariffs.json"))
     parser.add_argument("--today", type=dt.date.fromisoformat, default=dt.date.today())
     args = parser.parse_args()
     try:

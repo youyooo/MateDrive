@@ -24,46 +24,46 @@
 
 **Create**
 
-- `MateDroidIOS/Core/Domain/SleepDuration.swift`: interval normalization, current-sleep calculation, period boundaries, and localized duration components.
-- `MateDroidIOS/Core/API/Models/VehicleStateHistoryModels.swift`: flexible decoding for the optional state-history response.
-- `MateDroidIOS/Core/Persistence/Records/SleepIntervalRecord.swift`: persistence record.
-- `MateDroidIOS/Core/Persistence/Stores/SleepIntervalStore.swift`: idempotent interval upsert and range query.
-- `MateDroidIOS/Features/Dashboard/DashboardSummaryProvider.swift`: local latest-drive/latest-charge provider.
-- `MateDroidIOS/Features/Dashboard/DashboardOverviewCards.swift`: the three full-width cards.
-- `MateDroidIOSTests/Domain/SleepDurationTests.swift`
-- `MateDroidIOSTests/API/VehicleStateHistoryModelsTests.swift`
-- `MateDroidIOSTests/Persistence/SleepIntervalStoreTests.swift`
-- `MateDroidIOSTests/Features/DashboardSummaryProviderTests.swift`
+- `MateDriveApp/Core/Domain/SleepDuration.swift`: interval normalization, current-sleep calculation, period boundaries, and localized duration components.
+- `MateDriveApp/Core/API/Models/VehicleStateHistoryModels.swift`: flexible decoding for the optional state-history response.
+- `MateDriveApp/Core/Persistence/Records/SleepIntervalRecord.swift`: persistence record.
+- `MateDriveApp/Core/Persistence/Stores/SleepIntervalStore.swift`: idempotent interval upsert and range query.
+- `MateDriveApp/Features/Dashboard/DashboardSummaryProvider.swift`: local latest-drive/latest-charge provider.
+- `MateDriveApp/Features/Dashboard/DashboardOverviewCards.swift`: the three full-width cards.
+- `MateDriveTests/Domain/SleepDurationTests.swift`
+- `MateDriveTests/API/VehicleStateHistoryModelsTests.swift`
+- `MateDriveTests/Persistence/SleepIntervalStoreTests.swift`
+- `MateDriveTests/Features/DashboardSummaryProviderTests.swift`
 
 **Modify**
 
-- `MateDroidIOS/Core/API/TeslamateAPI.swift`: optional `vehicleStateHistory` request.
-- `MateDroidIOS/Core/API/TeslaMateCapability.swift`: add `stateHistory` capability.
-- `MateDroidIOS/Core/API/TeslaMateCapabilityService.swift`: probe and persist optional capability state.
-- `MateDroidIOS/Features/Settings/TeslaMateCapabilityPresentation.swift`: show sleep-history availability.
-- `MateDroidIOS/Core/Persistence/Migration.swift`: bump database version from 19 to 20.
-- `MateDroidIOS/Core/Persistence/Migrations.swift`: create `sleep_intervals` and indexes.
-- `MateDroidIOS/Core/Sync/AppDataPreloader.swift`: refresh and cache optional state history.
-- `MateDroidIOS/Features/Dashboard/DashboardViewModel.swift`: current state, current sleep, and cached summaries.
-- `MateDroidIOS/Features/Dashboard/DashboardSnapshotStore.swift`: optional backward-compatible fields.
-- `MateDroidIOS/Features/Dashboard/DashboardView.swift`: replace compact strip with card stack and show current sleep.
-- `MateDroidIOS/Features/Dashboard/DashboardOverviewPresentation.swift`: create latest-drive, latest-charge, and odometer presentations.
-- `MateDroidIOS/Features/Activities/ActivitiesViewModel.swift`: cached sleep-period summary state.
-- `MateDroidIOS/Features/Activities/ActivitiesView.swift`: period selector and sleep summary.
-- `MateDroidIOS/Features/FeatureHub/FeatureHubView.swift`: remove single-car model heading.
-- `MateDroidIOS/Features/FeatureHub/FeatureHubPresentation.swift`: remove unused vehicle name.
-- `MateDroidIOS/App/RootTabNavigation.swift`: reset Settings path when entering the tab.
-- `MateDroidIOS/App/RootView.swift`: inject local stores/providers and route tab selection through navigation state.
-- `MateDroidIOS/Resources/Localizable.xcstrings`: new labels and empty states.
-- Existing focused tests under `MateDroidIOSTests/Features` and `MateDroidIOSTests/App`.
+- `MateDriveApp/Core/API/TeslamateAPI.swift`: optional `vehicleStateHistory` request.
+- `MateDriveApp/Core/API/TeslaMateCapability.swift`: add `stateHistory` capability.
+- `MateDriveApp/Core/API/TeslaMateCapabilityService.swift`: probe and persist optional capability state.
+- `MateDriveApp/Features/Settings/TeslaMateCapabilityPresentation.swift`: show sleep-history availability.
+- `MateDriveApp/Core/Persistence/Migration.swift`: bump database version from 19 to 20.
+- `MateDriveApp/Core/Persistence/Migrations.swift`: create `sleep_intervals` and indexes.
+- `MateDriveApp/Core/Sync/AppDataPreloader.swift`: refresh and cache optional state history.
+- `MateDriveApp/Features/Dashboard/DashboardViewModel.swift`: current state, current sleep, and cached summaries.
+- `MateDriveApp/Features/Dashboard/DashboardSnapshotStore.swift`: optional backward-compatible fields.
+- `MateDriveApp/Features/Dashboard/DashboardView.swift`: replace compact strip with card stack and show current sleep.
+- `MateDriveApp/Features/Dashboard/DashboardOverviewPresentation.swift`: create latest-drive, latest-charge, and odometer presentations.
+- `MateDriveApp/Features/Activities/ActivitiesViewModel.swift`: cached sleep-period summary state.
+- `MateDriveApp/Features/Activities/ActivitiesView.swift`: period selector and sleep summary.
+- `MateDriveApp/Features/FeatureHub/FeatureHubView.swift`: remove single-car model heading.
+- `MateDriveApp/Features/FeatureHub/FeatureHubPresentation.swift`: remove unused vehicle name.
+- `MateDriveApp/App/RootTabNavigation.swift`: reset Settings path when entering the tab.
+- `MateDriveApp/App/RootView.swift`: inject local stores/providers and route tab selection through navigation state.
+- `MateDriveApp/Resources/Localizable.xcstrings`: new labels and empty states.
+- Existing focused tests under `MateDriveTests/Features` and `MateDriveTests/App`.
 
 ---
 
 ### Task 1: Pure Sleep-Duration Domain
 
 **Files:**
-- Create: `MateDroidIOS/Core/Domain/SleepDuration.swift`
-- Create: `MateDroidIOSTests/Domain/SleepDurationTests.swift`
+- Create: `MateDriveApp/Core/Domain/SleepDuration.swift`
+- Create: `MateDriveTests/Domain/SleepDurationTests.swift`
 
 **Interfaces:**
 - Produces: `SleepInterval`, `SleepDurationPeriod`, `SleepDurationSummary`, and `SleepDurationCalculator`.
@@ -96,7 +96,7 @@ func testFutureSleepStartIsRejected() {
 Run:
 
 ```bash
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/SleepDurationTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/SleepDurationTests test
 ```
 
 Expected: compile failure because `SleepDurationCalculator` is not defined.
@@ -157,7 +157,7 @@ Expected: all `SleepDurationTests` pass.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add MateDroidIOS/Core/Domain/SleepDuration.swift MateDroidIOSTests/Domain/SleepDurationTests.swift
+git add MateDriveApp/Core/Domain/SleepDuration.swift MateDriveTests/Domain/SleepDurationTests.swift
 git commit -m "feat: add accurate sleep duration calculations"
 ```
 
@@ -166,13 +166,13 @@ git commit -m "feat: add accurate sleep duration calculations"
 ### Task 2: Optional State-History API and Capability
 
 **Files:**
-- Create: `MateDroidIOS/Core/API/Models/VehicleStateHistoryModels.swift`
-- Create: `MateDroidIOSTests/API/VehicleStateHistoryModelsTests.swift`
-- Modify: `MateDroidIOS/Core/API/TeslamateAPI.swift`
-- Modify: `MateDroidIOS/Core/API/TeslaMateCapability.swift`
-- Modify: `MateDroidIOS/Core/API/TeslaMateCapabilityService.swift`
-- Modify: `MateDroidIOS/Features/Settings/TeslaMateCapabilityPresentation.swift`
-- Test: `MateDroidIOSTests/API/APIClientTests.swift`
+- Create: `MateDriveApp/Core/API/Models/VehicleStateHistoryModels.swift`
+- Create: `MateDriveTests/API/VehicleStateHistoryModelsTests.swift`
+- Modify: `MateDriveApp/Core/API/TeslamateAPI.swift`
+- Modify: `MateDriveApp/Core/API/TeslaMateCapability.swift`
+- Modify: `MateDriveApp/Core/API/TeslaMateCapabilityService.swift`
+- Modify: `MateDriveApp/Features/Settings/TeslaMateCapabilityPresentation.swift`
+- Test: `MateDriveTests/API/APIClientTests.swift`
 
 **Interfaces:**
 - Produces: `VehicleStateHistoryResponse`, `VehicleStateInterval`, and `TeslamateAPI.vehicleStateHistory(carId:startDate:endDate:)`.
@@ -241,7 +241,7 @@ Expected: focused suites pass and standard status behavior is unchanged.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add MateDroidIOS/Core/API MateDroidIOS/Features/Settings/TeslaMateCapabilityPresentation.swift MateDroidIOSTests/API
+git add MateDriveApp/Core/API MateDriveApp/Features/Settings/TeslaMateCapabilityPresentation.swift MateDriveTests/API
 git commit -m "feat: detect optional vehicle state history"
 ```
 
@@ -250,13 +250,13 @@ git commit -m "feat: detect optional vehicle state history"
 ### Task 3: Persist and Preload Sleep Intervals
 
 **Files:**
-- Create: `MateDroidIOS/Core/Persistence/Records/SleepIntervalRecord.swift`
-- Create: `MateDroidIOS/Core/Persistence/Stores/SleepIntervalStore.swift`
-- Create: `MateDroidIOSTests/Persistence/SleepIntervalStoreTests.swift`
-- Modify: `MateDroidIOS/Core/Persistence/Migration.swift`
-- Modify: `MateDroidIOS/Core/Persistence/Migrations.swift`
-- Modify: `MateDroidIOS/Core/Sync/AppDataPreloader.swift`
-- Test: `MateDroidIOSTests/Persistence/PersistenceMigrationTests.swift`
+- Create: `MateDriveApp/Core/Persistence/Records/SleepIntervalRecord.swift`
+- Create: `MateDriveApp/Core/Persistence/Stores/SleepIntervalStore.swift`
+- Create: `MateDriveTests/Persistence/SleepIntervalStoreTests.swift`
+- Modify: `MateDriveApp/Core/Persistence/Migration.swift`
+- Modify: `MateDriveApp/Core/Persistence/Migrations.swift`
+- Modify: `MateDriveApp/Core/Sync/AppDataPreloader.swift`
+- Test: `MateDriveTests/Persistence/PersistenceMigrationTests.swift`
 
 **Interfaces:**
 - Produces: `SleepIntervalStoring.records(carId:start:end:)` and `upsertAll(_:)`.
@@ -304,7 +304,7 @@ Expected: focused tests pass, unsupported state history produces zero saved inte
 - [ ] **Step 8: Commit**
 
 ```bash
-git add MateDroidIOS/Core/Persistence MateDroidIOS/Core/Sync/AppDataPreloader.swift MateDroidIOSTests/Persistence MateDroidIOSTests/Sync
+git add MateDriveApp/Core/Persistence MateDriveApp/Core/Sync/AppDataPreloader.swift MateDriveTests/Persistence MateDriveTests/Sync
 git commit -m "feat: cache vehicle sleep intervals"
 ```
 
@@ -313,12 +313,12 @@ git commit -m "feat: cache vehicle sleep intervals"
 ### Task 4: Cached Dashboard Summary Provider
 
 **Files:**
-- Create: `MateDroidIOS/Features/Dashboard/DashboardSummaryProvider.swift`
-- Create: `MateDroidIOSTests/Features/DashboardSummaryProviderTests.swift`
-- Modify: `MateDroidIOS/Features/Dashboard/DashboardViewModel.swift`
-- Modify: `MateDroidIOS/Features/Dashboard/DashboardSnapshotStore.swift`
-- Modify: `MateDroidIOS/App/RootView.swift`
-- Test: `MateDroidIOSTests/Features/DashboardViewModelTests.swift`
+- Create: `MateDriveApp/Features/Dashboard/DashboardSummaryProvider.swift`
+- Create: `MateDriveTests/Features/DashboardSummaryProviderTests.swift`
+- Modify: `MateDriveApp/Features/Dashboard/DashboardViewModel.swift`
+- Modify: `MateDriveApp/Features/Dashboard/DashboardSnapshotStore.swift`
+- Modify: `MateDriveApp/App/RootView.swift`
+- Test: `MateDriveTests/Features/DashboardViewModelTests.swift`
 
 **Interfaces:**
 - Produces: `DashboardLatestDrive`, `DashboardLatestCharge`, `DashboardCachedSummary`, and `DashboardSummaryProviding.summary(carId:)`.
@@ -372,7 +372,7 @@ Expected: cached summary is visible before refresh completes; failed API refresh
 - [ ] **Step 8: Commit**
 
 ```bash
-git add MateDroidIOS/Features/Dashboard MateDroidIOS/App/RootView.swift MateDroidIOSTests/Features/DashboardSummaryProviderTests.swift MateDroidIOSTests/Features/DashboardViewModelTests.swift
+git add MateDriveApp/Features/Dashboard MateDriveApp/App/RootView.swift MateDriveTests/Features/DashboardSummaryProviderTests.swift MateDriveTests/Features/DashboardViewModelTests.swift
 git commit -m "feat: load dashboard summaries from local cache"
 ```
 
@@ -381,11 +381,11 @@ git commit -m "feat: load dashboard summaries from local cache"
 ### Task 5: Vehicle Overview Card UI and Current Sleep Status
 
 **Files:**
-- Create: `MateDroidIOS/Features/Dashboard/DashboardOverviewCards.swift`
-- Modify: `MateDroidIOS/Features/Dashboard/DashboardOverviewPresentation.swift`
-- Modify: `MateDroidIOS/Features/Dashboard/DashboardView.swift`
-- Modify: `MateDroidIOSTests/Features/DashboardOverviewPresentationTests.swift`
-- Modify: `MateDroidIOS/Resources/Localizable.xcstrings`
+- Create: `MateDriveApp/Features/Dashboard/DashboardOverviewCards.swift`
+- Modify: `MateDriveApp/Features/Dashboard/DashboardOverviewPresentation.swift`
+- Modify: `MateDriveApp/Features/Dashboard/DashboardView.swift`
+- Modify: `MateDriveTests/Features/DashboardOverviewPresentationTests.swift`
+- Modify: `MateDriveApp/Resources/Localizable.xcstrings`
 
 **Interfaces:**
 - Produces: `DashboardOverviewCards` and three presentation rows in required order.
@@ -435,7 +435,7 @@ Run focused tests, `make localization-audit`, and `make build-code`.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add MateDroidIOS/Features/Dashboard MateDroidIOS/Resources/Localizable.xcstrings MateDroidIOSTests/Features/DashboardOverviewPresentationTests.swift
+git add MateDriveApp/Features/Dashboard MateDriveApp/Resources/Localizable.xcstrings MateDriveTests/Features/DashboardOverviewPresentationTests.swift
 git commit -m "feat: redesign cached vehicle overview cards"
 ```
 
@@ -444,10 +444,10 @@ git commit -m "feat: redesign cached vehicle overview cards"
 ### Task 6: Activities Sleep Summary
 
 **Files:**
-- Modify: `MateDroidIOS/Features/Activities/ActivitiesViewModel.swift`
-- Modify: `MateDroidIOS/Features/Activities/ActivitiesView.swift`
-- Modify: `MateDroidIOSTests/Features/ActivitiesViewModelTests.swift`
-- Modify: `MateDroidIOS/Resources/Localizable.xcstrings`
+- Modify: `MateDriveApp/Features/Activities/ActivitiesViewModel.swift`
+- Modify: `MateDriveApp/Features/Activities/ActivitiesView.swift`
+- Modify: `MateDriveTests/Features/ActivitiesViewModelTests.swift`
+- Modify: `MateDriveApp/Resources/Localizable.xcstrings`
 
 **Interfaces:**
 - Consumes: local `SleepIntervalStore` and `SleepDurationSummary`.
@@ -476,7 +476,7 @@ Expected: all tests pass with zero missing localization keys.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add MateDroidIOS/Features/Activities MateDroidIOS/Resources/Localizable.xcstrings MateDroidIOSTests/Features/ActivitiesViewModelTests.swift
+git add MateDriveApp/Features/Activities MateDriveApp/Resources/Localizable.xcstrings MateDriveTests/Features/ActivitiesViewModelTests.swift
 git commit -m "feat: show cached sleep period summaries"
 ```
 
@@ -485,12 +485,12 @@ git commit -m "feat: show cached sleep period summaries"
 ### Task 7: Simplify Features and Restore Settings Root Behavior
 
 **Files:**
-- Modify: `MateDroidIOS/Features/FeatureHub/FeatureHubView.swift`
-- Modify: `MateDroidIOS/Features/FeatureHub/FeatureHubPresentation.swift`
-- Modify: `MateDroidIOSTests/Features/FeatureHubPresentationTests.swift`
-- Modify: `MateDroidIOS/App/RootTabNavigation.swift`
-- Modify: `MateDroidIOS/App/RootView.swift`
-- Modify: `MateDroidIOSTests/App/RootTabNavigationTests.swift`
+- Modify: `MateDriveApp/Features/FeatureHub/FeatureHubView.swift`
+- Modify: `MateDriveApp/Features/FeatureHub/FeatureHubPresentation.swift`
+- Modify: `MateDriveTests/Features/FeatureHubPresentationTests.swift`
+- Modify: `MateDriveApp/App/RootTabNavigation.swift`
+- Modify: `MateDriveApp/App/RootView.swift`
+- Modify: `MateDriveTests/App/RootTabNavigationTests.swift`
 
 **Interfaces:**
 - Produces: a feature root without a single-car model heading and a Settings-tab entry action that clears retained child paths.
@@ -522,7 +522,7 @@ Expected: feature and root-navigation tests pass and Settings opens at the full 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add MateDroidIOS/Features/FeatureHub MateDroidIOS/App/RootTabNavigation.swift MateDroidIOS/App/RootView.swift MateDroidIOSTests/Features/FeatureHubPresentationTests.swift MateDroidIOSTests/App/RootTabNavigationTests.swift
+git add MateDriveApp/Features/FeatureHub MateDriveApp/App/RootTabNavigation.swift MateDriveApp/App/RootView.swift MateDriveTests/Features/FeatureHubPresentationTests.swift MateDriveTests/App/RootTabNavigationTests.swift
 git commit -m "fix: simplify features and restore settings root"
 ```
 

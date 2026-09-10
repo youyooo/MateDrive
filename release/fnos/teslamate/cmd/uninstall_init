@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+# Named volumes are deliberately preserved.
+exit 0

@@ -1,0 +1,150 @@
+services:
+  database:
+    image: @@DATABASE_IMAGE@@
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: teslamate
+      POSTGRES_PASSWORD: ${DATABASE_PASS:?set DATABASE_PASS}
+      POSTGRES_DB: teslamate
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        marker=/tmp/teslamate-password-synced
+        rm -f "$$marker"
+        /usr/local/bin/docker-entrypoint.sh postgres &
+        postgres_pid=$$!
+        stop_postgres() {
+          kill -TERM "$$postgres_pid" 2>/dev/null || true
+          wait "$$postgres_pid" 2>/dev/null || true
+        }
+        trap stop_postgres INT TERM EXIT
+        attempt=0
+        until pg_isready -q -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"; do
+          if ! kill -0 "$$postgres_pid" 2>/dev/null; then
+            wait "$$postgres_pid"
+            exit $$?
+          fi
+          attempt=$$((attempt + 1))
+          if [ "$$attempt" -ge 120 ]; then
+            echo "database did not become ready for password synchronization" >&2
+            exit 1
+          fi
+          sleep 1
+        done
+        {
+          printf "\\set new_password '%s'\n" "$$POSTGRES_PASSWORD"
+          printf "ALTER ROLE teslamate WITH PASSWORD :'new_password';\n"
+        } | psql -v ON_ERROR_STOP=1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" >/dev/null
+        touch /tmp/teslamate-password-synced
+        wait "$$postgres_pid"
+    volumes:
+      - teslamate-db:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/teslamate-password-synced && pg_isready -U teslamate -d teslamate"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    networks:
+      - teslamate-network
+
+  mosquitto:
+    image: @@MOSQUITTO_IMAGE@@
+    restart: unless-stopped
+    command: mosquitto -c /mosquitto-no-auth.conf
+    volumes:
+      - mosquitto-conf:/mosquitto/config
+      - mosquitto-data:/mosquitto/data
+    networks:
+      - teslamate-network
+
+  teslamate:
+    image: @@TESLAMATE_IMAGE@@
+    restart: unless-stopped
+    environment:
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?set ENCRYPTION_KEY}
+      DATABASE_USER: teslamate
+      DATABASE_PASS: ${DATABASE_PASS:?set DATABASE_PASS}
+      DATABASE_NAME: teslamate
+      DATABASE_HOST: database
+      MQTT_HOST: mosquitto
+      TZ: ${TZ:-Asia/Shanghai}
+    ports:
+      - "0.0.0.0:${TESLAMATE_PORT:-14000}:4000"
+    volumes:
+      - teslamate-import:/opt/app/import
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      database:
+        condition: service_healthy
+      mosquitto:
+        condition: service_started
+    networks:
+      - teslamate-network
+
+  grafana:
+    image: @@GRAFANA_IMAGE@@
+    restart: unless-stopped
+    environment:
+      DATABASE_USER: teslamate
+      DATABASE_PASS: ${DATABASE_PASS:?set DATABASE_PASS}
+      DATABASE_NAME: teslamate
+      DATABASE_HOST: database
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PW:?set GRAFANA_PW}
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      TZ: ${TZ:-Asia/Shanghai}
+    ports:
+      - "0.0.0.0:${GRAFANA_PORT:-14001}:3000"
+    volumes:
+      - teslamate-grafana-data:/var/lib/grafana
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - teslamate-network
+
+  teslamateapi:
+    image: @@TESLAMATEAPI_IMAGE@@
+    restart: unless-stopped
+    environment:
+      DATABASE_USER: teslamate
+      DATABASE_PASS: ${DATABASE_PASS:?set DATABASE_PASS}
+      DATABASE_NAME: teslamate
+      DATABASE_HOST: database
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?set ENCRYPTION_KEY}
+      MQTT_HOST: mosquitto
+      TESLAMATE_HOST: teslamate
+      TESLAMATE_PORT: "4000"
+      API_TOKEN: ${API_TOKEN:?set API_TOKEN}
+      API_TOKEN_DISABLE: "false"
+      TZ: ${TZ:-Asia/Shanghai}
+    ports:
+      - "0.0.0.0:${TESLAMATEAPI_PORT:-3030}:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+      mosquitto:
+        condition: service_started
+      teslamate:
+        condition: service_started
+    networks:
+      - teslamate-network
+
+networks:
+  teslamate-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${DOCKER_SUBNET:-10.253.0.0/24}
+
+volumes:
+  teslamate-db:
+  teslamate-grafana-data:
+  teslamate-import:
+  mosquitto-conf:
+  mosquitto-data:

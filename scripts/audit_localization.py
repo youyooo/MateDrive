@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
 
-LOCALIZATION_PATH = Path("MateDroidIOS/Resources/Localizable.xcstrings")
-SWIFT_SOURCE_ROOTS = [Path("MateDroidIOS"), Path("MateDroidWidget")]
+LOCALIZATION_PATH = Path("MateDriveApp/Resources/Localizable.xcstrings")
+APP_SHORTCUTS_LOCALIZATION_PATH = Path("MateDriveApp/Resources/AppShortcuts.xcstrings")
+SWIFT_SOURCE_ROOTS = [Path("MateDriveApp"), Path("MateDriveWidget")]
 CHINESE_LOCALES = ("zh-Hans", "zh-Hant")
+SUPPORTED_LOCALES = ("en", "zh-Hans", "zh-Hant")
 
 REQUIRED_CHINESE_TRANSLATIONS = {
     "Settings": {"zh-Hans": "设置", "zh-Hant": "設定"},
@@ -36,11 +39,43 @@ RAW_ERROR_PRESENTATION = re.compile(
     r"\b(?:Text|Label)\(\s*(?:error|message|errorMessage|auditError|exportError)\b"
 )
 
+SOURCE_LOCALIZED_PAIR = re.compile(
+    r"""(?:\bt|\blocalized|AppText\.localized)\(
+        \s*"((?:[^"\\]|\\.)*)"
+        \s*,\s*"((?:[^"\\]|\\.)*)"
+    """,
+    re.DOTALL | re.VERBOSE,
+)
+
+HAN_TEXT = re.compile(r"[\u3400-\u9fff]")
+ALLOWED_NON_HAN_CHINESE_FALLBACKS = {
+    "--",
+    "AC",
+    "DC",
+    "HTTP",
+    "MateDrive",
+    "Model S",
+    "Model 3",
+    "Model X",
+    "Model Y",
+    "MyTesS AK/SK",
+    "Open-Meteo",
+    "SOC",
+    "SSL",
+    "TeslaMate",
+    "URL",
+    "iCloud",
+    "iOS",
+    "kW",
+    "kWh",
+    "km",
+}
+
 SOURCE_LOCALIZATION_MARKERS = (
     't("',
     "localized(",
     "DashboardTextFormatter",
-    "MateDroidUnitFormatter",
+    "MateDriveUnitFormatter",
     "UserFacingErrorLocalizer",
     "String(format:",
     "Text(verbatim:",
@@ -69,6 +104,10 @@ def looks_like_hardcoded_english_ui(line: str, literal: str) -> bool:
 
 
 def main() -> int:
+    compiled_resources = subprocess.run(
+        [sys.executable, "scripts/generate_strings_resources.py", "--check"],
+        check=False,
+    )
     data = json.loads(LOCALIZATION_PATH.read_text())
     strings = data.get("strings", {})
     missing = {locale: [] for locale in CHINESE_LOCALES}
@@ -76,6 +115,9 @@ def main() -> int:
     translation_mismatches = []
     hardcoded_swiftui = []
     raw_error_presentations = []
+    shortcut_localization_errors = []
+    source_fallback_errors = []
+    source_pairs_checked = 0
 
     for key, value in sorted(strings.items()):
         for locale in CHINESE_LOCALES:
@@ -96,13 +138,43 @@ def main() -> int:
                 translation_mismatches.append((key, locale, expected, actual))
 
     for path in swift_source_paths():
-        for line_number, line in enumerate(path.read_text().splitlines(), start=1):
+        source = path.read_text()
+        for match in SOURCE_LOCALIZED_PAIR.finditer(source):
+            raw_key, raw_chinese = match.groups()
+            if "\\(" in raw_key or "\\" in raw_key or "\\" in raw_chinese:
+                continue
+            source_pairs_checked += 1
+            if not raw_chinese.strip():
+                source_fallback_errors.append((path, raw_key, "empty Chinese fallback"))
+            elif (
+                re.search(r"[A-Za-z]", raw_key)
+                and not HAN_TEXT.search(raw_chinese)
+                and raw_chinese not in ALLOWED_NON_HAN_CHINESE_FALLBACKS
+            ):
+                source_fallback_errors.append((path, raw_key, f"Chinese fallback remains {raw_chinese!r}"))
+
+        for line_number, line in enumerate(source.splitlines(), start=1):
             for match in SWIFTUI_LITERAL.finditer(line):
                 literal = match.group(2)
                 if looks_like_hardcoded_english_ui(line, literal):
                     hardcoded_swiftui.append((path, line_number, literal))
             if RAW_ERROR_PRESENTATION.search(line) and "UserFacingErrorLocalizer" not in line:
                 raw_error_presentations.append((path, line_number, line.strip()))
+
+    shortcut_data = json.loads(APP_SHORTCUTS_LOCALIZATION_PATH.read_text())
+    for key, value in sorted(shortcut_data.get("strings", {}).items()):
+        for locale in SUPPORTED_LOCALES:
+            values = (
+                value.get("localizations", {})
+                .get(locale, {})
+                .get("stringSet", {})
+                .get("values", [])
+            )
+            if not values or not all(text.strip() for text in values):
+                shortcut_localization_errors.append((key, locale, "missing translation"))
+                continue
+            if any(text.count("${applicationName}") != 1 for text in values):
+                shortcut_localization_errors.append((key, locale, "invalid applicationName placeholder"))
 
     print(f"localization keys: {len(strings)}")
     for locale in CHINESE_LOCALES:
@@ -111,6 +183,9 @@ def main() -> int:
     print(f"required Chinese translation mismatches: {len(translation_mismatches)}")
     print(f"hardcoded SwiftUI English literals: {len(hardcoded_swiftui)}")
     print(f"raw runtime error presentations: {len(raw_error_presentations)}")
+    print(f"literal localized source pairs checked: {source_pairs_checked}")
+    print(f"source fallback errors: {len(source_fallback_errors)}")
+    print(f"App Shortcut localization errors: {len(shortcut_localization_errors)}")
 
     for locale in CHINESE_LOCALES:
         if missing[locale]:
@@ -138,9 +213,19 @@ def main() -> int:
         for path, line_number, line in raw_error_presentations:
             print(f"- {path}:{line_number}: {line}")
 
+    if source_fallback_errors:
+        print("\nSource fallback errors:")
+        for path, key, reason in source_fallback_errors:
+            print(f"- {path}: {key}: {reason}")
+
+    if shortcut_localization_errors:
+        print("\nApp Shortcut localization errors:")
+        for key, locale, reason in shortcut_localization_errors:
+            print(f"- {key} [{locale}]: {reason}")
+
     has_missing = any(missing.values())
     has_english_like = any(english_like.values())
-    return 1 if has_missing or has_english_like or translation_mismatches or hardcoded_swiftui or raw_error_presentations else 0
+    return 1 if compiled_resources.returncode or has_missing or has_english_like or translation_mismatches or hardcoded_swiftui or raw_error_presentations or source_fallback_errors or shortcut_localization_errors else 0
 
 
 if __name__ == "__main__":

@@ -28,6 +28,6 @@ Task 6: complete (commits 0980a25..79d6025, review clean; focused generic build-
 Task 7: complete (commits 602374a..125782b, review clean; Swift parse and diff checks passed, focused build blocked by local CoreSimulator AssetCatalogSimulatorAgent)
 Task 8: complete (commits 8f5d5b6..24de016, review clean; Swift parse and diff checks passed, generic device test build reached unrelated pre-existing reconstructor test errors)
 Task 9: complete (commits 163116a..00f786e, review clean; focused generic build-for-testing passed)
-Task 10: in progress
-Task 11: pending
-Task 12: pending
+Task 10: complete (integration verified; focused generic build-for-testing and localization audit passed)
+Task 11: complete (backup/privacy/localization integration verified; focused generic build-for-testing and localization audit passed)
+Task 12: complete (cached-load performance and focused XCTest passed; privacy, localization, tariff, App Store, preflight, simulator/device test-build, and release-archive audits passed; version 1.0 build 4 archived and uploaded to TestFlight successfully. Full simulator runtime execution was blocked by an iOS 26.5 first-boot data-migration/system-shell failure, and no physical iPhone was connected for direct installation.)

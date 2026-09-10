@@ -1,0 +1,1674 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%.0f%% utilization</key>
+	<string>%.0f%% utilization</string>
+	<key>%.1f hard brakes/100 km</key>
+	<string>%.1f hard brakes/100 km</string>
+	<key>%@ days</key>
+	<string>%@ days</string>
+	<key>%@ hidden</key>
+	<string>%@ hidden</string>
+	<key>%@ is %@ %@, below %@ %@</key>
+	<string>%@ is %@ %@, below %@ %@</string>
+	<key>%d adjacent-drive groups; original record counts are retained.</key>
+	<string>%d adjacent-drive groups; original record counts are retained.</string>
+	<key>%d days</key>
+	<string>%d days</string>
+	<key>%d days installed</key>
+	<string>%d days installed</string>
+	<key>%d min</key>
+	<string>%d min</string>
+	<key>%d min stops</key>
+	<string>%d min stops</string>
+	<key>%d parking records unmatched</key>
+	<string>%d parking records unmatched</string>
+	<key>%d segments</key>
+	<string>%d segments</string>
+	<key>%d/%d drives recorded</key>
+	<string>%d/%d drives recorded</string>
+	<key>, </key>
+	<string>, </string>
+	<key>1 parking record unmatched</key>
+	<string>1 parking record unmatched</string>
+	<key>30 Days</key>
+	<string>30 Days</string>
+	<key>6 Months</key>
+	<string>6 Months</string>
+	<key>7 Days</key>
+	<string>7 Days</string>
+	<key>90 Days</key>
+	<string>90 Days</string>
+	<key>A valid place is required for future activities.</key>
+	<string>A valid place is required for future activities.</string>
+	<key>AC</key>
+	<string>AC</string>
+	<key>AC / DC</key>
+	<string>AC / DC</string>
+	<key>AC Charge</key>
+	<string>AC Charge</string>
+	<key>AC charger</key>
+	<string>AC charger</string>
+	<key>AC charging was recorded</key>
+	<string>AC charging was recorded</string>
+	<key>API Cache Cleared</key>
+	<string>API Cache Cleared</string>
+	<key>API Cache Size</key>
+	<string>API Cache Size</string>
+	<key>API Capabilities</key>
+	<string>API Capabilities</string>
+	<key>API Cost</key>
+	<string>API Cost</string>
+	<key>API Token</key>
+	<string>API Token</string>
+	<key>API tokens and authentication secrets are stored in the iOS Keychain and are not included in diagnostics or exports.</key>
+	<string>API tokens and authentication secrets are stored in the iOS Keychain and are not included in diagnostics or exports.</string>
+	<key>Accent</key>
+	<string>Accent</string>
+	<key>Accept Invalid Certificates</key>
+	<string>Accept Invalid Certificates</string>
+	<key>Achievement Card</key>
+	<string>Achievement Card</string>
+	<key>Achievement Share Card</key>
+	<string>Achievement Share Card</string>
+	<key>Active</key>
+	<string>Active</string>
+	<key>Active Time</key>
+	<string>Active Time</string>
+	<key>Activities</key>
+	<string>Activities</string>
+	<key>Activity</key>
+	<string>Activity</string>
+	<key>Activity Detail</key>
+	<string>Activity Detail</string>
+	<key>Activity Labels</key>
+	<string>Activity Labels</string>
+	<key>Activity Purpose</key>
+	<string>Activity Purpose</string>
+	<key>Activity Recap</key>
+	<string>Activity Recap</string>
+	<key>Activity actions</key>
+	<string>Activity actions</string>
+	<key>Activity classification runs on this device from vehicle coordinates recorded by your TeslaMate server. MateDrive does not request the phone's location.</key>
+	<string>Activity classification runs on this device from vehicle coordinates recorded by your TeslaMate server. MateDrive does not request the phone's location.</string>
+	<key>Activity detail unavailable</key>
+	<string>Activity detail unavailable</string>
+	<key>Activity filter</key>
+	<string>Activity filter</string>
+	<key>Activity location</key>
+	<string>Activity location</string>
+	<key>Add Pricing Rule</key>
+	<string>Add Pricing Rule</string>
+	<key>Add Segment</key>
+	<string>Add Segment</string>
+	<key>Add rules to estimate charging cost by location, time, and charger type.</key>
+	<string>Add rules to estimate charging cost by location, time, and charger type.</string>
+	<key>Address Keyword</key>
+	<string>Address Keyword</string>
+	<key>Advanced Connection Options</key>
+	<string>Advanced Connection Options</string>
+	<key>All</key>
+	<string>All</string>
+	<key>All Time</key>
+	<string>All Time</string>
+	<key>All dates</key>
+	<string>All dates</string>
+	<key>All day</key>
+	<string>All day</string>
+	<key>Allow Open-Meteo Route Weather</key>
+	<string>Allow Open-Meteo Route Weather</string>
+	<key>Already Correct</key>
+	<string>Already Correct</string>
+	<key>Also learns a reusable rule for future charging at this location.</key>
+	<string>Also learns a reusable rule for future charging at this location.</string>
+	<key>Any</key>
+	<string>Any</string>
+	<key>Any location</key>
+	<string>Any location</string>
+	<key>Anyone receiving this image can see the selected achievement details.</key>
+	<string>Anyone receiving this image can see the selected achievement details.</string>
+	<key>Anyone receiving this image can see the selected battery history details.</key>
+	<string>Anyone receiving this image can see the selected battery history details.</string>
+	<key>Anyone receiving this image can see the selected period details.</key>
+	<string>Anyone receiving this image can see the selected period details.</string>
+	<key>Anyone receiving this image can see the selected trip details.</key>
+	<string>Anyone receiving this image can see the selected trip details.</string>
+	<key>Apple map and geocoding services process map locations. Route weather stays off until you enable it. When enabled, one representative precise route coordinate and the drive time are sent to Open-Meteo. Open-Meteo may retain request logs for up to 90 days and states that it does not link them to user identities or use them for tracking.</key>
+	<string>Apple map and geocoding services process map locations. Route weather stays off until you enable it. When enabled, one representative precise route coordinate and the drive time are sent to Open-Meteo. Open-Meteo may retain request logs for up to 90 days and states that it does not link them to user identities or use them for tracking.</string>
+	<key>Apple map and geocoding services process map locations. When route weather is requested, precise route coordinates are sent to Open-Meteo for app functionality. Open-Meteo may retain request logs for up to 90 days and states that it does not link them to user identities or use them for tracking.</key>
+	<string>Apple map and geocoding services process map locations. When route weather is requested, precise route coordinates are sent to Open-Meteo for app functionality. Open-Meteo may retain request logs for up to 90 days and states that it does not link them to user identities or use them for tracking.</string>
+	<key>Applies to</key>
+	<string>Applies to</string>
+	<key>Apply To</key>
+	<string>Apply To</string>
+	<key>At 100%</key>
+	<string>At 100%</string>
+	<key>Audit History</key>
+	<string>Audit History</string>
+	<key>Authentication</key>
+	<string>Authentication</string>
+	<key>Automatic</key>
+	<string>Automatic</string>
+	<key>Available</key>
+	<string>Available</string>
+	<key>Available only for localhost, LAN, private, or Tailscale HTTPS addresses. Public servers always require a valid certificate.</key>
+	<string>Available only for localhost, LAN, private, or Tailscale HTTPS addresses. Public servers always require a valid certificate.</string>
+	<key>Average</key>
+	<string>Average</string>
+	<key>Average Gap</key>
+	<string>Average Gap</string>
+	<key>Average Speed</key>
+	<string>Average Speed</string>
+	<key>Avg Duration</key>
+	<string>Avg Duration</string>
+	<key>Avg Efficiency</key>
+	<string>Avg Efficiency</string>
+	<key>Avg Speed</key>
+	<string>Avg Speed</string>
+	<key>Base</key>
+	<string>Base</string>
+	<key>Base Charge</key>
+	<string>Base Charge</string>
+	<key>Basic Password</key>
+	<string>Basic Password</string>
+	<key>Basic Username</key>
+	<string>Basic Username</string>
+	<key>Battery</key>
+	<string>Battery</string>
+	<key>Battery %@, limit %@</key>
+	<string>Battery %@, limit %@</string>
+	<key>Battery Calibration</key>
+	<string>Battery Calibration</string>
+	<key>Battery Health</key>
+	<string>Battery Health</string>
+	<key>Battery Health Note</key>
+	<string>If TeslaMate started recording late, enter the new-car full rated range to calculate health from today's 100% range.</string>
+	<key>Battery History</key>
+	<string>Battery History</string>
+	<key>Battery Report</key>
+	<string>Battery Report</string>
+	<key>Battery Share Card</key>
+	<string>Battery Share Card</string>
+	<key>Battery Trend</key>
+	<string>Battery Trend</string>
+	<key>Battery level</key>
+	<string>Battery level</string>
+	<key>Battery percentage gain</key>
+	<string>Battery percentage gain</string>
+	<key>Battery retention is calculated from data recorded by TeslaMate, not from the vehicle's full lifetime. Enter a verified new-car usable capacity or rated range in Settings to calculate absolute health.</key>
+	<string>Battery retention is calculated from data recorded by TeslaMate, not from the vehicle's full lifetime. Enter a verified new-car usable capacity or rated range in Settings to calculate absolute health.</string>
+	<key>Battery unavailable</key>
+	<string>Battery unavailable</string>
+	<key>Bill</key>
+	<string>Bill</string>
+	<key>Billed energy</key>
+	<string>Billed energy</string>
+	<key>Billed energy is optional. When entered, it must come from your bill or charger meter and be greater than zero.</key>
+	<string>Billed energy is optional. When entered, it must come from your bill or charger meter and be greater than zero.</string>
+	<key>Billed energy must be greater than zero.</key>
+	<string>Billed energy must be greater than zero.</string>
+	<key>Blue</key>
+	<string>Blue</string>
+	<key>Braking Smoothness</key>
+	<string>Braking Smoothness</string>
+	<key>Business</key>
+	<string>Business</string>
+	<key>Cached API Responses</key>
+	<string>Cached API Responses</string>
+	<key>Cached activity unavailable</key>
+	<string>Cached activity unavailable</string>
+	<key>Calculated only from available TeslaMate API samples. Missing metrics are excluded instead of scored as zero; this is not Tesla's Safety Score.</key>
+	<string>Calculated only from available TeslaMate API samples. Missing metrics are excluded instead of scored as zero; this is not Tesla's Safety Score.</string>
+	<key>Cancel</key>
+	<string>Cancel</string>
+	<key>Capacity Loss</key>
+	<string>Capacity Loss</string>
+	<key>Capacity New</key>
+	<string>Capacity New</string>
+	<key>Capacity Now</key>
+	<string>Capacity Now</string>
+	<key>Car Image</key>
+	<string>Car Image</string>
+	<key>Catalog Version</key>
+	<string>Catalog Version</string>
+	<key>Charge</key>
+	<string>Charge</string>
+	<key>Charge Cost</key>
+	<string>Charge Cost</string>
+	<key>Charge Curves</key>
+	<string>Charge Curves</string>
+	<key>Charge Detail</key>
+	<string>Charge Detail</string>
+	<key>Charge Energy</key>
+	<string>Charge Energy</string>
+	<key>Charge Pricing</key>
+	<string>Charge Pricing</string>
+	<key>Charge Starting</key>
+	<string>Charge Starting</string>
+	<key>Charge Stops</key>
+	<string>Charge Stops</string>
+	<key>Charge energy coverage: %d/%d</key>
+	<string>Charge energy coverage: %d/%d</string>
+	<key>Charge gain</key>
+	<string>Charge gain</string>
+	<key>Charge unavailable</key>
+	<string>Charge unavailable</string>
+	<key>Charged</key>
+	<string>Charged</string>
+	<key>Charged Energy</key>
+	<string>Charged Energy</string>
+	<key>Charger</key>
+	<string>Charger</string>
+	<key>Charger Type</key>
+	<string>Charger Type</string>
+	<key>Charger type</key>
+	<string>Charger type</string>
+	<key>Charges</key>
+	<string>Charges</string>
+	<key>Charges only</key>
+	<string>Charges only</string>
+	<key>Charging</key>
+	<string>Charging</string>
+	<key>Charging Prices</key>
+	<string>Charging Prices</string>
+	<key>Charging Trend</key>
+	<string>Charging Trend</string>
+	<key>Charging complete</key>
+	<string>Charging complete</string>
+	<key>Charging cost</key>
+	<string>Charging cost</string>
+	<key>Charging cost estimates</key>
+	<string>Charging cost estimates</string>
+	<key>Charging location</key>
+	<string>Charging location</string>
+	<key>Check all four tyres; the recorded pressure difference is larger than 0.25 bar.</key>
+	<string>Check all four tyres; the recorded pressure difference is larger than 0.25 bar.</string>
+	<key>Choose the vehicle shown by this widget.</key>
+	<string>Choose the vehicle shown by this widget.</string>
+	<key>Clear</key>
+	<string>Clear</string>
+	<key>Clear API Cache</key>
+	<string>Clear API Cache</string>
+	<key>Clear Cached API Responses</key>
+	<string>Clear Cached API Responses</string>
+	<key>Clear Learned Labels &amp; Prices</key>
+	<string>Clear Learned Labels &amp; Prices</string>
+	<key>Clear Learned Suggestions</key>
+	<string>Clear Learned Suggestions</string>
+	<key>Clear Manual Cost</key>
+	<string>Clear Manual Cost</string>
+	<key>Clear Offline Data</key>
+	<string>Clear Offline Data</string>
+	<key>Clear Offline Snapshots</key>
+	<string>Clear Offline Snapshots</string>
+	<key>Clear Offline Vehicle Data</key>
+	<string>Clear Offline Vehicle Data</string>
+	<key>Clear Route Weather</key>
+	<string>Clear Route Weather</string>
+	<key>Clear Saved Route Weather</key>
+	<string>Clear Saved Route Weather</string>
+	<key>Clear all cached API responses?</key>
+	<string>Clear all cached API responses?</string>
+	<key>Clear all offline vehicle snapshots?</key>
+	<string>Clear all offline vehicle snapshots?</string>
+	<key>Clear all saved route weather?</key>
+	<string>Clear all saved route weather?</string>
+	<key>Clear learned suggestions?</key>
+	<string>Clear learned suggestions?</string>
+	<key>Cloudflare Access Client ID</key>
+	<string>Cloudflare Access Client ID</string>
+	<key>Cloudflare Access Client Secret</key>
+	<string>Cloudflare Access Client Secret</string>
+	<key>Color</key>
+	<string>Color</string>
+	<key>Combined Summary</key>
+	<string>Combined Summary</string>
+	<key>Commute</key>
+	<string>Commute</string>
+	<key>Compare</key>
+	<string>Compare</string>
+	<key>Compare Charges</key>
+	<string>Compare Charges</string>
+	<key>Compare Drives</key>
+	<string>Compare Drives</string>
+	<key>Comparing drives</key>
+	<string>Comparing drives</string>
+	<key>Complete every price segment with valid times and a non-negative price.</key>
+	<string>Complete every price segment with valid times and a non-negative price.</string>
+	<key>Complete history</key>
+	<string>Complete history</string>
+	<key>Confidence %d%% · %d recent drives</key>
+	<string>Confidence %d%% · %d recent drives</string>
+	<key>Configure vehicle image</key>
+	<string>Configure vehicle image</string>
+	<key>Confirm</key>
+	<string>Confirm</string>
+	<key>Confirm charging price</key>
+	<string>Confirm charging price</string>
+	<key>Confirmed</key>
+	<string>Confirmed</string>
+	<key>Confirmed activity labels and charging prices are included in MateDrive iCloud backups. Keychain credentials are never included.</key>
+	<string>Confirmed activity labels and charging prices are included in MateDrive iCloud backups. Keychain credentials are never included.</string>
+	<key>Confirmed by you</key>
+	<string>Confirmed by you</string>
+	<key>Confirmed place-label rules and charging price observations will be removed. Original activities, charges, and drives stay unchanged.</key>
+	<string>Confirmed place-label rules and charging price observations will be removed. Original activities, charges, and drives stay unchanged.</string>
+	<key>Connect TeslaMate</key>
+	<string>Connect TeslaMate</string>
+	<key>Connect server</key>
+	<string>Connect server</string>
+	<key>Connect your TeslaMate server</key>
+	<string>Connect your TeslaMate server</string>
+	<key>Connection Test</key>
+	<string>Connection Test</string>
+	<key>Cost</key>
+	<string>Cost</string>
+	<key>Cost Changes</key>
+	<string>Cost Changes</string>
+	<key>Cost Source</key>
+	<string>Cost Source</string>
+	<key>Costs hidden</key>
+	<string>Costs hidden</string>
+	<key>Could Not Clear Data</key>
+	<string>Could Not Clear Data</string>
+	<key>Could Not Save Settings</key>
+	<string>Could Not Save Settings</string>
+	<key>Could not access saved credentials. Your previous server settings were kept.</key>
+	<string>Could not access saved credentials. Your previous server settings were kept.</string>
+	<key>Could not save credentials. Your previous server settings were kept.</key>
+	<string>Could not save credentials. Your previous server settings were kept.</string>
+	<key>Could not save this permission. Try again.</key>
+	<string>Could not save this permission. Try again.</string>
+	<key>Countries</key>
+	<string>Countries</string>
+	<key>Countries Visited</key>
+	<string>Countries Visited</string>
+	<key>Create Trip</key>
+	<string>Create Trip</string>
+	<key>Create a new rule from this template</key>
+	<string>Create a new rule from this template</string>
+	<key>Credentials</key>
+	<string>Credentials</string>
+	<key>Currency</key>
+	<string>Currency</string>
+	<key>Current</key>
+	<string>Current</string>
+	<key>Current Alerts</key>
+	<string>Current Alerts</string>
+	<key>Current Charge</key>
+	<string>Current Charge</string>
+	<key>Current SOC</key>
+	<string>Current SOC</string>
+	<key>Current session in progress</key>
+	<string>Current session in progress</string>
+	<key>Current vehicle location</key>
+	<string>Current vehicle location</string>
+	<key>Custom</key>
+	<string>Custom</string>
+	<key>Custom Name</key>
+	<string>Custom Name</string>
+	<key>Custom activity</key>
+	<string>Custom activity</string>
+	<key>Custom activity name is required.</key>
+	<string>Custom activity name is required.</string>
+	<key>DC</key>
+	<string>DC</string>
+	<key>DC Charge</key>
+	<string>DC Charge</string>
+	<key>DC fast charging was recorded</key>
+	<string>DC fast charging was recorded</string>
+	<key>Dark</key>
+	<string>Dark</string>
+	<key>Dashboard</key>
+	<string>Dashboard</string>
+	<key>Data Flow</key>
+	<string>Data Flow</string>
+	<key>Data Quality</key>
+	<string>Data Quality</string>
+	<key>Data coverage</key>
+	<string>Data coverage</string>
+	<key>Data leaves the app only when you explicitly export or share it. Review addresses, routes, notes, and other personal details before sharing.</key>
+	<string>Data leaves the app only when you explicitly export or share it. Review addresses, routes, notes, and other personal details before sharing.</string>
+	<key>Date</key>
+	<string>Date</string>
+	<key>Day Trip</key>
+	<string>Day Trip</string>
+	<key>Deep Blue</key>
+	<string>Deep Blue</string>
+	<key>Default Price per kWh</key>
+	<string>Default Price per kWh</string>
+	<key>Delete</key>
+	<string>Delete</string>
+	<key>Delete Learned Data</key>
+	<string>Delete Learned Data</string>
+	<key>Delete Trip</key>
+	<string>Delete Trip</string>
+	<key>Delete learned labels and charging prices?</key>
+	<string>Delete learned labels and charging prices?</string>
+	<key>Derived activity sessions and dashboard, activity, software-update, and widget snapshots will be cleared. Synchronized drive, charging, and location history, confirmed labels, prices, server settings, and Keychain credentials will remain.</key>
+	<string>Derived activity sessions and dashboard, activity, software-update, and widget snapshots will be cleared. Synchronized drive, charging, and location history, confirmed labels, prices, server settings, and Keychain credentials will remain.</string>
+	<key>Derived activity sessions will be cleared, but confirmed labels, charging prices, server settings, and Keychain credentials will not be removed.</key>
+	<string>Derived activity sessions will be cleared, but confirmed labels, charging prices, server settings, and Keychain credentials will not be removed.</string>
+	<key>Detected at %@</key>
+	<string>Detected at %@</string>
+	<key>Detected configuration</key>
+	<string>Detected configuration</string>
+	<key>Direct TeslaMate data</key>
+	<string>Direct TeslaMate data</string>
+	<key>Disabled</key>
+	<string>Disabled</string>
+	<key>Distance</key>
+	<string>Distance</string>
+	<key>Distance Recorded</key>
+	<string>Distance Recorded</string>
+	<key>Distance coverage: %d/%d</key>
+	<string>Distance coverage: %d/%d</string>
+	<key>Done</key>
+	<string>Done</string>
+	<key>Drive</key>
+	<string>Drive</string>
+	<key>Drive Detail</key>
+	<string>Drive Detail</string>
+	<key>Drive Distance</key>
+	<string>Drive Distance</string>
+	<key>Drive Insights</key>
+	<string>Drive Insights</string>
+	<key>Drive Summary</key>
+	<string>Drive Summary</string>
+	<key>Drive endpoint</key>
+	<string>Drive endpoint</string>
+	<key>Drive unavailable</key>
+	<string>Drive unavailable</string>
+	<key>Drives</key>
+	<string>Drives</string>
+	<key>Drives only</key>
+	<string>Drives only</string>
+	<key>Driving</key>
+	<string>Driving</string>
+	<key>Driving Energy</key>
+	<string>Driving Energy</string>
+	<key>Driving Time</key>
+	<string>Driving Time</string>
+	<key>Driving energy coverage: %d/%d</key>
+	<string>Driving energy coverage: %d/%d</string>
+	<key>Duration</key>
+	<string>Duration</string>
+	<key>Edit</key>
+	<string>Edit</string>
+	<key>Edit Activity Label</key>
+	<string>Edit Activity Label</string>
+	<key>Edit activity label</key>
+	<string>Edit activity label</string>
+	<key>Efficiency</key>
+	<string>Efficiency</string>
+	<key>Elevation</key>
+	<string>Elevation</string>
+	<key>Enable Route Weather</key>
+	<string>Enable Route Weather</string>
+	<key>Enabled</key>
+	<string>Enabled</string>
+	<key>Enabling Route Weather</key>
+	<string>Enabling Route Weather</string>
+	<key>End</key>
+	<string>End</string>
+	<key>End Time</key>
+	<string>End Time</string>
+	<key>Ends</key>
+	<string>Ends</string>
+	<key>Energy</key>
+	<string>Energy</string>
+	<key>Energy Added</key>
+	<string>Energy Added</string>
+	<key>Energy Change</key>
+	<string>Energy Change</string>
+	<key>Energy price per kilowatt-hour.</key>
+	<string>Energy price per kilowatt-hour.</string>
+	<key>Energy unit price</key>
+	<string>Energy unit price</string>
+	<key>English</key>
+	<string>English</string>
+	<key>Enter a finite final amount of zero or more.</key>
+	<string>Enter a finite final amount of zero or more.</string>
+	<key>Enter a unit price, or enough bill data to derive one for future charges.</key>
+	<string>Enter a unit price, or enough bill data to derive one for future charges.</string>
+	<key>Enter a valid non-negative default price.</key>
+	<string>Enter a valid non-negative default price.</string>
+	<key>Enter a valid rule time in HH:mm format.</key>
+	<string>Enter a valid rule time in HH:mm format.</string>
+	<key>Enter both the start and end of the time window.</key>
+	<string>Enter both the start and end of the time window.</string>
+	<key>Enter energy from the user's bill or charger meter, not TeslaMate vehicle energy.</key>
+	<string>Enter energy from the user's bill or charger meter, not TeslaMate vehicle energy.</string>
+	<key>Enter valid coordinates and a radius greater than zero.</key>
+	<string>Enter valid coordinates and a radius greater than zero.</string>
+	<key>Error</key>
+	<string>Error</string>
+	<key>Estimated</key>
+	<string>Estimated</string>
+	<key>Estimated battery health</key>
+	<string>Estimated battery health</string>
+	<key>Exact dates and costs hidden</key>
+	<string>Exact dates and costs hidden</string>
+	<key>Exact dates hidden</key>
+	<string>Exact dates hidden</string>
+	<key>Exact match</key>
+	<string>Exact match</string>
+	<key>Exact recording dates and start odometer hidden</key>
+	<string>Exact recording dates and start odometer hidden</string>
+	<key>Exact recording dates hidden</key>
+	<string>Exact recording dates hidden</string>
+	<key>Export Audit CSV</key>
+	<string>Export Audit CSV</string>
+	<key>Export Diagnostics</key>
+	<string>Export Diagnostics</string>
+	<key>Export Failed</key>
+	<string>Export Failed</string>
+	<key>Failed</key>
+	<string>Failed</string>
+	<key>Fallback</key>
+	<string>Fallback</string>
+	<key>Fallback match</key>
+	<string>Fallback match</string>
+	<key>Final amount</key>
+	<string>Final amount</string>
+	<key>Finding location</key>
+	<string>Finding location</string>
+	<key>First Visit</key>
+	<string>First Visit</string>
+	<key>Fixed fee</key>
+	<string>Fixed fee</string>
+	<key>Follow Device Region</key>
+	<string>Follow Device Region</string>
+	<key>Follow System</key>
+	<string>Follow System</string>
+	<key>Follow TeslaMate</key>
+	<string>Follow TeslaMate</string>
+	<key>Free</key>
+	<string>Free</string>
+	<key>From</key>
+	<string>From</string>
+	<key>Front Left</key>
+	<string>Front Left</string>
+	<key>Front Right</key>
+	<string>Front Right</string>
+	<key>Future activities at this place</key>
+	<string>Future activities at this place</string>
+	<key>Future activities here</key>
+	<string>Future activities here</string>
+	<key>Future charges here</key>
+	<string>Future charges here</string>
+	<key>Generated</key>
+	<string>Generated</string>
+	<key>Generation</key>
+	<string>Generation</string>
+	<key>Geofence match</key>
+	<string>Geofence match</string>
+	<key>Geofences</key>
+	<string>Geofences</string>
+	<key>Goal</key>
+	<string>Goal</string>
+	<key>Green</key>
+	<string>Green</string>
+	<key>Hard-braking frequency or regenerative-utilization samples are required. Missing data is not converted into a score.</key>
+	<string>Hard-braking frequency or regenerative-utilization samples are required. Missing data is not converted into a score.</string>
+	<key>Has Cost</key>
+	<string>Has Cost</string>
+	<key>Health Confidence</key>
+	<string>Health Confidence</string>
+	<key>Help &amp; Legal</key>
+	<string>Help &amp; Legal</string>
+	<key>High Confidence</key>
+	<string>High Confidence</string>
+	<key>History</key>
+	<string>History</string>
+	<key>History Span</key>
+	<string>History Span</string>
+	<key>Home charging</key>
+	<string>Home charging</string>
+	<key>Home rule</key>
+	<string>Home rule</string>
+	<key>Idle</key>
+	<string>Idle</string>
+	<key>Imperial (mi, °F, psi)</key>
+	<string>Imperial (mi, °F, psi)</string>
+	<key>In Progress</key>
+	<string>In Progress</string>
+	<key>Include classification</key>
+	<string>Include classification</string>
+	<key>Include costs</key>
+	<string>Include costs</string>
+	<key>Include date and time</key>
+	<string>Include date and time</string>
+	<key>Include exact activity dates</key>
+	<string>Include exact activity dates</string>
+	<key>Include exact dates</key>
+	<string>Include exact dates</string>
+	<key>Include exact recording dates</key>
+	<string>Include exact recording dates</string>
+	<key>Include place names</key>
+	<string>Include place names</string>
+	<key>Include progress details</key>
+	<string>Include progress details</string>
+	<key>Include recording start odometer</key>
+	<string>Include recording start odometer</string>
+	<key>Include route shape</key>
+	<string>Include route shape</string>
+	<key>Include start and destination</key>
+	<string>Include start and destination</string>
+	<key>Include start and end locations</key>
+	<string>Include start and end locations</string>
+	<key>Include unlock dates</key>
+	<string>Include unlock dates</string>
+	<key>Increase following distance and anticipate slowing traffic to reduce hard braking.</key>
+	<string>Increase following distance and anticipate slowing traffic to reduce hard braking.</string>
+	<key>Independent App</key>
+	<string>Independent App</string>
+	<key>Indigo</key>
+	<string>Indigo</string>
+	<key>Inferred match</key>
+	<string>Inferred match</string>
+	<key>Inside</key>
+	<string>Inside</string>
+	<key>Inside a saved charging geofence</key>
+	<string>Inside a saved charging geofence</string>
+	<key>Inside a saved school geofence</key>
+	<string>Inside a saved school geofence</string>
+	<key>Inside a saved shopping geofence</key>
+	<string>Inside a saved shopping geofence</string>
+	<key>Inside the saved Home geofence</key>
+	<string>Inside the saved Home geofence</string>
+	<key>Inside the saved Work geofence</key>
+	<string>Inside the saved Work geofence</string>
+	<key>Intermediate Stops</key>
+	<string>Intermediate Stops</string>
+	<key>Known Charge Cost</key>
+	<string>Known Charge Cost</string>
+	<key>Language</key>
+	<string>Language</string>
+	<key>Last 6 Days</key>
+	<string>Last 6 Days</string>
+	<key>Last Cache Update</key>
+	<string>Last Cache Update</string>
+	<key>Latitude</key>
+	<string>Latitude</string>
+	<key>Latitude, longitude, and radius must be entered together.</key>
+	<string>Latitude, longitude, and radius must be entered together.</string>
+	<key>Learned Data Cleared</key>
+	<string>Learned Data Cleared</string>
+	<key>Learned pattern</key>
+	<string>Learned pattern</string>
+	<key>Learned suggestions cleared.</key>
+	<string>Learned suggestions cleared.</string>
+	<key>Legs</key>
+	<string>Legs</string>
+	<key>Leisure</key>
+	<string>Leisure</string>
+	<key>Lifetime</key>
+	<string>Lifetime</string>
+	<key>Lifetime health unavailable</key>
+	<string>Lifetime health unavailable</string>
+	<key>Light</key>
+	<string>Light</string>
+	<key>Limit to a time window</key>
+	<string>Limit to a time window</string>
+	<key>Limited</key>
+	<string>Limited</string>
+	<key>Loading</key>
+	<string>Loading</string>
+	<key>Loading battery</key>
+	<string>Loading battery</string>
+	<key>Loading charge</key>
+	<string>Loading charge</string>
+	<key>Loading charges</key>
+	<string>Loading charges</string>
+	<key>Loading comparison</key>
+	<string>Loading comparison</string>
+	<key>Loading countries</key>
+	<string>Loading countries</string>
+	<key>Loading current charge</key>
+	<string>Loading current charge</string>
+	<key>Loading dashboard</key>
+	<string>Loading dashboard</string>
+	<key>Loading drive</key>
+	<string>Loading drive</string>
+	<key>Loading drives</key>
+	<string>Loading drives</string>
+	<key>Loading mileage</key>
+	<string>Loading mileage</string>
+	<key>Loading regions</key>
+	<string>Loading regions</string>
+	<key>Loading sentry history</key>
+	<string>Loading sentry history</string>
+	<key>Loading stats</key>
+	<string>Loading stats</string>
+	<key>Loading trip</key>
+	<string>Loading trip</string>
+	<key>Loading trips</key>
+	<string>Loading trips</string>
+	<key>Loading updates</key>
+	<string>Loading updates</string>
+	<key>Loading weather</key>
+	<string>Loading weather</string>
+	<key>Local Data</key>
+	<string>Local Data</string>
+	<key>Local manual price</key>
+	<string>Local manual price</string>
+	<key>Location</key>
+	<string>Location</string>
+	<key>Location and time pricing rules are not configured yet</key>
+	<string>Location and time pricing rules are not configured yet</string>
+	<key>Location filter applied</key>
+	<string>Location filter applied</string>
+	<key>Location unavailable</key>
+	<string>Location unavailable</string>
+	<key>Locations hidden</key>
+	<string>Locations hidden</string>
+	<key>Lock</key>
+	<string>Lock</string>
+	<key>Locked</key>
+	<string>Locked</string>
+	<key>Longest</key>
+	<string>Longest</string>
+	<key>Longest Drive</key>
+	<string>Longest Drive</string>
+	<key>Longitude</key>
+	<string>Longitude</string>
+	<key>Low Confidence</key>
+	<string>Low Confidence</string>
+	<key>Maintenance</key>
+	<string>Maintenance</string>
+	<key>Manual Cost</key>
+	<string>Manual Cost</string>
+	<key>Manual Costs Protected</key>
+	<string>Manual Costs Protected</string>
+	<key>Manual configuration</key>
+	<string>Manual configuration</string>
+	<key>Manual entry</key>
+	<string>Manual entry</string>
+	<key>Manual match</key>
+	<string>Manual match</string>
+	<key>Maps &amp; Weather</key>
+	<string>Maps &amp; Weather</string>
+	<key>Matched</key>
+	<string>Matched</string>
+	<key>Matched a repeated route</key>
+	<string>Matched a repeated route</string>
+	<key>Matched a weekday commute window</key>
+	<string>Matched a weekday commute window</string>
+	<key>Matched directly from the vehicle details.</key>
+	<string>Matched directly from the vehicle details.</string>
+	<key>Matched from vehicle details with catalog defaults where data was unavailable.</key>
+	<string>Matched from vehicle details with catalog defaults where data was unavailable.</string>
+	<key>Matched the typical stay duration</key>
+	<string>Matched the typical stay duration</string>
+	<key>MateDrive</key>
+	<string>MateDrive</string>
+	<key>MateDrive Page</key>
+	<string>MateDrive Page</string>
+	<key>MateDrive Vehicle</key>
+	<string>MateDrive Vehicle</string>
+	<key>MateDrive groups the display only. TeslaMate records remain unchanged, and every original segment stays available below.</key>
+	<string>MateDrive groups the display only. TeslaMate records remain unchanged, and every original segment stays available below.</string>
+	<key>MateDrive has no developer-operated analytics or vehicle-data backend and does not track you across apps.</key>
+	<string>MateDrive has no developer-operated analytics or vehicle-data backend and does not track you across apps.</string>
+	<key>MateDrive inferred this activity from the available trip, place, time and charging evidence.</key>
+	<string>MateDrive inferred this activity from the available trip, place, time and charging evidence.</string>
+	<key>MateDrive is an independently developed, unofficial iOS app. It is not affiliated with, sponsored by, or endorsed by Tesla, Inc., TeslaMate, or any other service provider. Product and service names are used only to describe compatibility.</key>
+	<string>MateDrive is an independently developed, unofficial iOS app. It is not affiliated with, sponsored by, or endorsed by Tesla, Inc., TeslaMate, or any other service provider. Product and service names are used only to describe compatibility.</string>
+	<key>MateDrive verifies server and data access before saving.</key>
+	<string>MateDrive verifies server and data access before saving.</string>
+	<key>Max Speed</key>
+	<string>Max Speed</string>
+	<key>Maximum stop</key>
+	<string>Maximum stop</string>
+	<key>Medium Confidence</key>
+	<string>Medium Confidence</string>
+	<key>Merge adjacent drives</key>
+	<string>Merge adjacent drives</string>
+	<key>Merged Drive</key>
+	<string>Merged Drive</string>
+	<key>Metric (km, °C, bar)</key>
+	<string>Metric (km, °C, bar)</string>
+	<key>Midnight Cherry</key>
+	<string>Midnight Cherry</string>
+	<key>Midnight Silver</key>
+	<string>Midnight Silver</string>
+	<key>Mileage</key>
+	<string>Mileage</string>
+	<key>Mileage by Day</key>
+	<string>Mileage by Day</string>
+	<key>Mileage by Month</key>
+	<string>Mileage by Month</string>
+	<key>Mileage by Year</key>
+	<string>Mileage by Year</string>
+	<key>Missing Cost</key>
+	<string>Missing Cost</string>
+	<key>Missing hours: %@</key>
+	<string>Missing hours: %@</string>
+	<key>Most Efficient</key>
+	<string>Most Efficient</string>
+	<key>Name</key>
+	<string>Name</string>
+	<key>Needs calibration</key>
+	<string>Needs calibration</string>
+	<key>Net battery change</key>
+	<string>Net battery change</string>
+	<key>New Battery Rated Range</key>
+	<string>New Battery Rated Range</string>
+	<key>New Blank Rule</key>
+	<string>New Blank Rule</string>
+	<key>New from Template</key>
+	<string>New from Template</string>
+	<key>Newest</key>
+	<string>Newest</string>
+	<key>No Active Charge</key>
+	<string>No Active Charge</string>
+	<key>No Cost</key>
+	<string>No Cost</string>
+	<key>No Developer Collection</key>
+	<string>No Developer Collection</string>
+	<key>No Matching Rule</key>
+	<string>No Matching Rule</string>
+	<key>No cached activity</key>
+	<string>No cached activity</string>
+	<key>No charge history</key>
+	<string>No charge history</string>
+	<key>No charge point data</key>
+	<string>No charge point data</string>
+	<key>No comparable charges</key>
+	<string>No comparable charges</string>
+	<key>No comparable drives</key>
+	<string>No comparable drives</string>
+	<key>No cost recorded</key>
+	<string>No cost recorded</string>
+	<key>No countries recorded</key>
+	<string>No countries recorded</string>
+	<key>No curve data</key>
+	<string>No curve data</string>
+	<key>No data</key>
+	<string>No data</string>
+	<key>No drive history</key>
+	<string>No drive history</string>
+	<key>No matching activity</key>
+	<string>No matching activity</string>
+	<key>No mileage data</key>
+	<string>No mileage data</string>
+	<key>No pricing changes</key>
+	<string>No pricing changes</string>
+	<key>No pricing rule matched this charge</key>
+	<string>No pricing rule matched this charge</string>
+	<key>No pricing rules</key>
+	<string>No pricing rules</string>
+	<key>No recorded locations</key>
+	<string>No recorded locations</string>
+	<key>No regions recorded</key>
+	<string>No regions recorded</string>
+	<key>No reliable data</key>
+	<string>No reliable data</string>
+	<key>No route coordinates</key>
+	<string>No route coordinates</string>
+	<key>No saved activity labels</key>
+	<string>No saved activity labels</string>
+	<key>No sentry alerts recorded</key>
+	<string>No sentry alerts recorded</string>
+	<key>No software updates found</key>
+	<string>No software updates found</string>
+	<key>No source references are available.</key>
+	<string>No source references are available.</string>
+	<key>No trips found</key>
+	<string>No trips found</string>
+	<key>No weather samples</key>
+	<string>No weather samples</string>
+	<key>Not classified</key>
+	<string>Not classified</string>
+	<key>Not configured</key>
+	<string>Not configured</string>
+	<key>Notifications</key>
+	<string>Notifications</string>
+	<key>OK</key>
+	<string>OK</string>
+	<key>Odometer</key>
+	<string>Odometer</string>
+	<key>Off</key>
+	<string>Off</string>
+	<key>Official source references are available.</key>
+	<string>Official source references are available.</string>
+	<key>Offline Activity Timelines</key>
+	<string>Offline Activity Timelines</string>
+	<key>Offline Dashboard Snapshots</key>
+	<string>Offline Dashboard Snapshots</string>
+	<key>Offline Data Cleared</key>
+	<string>Offline Data Cleared</string>
+	<key>Offline Snapshots Cleared</key>
+	<string>Offline Snapshots Cleared</string>
+	<key>Oldest</key>
+	<string>Oldest</string>
+	<key>On</key>
+	<string>On</string>
+	<key>On-device classification</key>
+	<string>On-device classification</string>
+	<key>One-time fixed fee for this charging session.</key>
+	<string>One-time fixed fee for this charging session.</string>
+	<key>Ongoing</key>
+	<string>Ongoing</string>
+	<key>Only charger type and pricing schedule are saved. Location, effective dates, and priority stay with each rule.</key>
+	<string>Only charger type and pricing schedule are saved. Location, effective dates, and priority stay with each rule.</string>
+	<key>Only derived activity sessions will be removed and regenerated. Original activities, charges, and drives stay unchanged.</key>
+	<string>Only derived activity sessions will be removed and regenerated. Original activities, charges, and drives stay unchanged.</string>
+	<key>Open ${destination}</key>
+	<string>Open ${destination}</string>
+	<key>Open MateDrive Page</key>
+	<string>Open MateDrive Page</string>
+	<key>Open details</key>
+	<string>Open details</string>
+	<key>Open recent driving map</key>
+	<string>Open recent driving map</string>
+	<key>Opens a selected MateDrive page for the current vehicle.</key>
+	<string>Opens a selected MateDrive page for the current vehicle.</string>
+	<key>Orange</key>
+	<string>Orange</string>
+	<key>Original Drive Segments</key>
+	<string>Original Drive Segments</string>
+	<key>Other DC</key>
+	<string>Other DC</string>
+	<key>Other DC charger</key>
+	<string>Other DC charger</string>
+	<key>Outside</key>
+	<string>Outside</string>
+	<key>Outside Temperature</key>
+	<string>Outside Temperature</string>
+	<key>Overnight windows are supported, for example 22:00 to 06:00.</key>
+	<string>Overnight windows are supported, for example 22:00 to 06:00.</string>
+	<key>Page</key>
+	<string>Page</string>
+	<key>Pages will request fresh data from your server the next time they open. Server settings and Keychain credentials will not be removed.</key>
+	<string>Pages will request fresh data from your server the next time they open. Server settings and Keychain credentials will not be removed.</string>
+	<key>Palette</key>
+	<string>Palette</string>
+	<key>Park</key>
+	<string>Park</string>
+	<key>Parked</key>
+	<string>Parked</string>
+	<key>Parking</key>
+	<string>Parking</string>
+	<key>Parking Detail</key>
+	<string>Parking Detail</string>
+	<key>Parking location</key>
+	<string>Parking location</string>
+	<key>Parking only</key>
+	<string>Parking only</string>
+	<key>Partial history</key>
+	<string>Partial history</string>
+	<key>Peak</key>
+	<string>Peak</string>
+	<key>Peak Power</key>
+	<string>Peak Power</string>
+	<key>Pearl White</key>
+	<string>Pearl White</string>
+	<key>Period Recap Share Card</key>
+	<string>Period Recap Share Card</string>
+	<key>Personal</key>
+	<string>Personal</string>
+	<key>Pickup or drop-off</key>
+	<string>Pickup or drop-off</string>
+	<key>Pink</key>
+	<string>Pink</string>
+	<key>Power</key>
+	<string>Power</string>
+	<key>Power Curve</key>
+	<string>Power Curve</string>
+	<key>Precondition the battery before cold-weather drives when regeneration is limited.</key>
+	<string>Precondition the battery before cold-weather drives when regeneration is limited.</string>
+	<key>Preferences</key>
+	<string>Preferences</string>
+	<key>Price</key>
+	<string>Price</string>
+	<key>Price Segments</key>
+	<string>Price Segments</string>
+	<key>Price components</key>
+	<string>Price components</string>
+	<key>Price coverage: %d/%d</key>
+	<string>Price coverage: %d/%d</string>
+	<key>Price per kWh</key>
+	<string>Price per kWh</string>
+	<key>Price scope</key>
+	<string>Price scope</string>
+	<key>Price segments cannot overlap.</key>
+	<string>Price segments cannot overlap.</string>
+	<key>Pricing Preview</key>
+	<string>Pricing Preview</string>
+	<key>Pricing Rule</key>
+	<string>Pricing Rule</string>
+	<key>Pricing Rules</key>
+	<string>Pricing Rules</string>
+	<key>Pricing basis energy</key>
+	<string>Pricing basis energy</string>
+	<key>Pricing rule</key>
+	<string>Pricing rule</string>
+	<key>Priority</key>
+	<string>Priority</string>
+	<key>Privacy &amp; Local Data</key>
+	<string>Privacy &amp; Local Data</string>
+	<key>Privacy Policy</key>
+	<string>Privacy Policy</string>
+	<key>Private route</key>
+	<string>Private route</string>
+	<key>Progress</key>
+	<string>Progress</string>
+	<key>Purpose</key>
+	<string>Purpose</string>
+	<key>Quicksilver</key>
+	<string>Quicksilver</string>
+	<key>Radius Meters</key>
+	<string>Radius Meters</string>
+	<key>Range</key>
+	<string>Range</string>
+	<key>Range Change</key>
+	<string>Range Change</string>
+	<key>Range Loss</key>
+	<string>Range Loss</string>
+	<key>Range New</key>
+	<string>Range New</string>
+	<key>Range Now</key>
+	<string>Range Now</string>
+	<key>Rated Range</key>
+	<string>Rated Range</string>
+	<key>Rated range</key>
+	<string>Rated range</string>
+	<key>Rated-range change</key>
+	<string>Rated-range change</string>
+	<key>Read-only responses remain available for up to 30 days. Pages show cached data immediately and refresh it in the background, including after the app restarts. Cache filenames contain only a one-way hash, and files use iOS data protection.</key>
+	<string>Read-only responses remain available for up to 30 days. Pages show cached data immediately and refresh it in the background, including after the app restarts. Cache filenames contain only a one-way hash, and files use iOS data protection.</string>
+	<key>Ready</key>
+	<string>Ready</string>
+	<key>Rear Left</key>
+	<string>Rear Left</string>
+	<key>Rear Right</key>
+	<string>Rear Right</string>
+	<key>Rebuild</key>
+	<string>Rebuild</string>
+	<key>Rebuild Derived Activities</key>
+	<string>Rebuild Derived Activities</string>
+	<key>Rebuild derived activities?</key>
+	<string>Rebuild derived activities?</string>
+	<key>Recent Driving Score</key>
+	<string>Recent Driving Score</string>
+	<key>Recent dashboard status, complete activity timelines, and aggregated widget trends are stored so pages remain available during a temporary server outage. Widget trends exclude locations and exact event times. Snapshots are isolated by server and vehicle.</key>
+	<string>Recent dashboard status, complete activity timelines, and aggregated widget trends are stored so pages remain available during a temporary server outage. Widget trends exclude locations and exact event times. Snapshots are isolated by server and vehicle.</string>
+	<key>Recent recorded metrics are balanced. Keep the same smooth driving pattern.</key>
+	<string>Recent recorded metrics are balanced. Keep the same smooth driving pattern.</string>
+	<key>Recommendations</key>
+	<string>Recommendations</string>
+	<key>Reconstructed from power samples</key>
+	<string>Reconstructed from power samples</string>
+	<key>Record more complete drives before treating this score as a stable trend.</key>
+	<string>Record more complete drives before treating this score as a stable trend.</string>
+	<key>Recorded Capacity Retention</key>
+	<string>Recorded Capacity Retention</string>
+	<key>Recorded Range Retention</key>
+	<string>Recorded Range Retention</string>
+	<key>Recorded charging location</key>
+	<string>Recorded charging location</string>
+	<key>Recorded event</key>
+	<string>Recorded event</string>
+	<key>Recorded location</key>
+	<string>Recorded location</string>
+	<key>Recorded range: %@ – %@</key>
+	<string>Recorded range: %@ – %@</string>
+	<key>Recording Start Odometer</key>
+	<string>Recording Start Odometer</string>
+	<key>Recording start odometer hidden</key>
+	<string>Recording start odometer hidden</string>
+	<key>Recording-period retention does not represent lifetime battery health. Add a verified new-car reference before drawing a degradation conclusion.</key>
+	<string>Recording-period retention does not represent lifetime battery health. Add a verified new-car reference before drawing a degradation conclusion.</string>
+	<key>Records</key>
+	<string>Records</string>
+	<key>Red</key>
+	<string>Red</string>
+	<key>Refresh</key>
+	<string>Refresh</string>
+	<key>Regeneration</key>
+	<string>Regeneration</string>
+	<key>Region</key>
+	<string>Region</string>
+	<key>Regional tariff</key>
+	<string>Regional tariff</string>
+	<key>Regions</key>
+	<string>Regions</string>
+	<key>Regions Visited</key>
+	<string>Regions Visited</string>
+	<key>Release the accelerator earlier and more smoothly to use more regenerative braking.</key>
+	<string>Release the accelerator earlier and more smoothly to use more regenerative braking.</string>
+	<key>Rename</key>
+	<string>Rename</string>
+	<key>Repeated at a similar time</key>
+	<string>Repeated at a similar time</string>
+	<key>Replace Recorded Cost</key>
+	<string>Replace Recorded Cost</string>
+	<key>Replenishment</key>
+	<string>Replenishment</string>
+	<key>Required</key>
+	<string>Required</string>
+	<key>Residential Tariff</key>
+	<string>Residential Tariff</string>
+	<key>Restore the original TeslaMate API costs for every successful write?</key>
+	<string>Restore the original TeslaMate API costs for every successful write?</string>
+	<key>Restored</key>
+	<string>Restored</string>
+	<key>Reusable Tariff Template</key>
+	<string>Reusable Tariff Template</string>
+	<key>Road Trip</key>
+	<string>Road Trip</string>
+	<key>Roll Back</key>
+	<string>Roll Back</string>
+	<key>Roll Back Costs?</key>
+	<string>Roll Back Costs?</string>
+	<key>Route Drives</key>
+	<string>Route Drives</string>
+	<key>Route Weather</key>
+	<string>Route Weather</string>
+	<key>Route Weather Cleared</key>
+	<string>Route Weather Cleared</string>
+	<key>Route shape</key>
+	<string>Route shape</string>
+	<key>Rule</key>
+	<string>Rule</string>
+	<key>Rule unit price</key>
+	<string>Rule unit price</string>
+	<key>Rules</key>
+	<string>Rules</string>
+	<key>SOC</key>
+	<string>SOC</string>
+	<key>SOC Change</key>
+	<string>SOC Change</string>
+	<key>Save</key>
+	<string>Save</string>
+	<key>Save Cost</key>
+	<string>Save Cost</string>
+	<key>Save Pricing as Template</key>
+	<string>Save Pricing as Template</string>
+	<key>Save Trip</key>
+	<string>Save Trip</string>
+	<key>Saved Open-Meteo results will be removed from this device. Your route-weather permission and TeslaMate data will not change.</key>
+	<string>Saved Open-Meteo results will be removed from this device. Your route-weather permission and TeslaMate data will not change.</string>
+	<key>Saved place</key>
+	<string>Saved place</string>
+	<key>Saved place rule</key>
+	<string>Saved place rule</string>
+	<key>Saves the confirmed result for this charge.</key>
+	<string>Saves the confirmed result for this charge.</string>
+	<key>Saving</key>
+	<string>Saving</string>
+	<key>Secondary Server URL</key>
+	<string>Secondary Server URL</string>
+	<key>Segments</key>
+	<string>Segments</string>
+	<key>Segments %d-%d: %d min stop, endpoints %d m apart</key>
+	<string>Segments %d-%d: %d min stop, endpoints %d m apart</string>
+	<key>Segments %d-%d: %d min stop, matching endpoint address</key>
+	<string>Segments %d-%d: %d min stop, matching endpoint address</string>
+	<key>Selected</key>
+	<string>Selected</string>
+	<key>Sensitive details selected</key>
+	<string>Sensitive details selected</string>
+	<key>Sentry</key>
+	<string>Sentry</string>
+	<key>Sentry Alert</key>
+	<string>Sentry Alert</string>
+	<key>Sentry active</key>
+	<string>Sentry active</string>
+	<key>Sentry mode detected activity</key>
+	<string>Sentry mode detected activity</string>
+	<key>Server</key>
+	<string>Server</string>
+	<key>Server Statistics</key>
+	<string>Server Statistics</string>
+	<key>Server URL</key>
+	<string>Server URL</string>
+	<key>Server Version</key>
+	<string>Server Version</string>
+	<key>Server settings and Keychain credentials will not be removed.</key>
+	<string>Server settings and Keychain credentials will not be removed.</string>
+	<key>Service fee</key>
+	<string>Service fee</string>
+	<key>Service fee per kilowatt-hour.</key>
+	<string>Service fee per kilowatt-hour.</string>
+	<key>Session</key>
+	<string>Session</string>
+	<key>Session Fee</key>
+	<string>Session Fee</string>
+	<key>Session fee must be a non-negative number.</key>
+	<string>Session fee must be a non-negative number.</string>
+	<key>Settings</key>
+	<string>Settings</string>
+	<key>Share Achievement</key>
+	<string>Share Achievement</string>
+	<key>Share Battery Report</key>
+	<string>Share Battery Report</string>
+	<key>Share Card</key>
+	<string>Share Card</string>
+	<key>Share Drive</key>
+	<string>Share Drive</string>
+	<key>Share Image</key>
+	<string>Share Image</string>
+	<key>Share Period Recap</key>
+	<string>Share Period Recap</string>
+	<key>Share Trip Report</key>
+	<string>Share Trip Report</string>
+	<key>Sharing</key>
+	<string>Sharing</string>
+	<key>Shopping</key>
+	<string>Shopping</string>
+	<key>Show battery level</key>
+	<string>Show battery level</string>
+	<key>Show list</key>
+	<string>Show list</string>
+	<key>Show map</key>
+	<string>Show map</string>
+	<key>Show rated range</key>
+	<string>Show rated range</string>
+	<key>Showing saved drives. Pull to refresh when the server is available.</key>
+	<string>Showing saved drives. Pull to refresh when the server is available.</string>
+	<key>Shows 30-day charging energy and known cost totals.</key>
+	<string>Shows 30-day charging energy and known cost totals.</string>
+	<key>Shows a privacy-safe battery capacity or range trend.</key>
+	<string>Shows a privacy-safe battery capacity or range trend.</string>
+	<key>Shows the latest read-only car status.</key>
+	<string>Shows the latest read-only car status.</string>
+	<key>Similar Charges</key>
+	<string>Similar Charges</string>
+	<key>Smart Activities</key>
+	<string>Smart Activities</string>
+	<key>Smart Activity Privacy</key>
+	<string>Smart Activity Privacy</string>
+	<key>Smart suggestion</key>
+	<string>Smart suggestion</string>
+	<key>Solid Black</key>
+	<string>Solid Black</string>
+	<key>Sort</key>
+	<string>Sort</string>
+	<key>Speed</key>
+	<string>Speed</string>
+	<key>Standby change</key>
+	<string>Standby change</string>
+	<key>Start</key>
+	<string>Start</string>
+	<key>Start Time</key>
+	<string>Start Time</string>
+	<key>Start and end time must be entered together.</key>
+	<string>Start and end time must be entered together.</string>
+	<key>Start and end times are both required.</key>
+	<string>Start and end times are both required.</string>
+	<key>Starts</key>
+	<string>Starts</string>
+	<key>Station</key>
+	<string>Station</string>
+	<key>Station rule</key>
+	<string>Station rule</string>
+	<key>Stats</key>
+	<string>Stats</string>
+	<key>Stealth Grey</key>
+	<string>Stealth Grey</string>
+	<key>Succeeded</key>
+	<string>Succeeded</string>
+	<key>Summary</key>
+	<string>Summary</string>
+	<key>Support &amp; Feedback</key>
+	<string>Support &amp; Feedback</string>
+	<key>Surface</key>
+	<string>Surface</string>
+	<key>Tariff Templates</key>
+	<string>Tariff Templates</string>
+	<key>Tariff and charging-cost results are estimates for reference, not invoices. Confirm them against the charger operator's bill.</key>
+	<string>Tariff and charging-cost results are estimates for reference, not invoices. Confirm them against the charger operator's bill.</string>
+	<key>Teal</key>
+	<string>Teal</string>
+	<key>Temperature</key>
+	<string>Temperature</string>
+	<key>Template Name</key>
+	<string>Template Name</string>
+	<key>Template Saved</key>
+	<string>Template Saved</string>
+	<key>Templates reuse pricing schedules without copying locations or effective dates.</key>
+	<string>Templates reuse pricing schedules without copying locations or effective dates.</string>
+	<key>Tesla Supercharger</key>
+	<string>Tesla Supercharger</string>
+	<key>TeslaMate</key>
+	<string>TeslaMate</string>
+	<key>TeslaMate API price</key>
+	<string>TeslaMate API price</string>
+	<key>TeslaMate has not published the active charge yet.</key>
+	<string>TeslaMate has not published the active charge yet.</string>
+	<key>Test Connection</key>
+	<string>Test Connection</string>
+	<key>Testing Connection</key>
+	<string>Testing Connection</string>
+	<key>The car is not currently charging.</key>
+	<string>The car is not currently charging.</string>
+	<key>The currency code is invalid.</key>
+	<string>The currency code is invalid.</string>
+	<key>The effective start date must not be after the end date.</key>
+	<string>The effective start date must not be after the end date.</string>
+	<key>The energy unit price cannot be negative.</key>
+	<string>The energy unit price cannot be negative.</string>
+	<key>The final amount on the user's bill.</key>
+	<string>The final amount on the user's bill.</string>
+	<key>The fixed fee cannot be negative.</key>
+	<string>The fixed fee cannot be negative.</string>
+	<key>The model year falls outside the catalog range. Check the detected generation.</key>
+	<string>The model year falls outside the catalog range. Check the detected generation.</string>
+	<key>The model year is unavailable, so the generation was inferred.</key>
+	<string>The model year is unavailable, so the generation was inferred.</string>
+	<key>The report excludes server addresses, credentials, vehicle identifiers, and coordinates.</key>
+	<string>The report excludes server addresses, credentials, vehicle identifiers, and coordinates.</string>
+	<key>The reported wheels conflict with the detected factory trim. Choose the configuration that matches your vehicle.</key>
+	<string>The reported wheels conflict with the detected factory trim. Choose the configuration that matches your vehicle.</string>
+	<key>The saved configuration is no longer available. Automatic matching has been restored.</key>
+	<string>The saved configuration is no longer available. Automatic matching has been restored.</string>
+	<key>The service fee cannot be negative.</key>
+	<string>The service fee cannot be negative.</string>
+	<key>The time window is saved with future rules and may cross midnight.</key>
+	<string>The time window is saved with future rules and may cross midnight.</string>
+	<key>The vehicle left soon after charging</key>
+	<string>The vehicle left soon after charging</string>
+	<key>The vehicle model was not recognized. Choose a catalog generation manually.</key>
+	<string>The vehicle model was not recognized. Choose a catalog generation manually.</string>
+	<key>These evaluations come directly from TeslaMate API and remain separate from MateDrive's transparent recent-driving score.</key>
+	<string>These evaluations come directly from TeslaMate API and remain separate from MateDrive's transparent recent-driving score.</string>
+	<key>This activity</key>
+	<string>This activity</string>
+	<key>This activity only</key>
+	<string>This activity only</string>
+	<key>This charge only</key>
+	<string>This charge only</string>
+	<key>This feature is temporarily unavailable.</key>
+	<string>This feature is temporarily unavailable.</string>
+	<key>This is a suggestion. Use Edit activity label to correct it; your choice will take priority.</key>
+	<string>This is a suggestion. Use Edit activity label to correct it; your choice will take priority.</string>
+	<key>This is an estimate from TeslaMate records and your calibration reference, not a physical battery diagnosis.</key>
+	<string>This is an estimate from TeslaMate records and your calibration reference, not a physical battery diagnosis.</string>
+	<key>This permanently deletes confirmed activity labels and charging-price observations, then clears derived activity sessions. Original TeslaMate data, server settings, and Keychain credentials are not removed.</key>
+	<string>This permanently deletes confirmed activity labels and charging-price observations, then clears derived activity sessions. Original TeslaMate data, server settings, and Keychain credentials are not removed.</string>
+	<key>This recap uses loaded records only and marks totals as partial.</key>
+	<string>This recap uses loaded records only and marks totals as partial.</string>
+	<key>Through</key>
+	<string>Through</string>
+	<key>Tier %d</key>
+	<string>Tier %d</string>
+	<key>Time</key>
+	<string>Time</string>
+	<key>Time must be between 00:00 and 23:59.</key>
+	<string>Time must be between 00:00 and 23:59.</string>
+	<key>Time unavailable</key>
+	<string>Time unavailable</string>
+	<key>Time values must be between 00:00 and 23:59.</key>
+	<string>Time values must be between 00:00 and 23:59.</string>
+	<key>Time window</key>
+	<string>Time window</string>
+	<key>Timeline</key>
+	<string>Timeline</string>
+	<key>To load weather for this drive, MateDrive sends one representative precise route coordinate and the drive time to Open-Meteo. Open-Meteo may retain request logs for up to 90 days. You can turn this off and clear saved weather in Privacy &amp; Local Data.</key>
+	<string>To load weather for this drive, MateDrive sends one representative precise route coordinate and the drive time to Open-Meteo. Open-Meteo may retain request logs for up to 90 days. You can turn this off and clear saved weather in Privacy &amp; Local Data.</string>
+	<key>Today</key>
+	<string>Today</string>
+	<key>Total Cost</key>
+	<string>Total Cost</string>
+	<key>Total Distance</key>
+	<string>Total Distance</string>
+	<key>Totals reflect loaded records only.</key>
+	<string>Totals reflect loaded records only.</string>
+	<key>Trim</key>
+	<string>Trim</string>
+	<key>Trip Detail</key>
+	<string>Trip Detail</string>
+	<key>Trip Report</key>
+	<string>Trip Report</string>
+	<key>Trip Report Share Card</key>
+	<string>Trip Report Share Card</string>
+	<key>Trip name</key>
+	<string>Trip name</string>
+	<key>Trip not found</key>
+	<string>Trip not found</string>
+	<key>Trips</key>
+	<string>Trips</string>
+	<key>Turning this off stops future Open-Meteo requests. Previously saved weather remains on this device until you clear it below.</key>
+	<string>Turning this off stops future Open-Meteo requests. Previously saved weather remains on this device until you clear it below.</string>
+	<key>Type</key>
+	<string>Type</string>
+	<key>Tyre Pressure</key>
+	<string>Tyre Pressure</string>
+	<key>Ultra Red</key>
+	<string>Ultra Red</string>
+	<key>Unable to create share image.</key>
+	<string>Unable to create share image.</string>
+	<key>Unable to update vehicle image. Please try again.</key>
+	<string>Unable to update vehicle image. Please try again.</string>
+	<key>Unavailable</key>
+	<string>Unavailable</string>
+	<key>Unclassified</key>
+	<string>Unclassified</string>
+	<key>Unified Activities</key>
+	<string>Unified Activities</string>
+	<key>Units</key>
+	<string>Units</string>
+	<key>Unknown</key>
+	<string>Unknown</string>
+	<key>Unknown DC charger</key>
+	<string>Unknown DC charger</string>
+	<key>Unknown install date</key>
+	<string>Unknown install date</string>
+	<key>Unlocked</key>
+	<string>Unlocked</string>
+	<key>Updates</key>
+	<string>Updates</string>
+	<key>Updates per Month</key>
+	<string>Updates per Month</string>
+	<key>Use automatic match</key>
+	<string>Use automatic match</string>
+	<key>Use this configuration</key>
+	<string>Use this configuration</string>
+	<key>Use this time window</key>
+	<string>Use this time window</string>
+	<key>User confirmed</key>
+	<string>User confirmed</string>
+	<key>Using the closest available catalog image.</key>
+	<string>Using the closest available catalog image.</string>
+	<key>Using your saved vehicle image configuration.</key>
+	<string>Using your saved vehicle image configuration.</string>
+	<key>Variant</key>
+	<string>Variant</string>
+	<key>Vehicle</key>
+	<string>Vehicle</string>
+	<key>Vehicle image</key>
+	<string>Vehicle image</string>
+	<key>Vehicle image unavailable</key>
+	<string>Vehicle image unavailable</string>
+	<key>Vehicle location</key>
+	<string>Vehicle location</string>
+	<key>Vehicle, drive, charging, battery, and location data are read directly from the server you configure.</key>
+	<string>Vehicle, drive, charging, battery, and location data are read directly from the server you configure.</string>
+	<key>Vehicle-reported energy</key>
+	<string>Vehicle-reported energy</string>
+	<key>Verified Regions</key>
+	<string>Verified Regions</string>
+	<key>Verify &amp; Continue</key>
+	<string>Verify &amp; Continue</string>
+	<key>Version</key>
+	<string>Version</string>
+	<key>View Charge</key>
+	<string>View Charge</string>
+	<key>View Drive</key>
+	<string>View Drive</string>
+	<key>View Standby Drain</key>
+	<string>View Standby Drain</string>
+	<key>Voltage</key>
+	<string>Voltage</string>
+	<key>Weather Along The Way</key>
+	<string>Weather Along The Way</string>
+	<key>Wheels</key>
+	<string>Wheels</string>
+	<key>Where Was I</key>
+	<string>Where Was I</string>
+	<key>Why MateDrive classified this activity</key>
+	<string>Why MateDrive classified this activity</string>
+	<key>Why These Drives Were Merged</key>
+	<string>Why These Drives Were Merged</string>
+	<key>Widget</key>
+	<string>Widget</string>
+	<key>Widget Vehicle Snapshots</key>
+	<string>Widget Vehicle Snapshots</string>
+	<key>Work charging</key>
+	<string>Work charging</string>
+	<key>Working</key>
+	<string>Working</string>
+	<key>Write</key>
+	<string>Write</string>
+	<key>Write Costs?</key>
+	<string>Write Costs?</string>
+	<key>Write Selected Costs</key>
+	<string>Write Selected Costs</string>
+	<key>Write the selected rule estimates to TeslaMate API? Existing API costs are changed only when explicitly selected.</key>
+	<string>Write the selected rule estimates to TeslaMate API? Existing API costs are changed only when explicitly selected.</string>
+	<key>Writeback Results</key>
+	<string>Writeback Results</string>
+	<key>Year</key>
+	<string>Year</string>
+	<key>Your TeslaMate Server</key>
+	<string>Your TeslaMate Server</string>
+	<key>Your confirmed label takes priority over automatic classification.</key>
+	<string>Your confirmed label takes priority over automatic classification.</string>
+	<key>costs</key>
+	<string>costs</string>
+	<key>dates</key>
+	<string>dates</string>
+	<key>drive</key>
+	<string>drive</string>
+	<key>drives</key>
+	<string>drives</string>
+	<key>failed</key>
+	<string>failed</string>
+	<key>iCloud backup</key>
+	<string>iCloud backup</string>
+	<key>locations</key>
+	<string>locations</string>
+	<key>min</key>
+	<string>min</string>
+	<key>minutes</key>
+	<string>minutes</string>
+	<key>place names</key>
+	<string>place names</string>
+	<key>progress details</key>
+	<string>progress details</string>
+	<key>rolled back</key>
+	<string>rolled back</string>
+	<key>route</key>
+	<string>route</string>
+	<key>segments</key>
+	<string>segments</string>
+	<key>succeeded</key>
+	<string>succeeded</string>
+	<key>trip</key>
+	<string>trip</string>
+	<key>unlock dates</key>
+	<string>unlock dates</string>
+	<key>vehicle.color.deep-blue</key>
+	<string>Deep Blue</string>
+	<key>vehicle.color.pearl-white</key>
+	<string>Pearl White</string>
+	<key>vehicle.color.stainless</key>
+	<string>Stainless Steel</string>
+	<key>vehicle.color.stealth-grey</key>
+	<string>Stealth Grey</string>
+	<key>vehicle.generation.cybertruck-awd</key>
+	<string>Cybertruck All-Wheel Drive</string>
+	<key>vehicle.generation.cybertruck-cyberbeast</key>
+	<string>Cybertruck Cyberbeast</string>
+	<key>vehicle.generation.model-3-early</key>
+	<string>Model 3 (2017-2020)</string>
+	<key>vehicle.generation.model-3-highland</key>
+	<string>Model 3 Highland</string>
+	<key>vehicle.generation.model-3-highland-performance</key>
+	<string>Model 3 Highland Performance</string>
+	<key>vehicle.generation.model-3-refresh</key>
+	<string>Model 3 Refresh</string>
+	<key>vehicle.generation.model-3-refresh-performance</key>
+	<string>Model 3 Refresh Performance</string>
+	<key>vehicle.generation.model-s-facelift</key>
+	<string>Model S (Facelift)</string>
+	<key>vehicle.generation.model-s-nosecone</key>
+	<string>Model S (Nose Cone)</string>
+	<key>vehicle.generation.model-s-plaid</key>
+	<string>Model S Plaid</string>
+	<key>vehicle.generation.model-s-refresh</key>
+	<string>Model S Refresh</string>
+	<key>vehicle.generation.model-x-legacy</key>
+	<string>Model X Legacy</string>
+	<key>vehicle.generation.model-x-plaid</key>
+	<string>Model X Plaid</string>
+	<key>vehicle.generation.model-x-refresh</key>
+	<string>Model X Refresh</string>
+	<key>vehicle.generation.model-y-juniper-performance</key>
+	<string>Model Y Juniper Performance</string>
+	<key>vehicle.generation.model-y-juniper-premium</key>
+	<string>Model Y Juniper Premium</string>
+	<key>vehicle.generation.model-y-juniper-standard</key>
+	<string>Model Y Juniper Standard</string>
+	<key>vehicle.generation.model-y-legacy</key>
+	<string>Model Y Legacy</string>
+	<key>vehicle.generation.model-y-legacy-performance</key>
+	<string>Model Y Legacy Performance</string>
+	<key>vehicle.generation.roadster-1</key>
+	<string>Roadster (2008-2012)</string>
+	<key>vehicle.trim.awd</key>
+	<string>All-Wheel Drive</string>
+	<key>vehicle.trim.base</key>
+	<string>Base</string>
+	<key>vehicle.trim.cyberbeast</key>
+	<string>Cyberbeast</string>
+	<key>vehicle.trim.dual-motor</key>
+	<string>Dual Motor</string>
+	<key>vehicle.trim.legacy</key>
+	<string>Legacy</string>
+	<key>vehicle.trim.performance</key>
+	<string>Performance</string>
+	<key>vehicle.trim.plaid</key>
+	<string>Plaid</string>
+	<key>vehicle.trim.premium</key>
+	<string>Premium</string>
+	<key>vehicle.trim.sport</key>
+	<string>Sport</string>
+	<key>vehicle.trim.standard</key>
+	<string>Standard</string>
+	<key>vehicle.wheel.aero-18</key>
+	<string>18-inch Aero Wheels</string>
+	<key>vehicle.wheel.all-season-20</key>
+	<string>20-inch All-Season Wheels</string>
+	<key>vehicle.wheel.all-terrain-20</key>
+	<string>20-inch All-Terrain Wheels</string>
+	<key>vehicle.wheel.arachnid-21</key>
+	<string>21-inch Arachnid Wheels</string>
+	<key>vehicle.wheel.crossflow-19</key>
+	<string>19-inch Crossflow Wheels</string>
+	<key>vehicle.wheel.cyberstream-20</key>
+	<string>20-inch Cyberstream Wheels</string>
+	<key>vehicle.wheel.directional-16-17</key>
+	<string>16/17-inch Directional Wheels</string>
+	<key>vehicle.wheel.gemini-19</key>
+	<string>19-inch Gemini Wheels</string>
+	<key>vehicle.wheel.performance-20</key>
+	<string>20-inch Performance Wheels</string>
+	<key>vehicle.wheel.photon-18</key>
+	<string>18-inch Photon Wheels</string>
+	<key>vehicle.wheel.slipstream-20</key>
+	<string>20-inch Slipstream Wheels</string>
+	<key>vehicle.wheel.tempest-19</key>
+	<string>19-inch Tempest Wheels</string>
+	<key>vehicle.wheel.turbine-22</key>
+	<string>22-inch Turbine Wheels</string>
+	<key>vehicle.wheel.uberturbine-20</key>
+	<string>20-inch Überturbine Wheels</string>
+	<key>vehicle.wheel.uberturbine-21</key>
+	<string>21-inch Überturbine Wheels</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Open ${applicationName}</key>
+	<string>開啟 ${applicationName}</string>
+	<key>Open activities in ${applicationName}</key>
+	<string>在 ${applicationName} 中開啟活動記錄</string>
+	<key>Open charging history in ${applicationName}</key>
+	<string>在 ${applicationName} 中開啟充電記錄</string>
+	<key>Open current charge in ${applicationName}</key>
+	<string>在 ${applicationName} 中開啟當前充電</string>
+	<key>Open drive history in ${applicationName}</key>
+	<string>在 ${applicationName} 中開啟行程記錄</string>
+</dict>
+</plist>

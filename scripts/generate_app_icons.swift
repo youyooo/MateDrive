@@ -33,7 +33,7 @@ let slots: [IconSlot] = [
 ]
 
 let outputDirectory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-    .appendingPathComponent("MateDroidIOS/Resources/Assets.xcassets/AppIcon.appiconset", isDirectory: true)
+    .appendingPathComponent("MateDriveApp/Resources/Assets.xcassets/AppIcon.appiconset", isDirectory: true)
 
 try FileManager.default.createDirectory(at: outputDirectory, withIntermediateDirectories: true)
 let existingFiles = try FileManager.default.contentsOfDirectory(

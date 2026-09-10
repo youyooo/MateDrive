@@ -1,0 +1,10 @@
+# TeslaMate fnOS generic defaults. Secrets are supplied by the install wizard.
+TESLAMATE_PORT=14000
+GRAFANA_PORT=14001
+TESLAMATEAPI_PORT=3030
+DOCKER_SUBNET=10.253.0.0/24
+TZ=Asia/Shanghai
+DATABASE_PASS=
+ENCRYPTION_KEY=
+GRAFANA_PW=
+API_TOKEN=

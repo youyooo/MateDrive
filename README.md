@@ -1,18 +1,19 @@
 # MateDrive
 
-MateDrive 是面向 iPhone 的原生 TeslaMate 数据客户端。它连接到用户自行部署的 TeslaMate API，以只读方式展示车辆状态、行程、充电、电池、费用、地图和统计数据，不需要 Tesla 账号密码，也不会向车辆发送控制命令。
+MateDrive 是独立开发的 iPhone 原生车辆数据客户端。它连接到用户自行部署的 TeslaMate 兼容 API，以只读方式展示车辆状态、行程、充电、电池、费用、地图和统计数据，不需要 Tesla 账号密码，也不会向车辆发送控制命令。
 
-> 当前状态：源代码与真机测试流程已开放，App Store 版本仍在准备签名、审核测试服务器和许可证发布许可。
+> 当前状态：源代码与真机测试流程已开放，App Store 版本正在完成 TestFlight 与审核准备。
 
 ## 主要功能
 
-- 车辆首页：电量、续航、充电、门锁、哨兵、温度、胎压和软件版本。
+- 车辆概览：圆形电量或表显续航、胎压、地图、最近行程、最近充电费用和总里程。
 - 行程分析：路线地图、速度、功率、海拔、温度、天气、能耗与多行程比较。
 - 充电分析：充电曲线、AC/DC 统计、单笔费用、阶梯/分时价格规则与费用覆盖率。
-- 电池分析：可用容量校准、健康趋势、数据质量和缺失样本说明。
-- 历史与统计：里程、活动时间线、地点、通勤、驻车损耗、国家/地区、成就和软件升级。
-- iOS 能力：SwiftUI、WidgetKit、本地通知、Keychain、后台刷新和系统地图。
-- 本地化：简体中文、繁体中文、英语、德语、西班牙语、意大利语和加泰罗尼亚语。
+- 电池分析：可用容量校准、健康趋势、数据质量、缺失样本说明和隐私安全的本地报告分享。
+- 可选 iCloud 私人备份：明确授权后备份本地数据库与非敏感设置，保留最近三份，恢复前校验并支持失败自动回滚；Keychain 密钥不会进入备份。
+- 历史与统计：里程、活动时间线、相邻行程合并、隐私安全的周期回顾、成就卡片与多行程路程报告分享、地点、通勤、驻车损耗、国家/地区、成就和软件升级。
+- iOS 能力：SwiftUI、WidgetKit、本地通知、Keychain、后台刷新、后台全量同步续传和系统地图。
+- 本地化：简体中文、繁体中文和英语。
 - 区域设置：人民币、港币、新台币、美元等 ISO 4217 货币，以及公制/英制单位。
 
 ## 系统要求
@@ -29,8 +30,8 @@ MateDrive 不直接连接 TeslaMate 的 PostgreSQL，也不接受 Tesla 账号�
 ```bash
 git clone https://github.com/youyooo/MateDrive.git
 cd MateDrive
-xcodegen generate
-open MateDroidIOS.xcodeproj
+/opt/homebrew/bin/xcodegen generate
+open MateDrive.xcodeproj
 ```
 
 常用验证命令：
@@ -57,10 +58,10 @@ make release-technical-gate
 
 ## 隐私与免责声明
 
-MateDrive 没有开发者运营的数据后端，不包含广告追踪或开发者分析。车辆和位置数据来自用户配置的服务器，并保存在该服务器和用户设备上。Apple 地图/地理编码及 Open-Meteo 天气功能可能按功能需要处理位置和时间信息，详见[隐私政策](docs/support/privacy.html)。
+MateDrive 没有开发者运营的数据后端，不包含广告追踪或开发者分析。车辆和位置数据来自用户配置的服务器，并保存在该服务器和用户设备上；只有在用户明确开启 iCloud 备份后，本地数据库与非敏感设置才会保存到用户自己的 iCloud 私人数据库。Apple 地图/地理编码及 Open-Meteo 天气功能可能按功能需要处理位置和时间信息，详见[隐私政策](docs/support/privacy.html)。
 
-MateDrive 是独立开源项目，与 Tesla, Inc.、TeslaMate 或其他服务提供方不存在隶属或官方认可关系。Tesla 和相关产品名称是其各自权利人的商标。
+MateDrive 是独立实现的原生 iOS 开源项目，不捆绑车辆照片、厂商宣传图或车辆渲染图。MateDrive 与 Tesla, Inc.、TeslaMate 或其他服务提供方不存在隶属或官方认可关系；相关产品名称仅用于说明兼容性，商标归各自权利人所有。
 
 ## 许可证
 
-本项目按 [GNU General Public License v3.0](LICENSE) 开源。第三方来源和法律声明见 [NOTICE.md](NOTICE.md)。
+本项目按 [MIT License](LICENSE) 开源。第三方服务与商标声明见 [NOTICE.md](NOTICE.md)。

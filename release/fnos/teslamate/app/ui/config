@@ -1,0 +1,43 @@
+{
+  ".url": {
+    "App.Native.TeslaMate": {
+      "title": "TeslaMate",
+      "desc": "Tesla 数据记录器",
+      "icon": "images/icon_{0}.png",
+      "type": "url",
+      "protocol": "http",
+      "port": "${TESLAMATE_PORT}",
+      "url": "/",
+      "allUsers": true,
+      "control": {
+        "portPerm": "editable"
+      }
+    },
+    "App.Native.TeslaMate.Grafana": {
+      "title": "Grafana",
+      "desc": "TeslaMate 数据可视化",
+      "icon": "images/icon_{0}.png",
+      "type": "url",
+      "protocol": "http",
+      "port": "${GRAFANA_PORT}",
+      "url": "/",
+      "allUsers": true,
+      "control": {
+        "portPerm": "editable"
+      }
+    },
+    "App.Native.TeslaMate.API": {
+      "title": "手机 API",
+      "desc": "TeslaMateAPI 手机连接入口",
+      "icon": "images/icon_{0}.png",
+      "type": "url",
+      "protocol": "http",
+      "port": "${TESLAMATEAPI_PORT}",
+      "url": "/",
+      "allUsers": true,
+      "control": {
+        "portPerm": "editable"
+      }
+    }
+  }
+}

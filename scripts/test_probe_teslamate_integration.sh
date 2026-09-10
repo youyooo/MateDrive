@@ -3,6 +3,7 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 probe_script="$repo_root/scripts/probe_teslamate_integration.sh"
+python_bin="$(command -v python3)"
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
 
@@ -91,8 +92,11 @@ chmod +x "$fake_curl"
 run_probe() {
   local status="$1"
   shift
+  sleep 0.05
   env -i \
     PATH="/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/usr/local/bin" \
+    LANG="en_US.UTF-8" \
+    LC_ALL="en_US.UTF-8" \
     TMPDIR="$tmp_dir" \
     MATEDRIVE_FAKE_CURL_STATUS="$status" \
     MATEDRIVE_FAKE_CURL_GLOBALSETTINGS_STATUS="${MATEDRIVE_FAKE_CURL_GLOBALSETTINGS_STATUS:-}" \
@@ -101,6 +105,7 @@ run_probe() {
     MATEDRIVE_FAKE_CURL_ARGS="$tmp_dir/args" \
     MATEDRIVE_FAKE_CURL_URL="$tmp_dir/url" \
     MATEDRIVE_INTEGRATION_CURL="$fake_curl" \
+    MATEDRIVE_INTEGRATION_PYTHON="$python_bin" \
     MATEDRIVE_INTEGRATION_DEFAULT_BASE_URL="http://default.example" \
     MATEDRIVE_INTEGRATION_ENV_FILE="/dev/null" \
     "$@" \
@@ -124,6 +129,8 @@ assert_exit() {
   set +e
   "$@" >"$output" 2>&1
   local actual_code="$?"
+  # Avoid transient process-pressure kills when many isolated probes finish at once.
+  sleep 0.02
   set -e
   if [ "$actual_code" -ne "$expected_code" ]; then
     echo "Expected exit $expected_code, got $actual_code" >&2
@@ -149,6 +156,15 @@ assert_contains "$tmp_dir/url" "http://teslamate.example/api/v1/cars/1/battery-h
 assert_contains "$tmp_dir/url" "http://teslamate.example/api/v1/cars/1/updates?page=1&show=1"
 assert_contains "$tmp_dir/url" "http://teslamate.example/api/v1/cars/1/charges/current"
 assert_contains "$tmp_dir/args" "Authorization: Bearer token"
+
+assert_exit 1 "$tmp_dir/review-http.out" run_probe 200 MATEDRIVE_INTEGRATION_REVIEW_MODE=1 MATEDRIVE_INTEGRATION_BASE_URL="http://review.example" MATEDRIVE_INTEGRATION_API_TOKEN="token"
+assert_contains "$tmp_dir/review-http.out" "App Review integration requires an HTTPS server with publicly routable DNS."
+
+assert_exit 1 "$tmp_dir/review-private.out" run_probe 200 MATEDRIVE_INTEGRATION_REVIEW_MODE=1 MATEDRIVE_INTEGRATION_BASE_URL="https://192.168.3.82" MATEDRIVE_INTEGRATION_API_TOKEN="token"
+assert_contains "$tmp_dir/review-private.out" "Local, private, Tailscale-only, and plain HTTP addresses are not valid review endpoints."
+
+assert_exit 0 "$tmp_dir/review-public.out" run_probe 200 MATEDRIVE_INTEGRATION_REVIEW_MODE=1 MATEDRIVE_INTEGRATION_BASE_URL="https://example.com" MATEDRIVE_INTEGRATION_API_TOKEN="token"
+assert_contains "$tmp_dir/review-public.out" "TeslaMate API preflight passed at https://example.com."
 
 MATEDRIVE_FAKE_CURL_BODY='{"meta":{"request":"ok"},"data":{"cars":[{"id":"7","displayName":"Model 3","car_details":{"model":"3"},"car_exterior":{"exterior_color":"PBSB","wheel_type":"W39B"}}]}}' assert_exit 0 "$tmp_dir/string-id.out" run_probe 200 MATEDRIVE_INTEGRATION_BASE_URL="http://teslamate.example" MATEDRIVE_INTEGRATION_API_TOKEN="token"
 assert_contains "$tmp_dir/string-id.out" "TeslaMate API preflight passed at http://teslamate.example."

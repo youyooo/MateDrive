@@ -76,6 +76,31 @@ class ReleaseArchiveAuditTests(unittest.TestCase):
         self.write_plist(self.widget / "Info.plist", widget_info)
         self.assertIn("app and widget build versions must match", audit_archive(self.archive))
 
+    def test_reports_app_shortcuts_resource_in_widget(self) -> None:
+        shortcut_table = self.widget / "en.lproj/AppShortcuts.strings"
+        shortcut_table.parent.mkdir()
+        shortcut_table.touch()
+        self.assertIn(
+            "widget must not contain the app-only AppShortcuts.strings resource",
+            audit_archive(self.archive),
+        )
+
+    def test_reports_vehicle_image_in_app_bundle(self) -> None:
+        (self.app / "vehicle_model-3-refresh_base_pearl-white_aero-18.png").touch()
+        blockers = audit_archive(self.archive)
+        self.assertTrue(any("forbidden vehicle image resource" in item for item in blockers))
+
+    def test_reports_legacy_vehicle_image_in_widget_bundle(self) -> None:
+        (self.widget / "m3_PPSW_W32D.png").touch()
+        blockers = audit_archive(self.archive)
+        self.assertTrue(any("forbidden vehicle image resource" in item for item in blockers))
+
+    def test_reports_vehicle_image_catalog(self) -> None:
+        catalog_name = "Vehicle" + "Image" + "Catalog.json"
+        (self.app / catalog_name).touch()
+        blockers = audit_archive(self.archive)
+        self.assertTrue(any(catalog_name in item for item in blockers))
+
 
 if __name__ == "__main__":
     unittest.main()

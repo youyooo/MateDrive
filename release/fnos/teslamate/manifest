@@ -1,0 +1,14 @@
+appname         = App.Native.TeslaMate
+version         = 0.1.2
+display_name    = TeslaMate
+desc            = 非官方 TeslaMate 飞牛安装包：在 NAS 上运行数据记录、Grafana 与本地 API。
+platform        = x86
+source          = thirdparty
+maintainer      = Youyooo
+maintainer_url  = https://docs.teslamate.org/
+distributor     = Youyooo
+service_port    = 14000
+checkport       = true
+desktop_uidir   = ui
+desktop_applaunchname = App.Native.TeslaMate
+disable_authorization_path = true

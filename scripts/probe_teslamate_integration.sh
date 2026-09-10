@@ -20,13 +20,15 @@ if [ -f "$env_file" ]; then
   set +a
 fi
 
-base_url="$(first_non_empty "${MATEDRIVE_INTEGRATION_BASE_URL:-}" "${MATEDROID_INTEGRATION_BASE_URL:-}" || true)"
-token="$(first_non_empty "${MATEDRIVE_INTEGRATION_API_TOKEN:-}" "${MATEDROID_INTEGRATION_API_TOKEN:-}" || true)"
-basic_username="$(first_non_empty "${MATEDRIVE_INTEGRATION_BASIC_USERNAME:-}" "${MATEDROID_INTEGRATION_BASIC_USERNAME:-}" || true)"
-basic_password="$(first_non_empty "${MATEDRIVE_INTEGRATION_BASIC_PASSWORD:-}" "${MATEDROID_INTEGRATION_BASIC_PASSWORD:-}" || true)"
+base_url="$(first_non_empty "${MATEDRIVE_INTEGRATION_BASE_URL:-}" || true)"
+token="$(first_non_empty "${MATEDRIVE_INTEGRATION_API_TOKEN:-}" || true)"
+basic_username="$(first_non_empty "${MATEDRIVE_INTEGRATION_BASIC_USERNAME:-}" || true)"
+basic_password="$(first_non_empty "${MATEDRIVE_INTEGRATION_BASIC_PASSWORD:-}" || true)"
 curl_bin="${MATEDRIVE_INTEGRATION_CURL:-curl}"
+python_bin="${MATEDRIVE_INTEGRATION_PYTHON:-python3}"
 default_base_url="${MATEDRIVE_INTEGRATION_DEFAULT_BASE_URL:-http://127.0.0.1:3030}"
 default_base_url="${default_base_url%/}"
+review_mode="${MATEDRIVE_INTEGRATION_REVIEW_MODE:-0}"
 probe_body="${TMPDIR:-/tmp}/matedrive_integration_probe.out"
 probe_error="${TMPDIR:-/tmp}/matedrive_integration_probe.err"
 
@@ -59,7 +61,41 @@ if [ -z "$base_url" ]; then
 fi
 base_url="${base_url%/}"
 
-curl_args=(-sS --max-time 5 -o "$probe_body" -w '%{http_code}')
+if [ "$review_mode" = "1" ]; then
+  if ! "$python_bin" - "$base_url" <<'PY'
+import ipaddress
+import socket
+import sys
+from urllib.parse import urlsplit
+
+url = urlsplit(sys.argv[1])
+host = url.hostname
+if url.scheme.lower() != "https" or not host:
+    sys.exit(1)
+if host == "localhost" or host.endswith(".local") or "." not in host:
+    sys.exit(1)
+try:
+    literal = ipaddress.ip_address(host)
+    addresses = [literal]
+except ValueError:
+    try:
+        addresses = {
+            ipaddress.ip_address(item[4][0])
+            for item in socket.getaddrinfo(host, url.port or 443, type=socket.SOCK_STREAM)
+        }
+    except OSError:
+        sys.exit(1)
+if not addresses or not all(address.is_global for address in addresses):
+    sys.exit(1)
+PY
+  then
+    echo "App Review integration requires an HTTPS server with publicly routable DNS."
+    echo "Local, private, Tailscale-only, and plain HTTP addresses are not valid review endpoints."
+    exit 1
+  fi
+fi
+
+curl_args=(-sS -L --max-redirs 3 --max-time 5 -o "$probe_body" -w '%{http_code}')
 if [ -n "$token" ]; then
   curl_args+=(-H "Authorization: Bearer $token")
 fi
@@ -101,7 +137,7 @@ probe_endpoint() {
 extract_first_number() {
   local file="$1"
   shift
-  python3 - "$file" "$@" <<'PY'
+  "$python_bin" - "$file" "$@" <<'PY'
 import json
 import sys
 
@@ -152,7 +188,7 @@ PY
 
 check_vehicle_metadata() {
   local file="$1"
-  python3 - "$file" <<'PY'
+  "$python_bin" - "$file" <<'PY'
 import json
 import sys
 
@@ -224,7 +260,7 @@ wheel_type = (
     or text_at(car, "vehicle_config", "wheel_type")
 )
 
-legacy_names = {"", "Tesla", "MateDroid", "MateDrive"}
+legacy_names = {"", "Tesla", "MateDrive"}
 has_model = model not in legacy_names
 has_usable_name = display_name not in legacy_names
 

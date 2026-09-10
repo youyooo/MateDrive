@@ -13,7 +13,14 @@ if [[ -z "$team_id" ]]; then
 fi
 
 if [[ -z "$device_id" ]]; then
-  device_id="$(xcrun devicectl list devices | awk '$4 == "available" && $5 == "iPhone" { print $3; exit }')"
+  device_json="$(mktemp)"
+  trap 'rm -f "$device_json"' EXIT
+  if xcrun devicectl list devices \
+    --filter "hardwareProperties.deviceType == 'iPhone' AND connectionProperties.pairingState == 'paired'" \
+    --json-output "$device_json" \
+    --quiet; then
+    device_id="$(/usr/bin/plutil -extract result.devices.0.identifier raw "$device_json" 2>/dev/null || true)"
+  fi
 fi
 
 if [[ -z "$device_id" ]]; then
@@ -30,7 +37,7 @@ xcodegen generate
 
 derived_data="$root_dir/build/device-derived-data"
 xcodebuild \
-  -project MateDroidIOS.xcodeproj \
+  -project MateDrive.xcodeproj \
   -scheme MateDrive \
   -configuration Debug \
   -destination "id=$device_id" \
@@ -47,6 +54,8 @@ app_path="$derived_data/Build/Products/Debug-iphoneos/MateDrive.app"
 }
 
 xcrun devicectl device install app --device "$device_id" "$app_path"
-xcrun devicectl device process launch --device "$device_id" com.matedrive.ios
-
-echo "MateDrive was installed and launched on $device_id."
+if xcrun devicectl device process launch --device "$device_id" com.matedrive.ios; then
+  echo "MateDrive was installed and launched on $device_id."
+else
+  echo "MateDrive was installed on $device_id, but iOS did not allow automatic launch. Unlock the phone and open MateDrive manually."
+fi

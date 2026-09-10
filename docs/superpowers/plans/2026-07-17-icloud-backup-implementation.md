@@ -25,9 +25,9 @@
 ### Task 1: Add SQLite Online Backup And Integrity Primitives
 
 **Files:**
-- Modify: `MateDroidIOS/Core/Persistence/SQLiteDatabase.swift`
-- Modify: `MateDroidIOS/Core/Persistence/AppDatabaseProvider.swift`
-- Create: `MateDroidIOSTests/Persistence/SQLiteBackupTests.swift`
+- Modify: `MateDriveApp/Core/Persistence/SQLiteDatabase.swift`
+- Modify: `MateDriveApp/Core/Persistence/AppDatabaseProvider.swift`
+- Create: `MateDriveTests/Persistence/SQLiteBackupTests.swift`
 
 **Interfaces:**
 - Produces: `SQLiteDatabase.backup(to:)`, `SQLiteDatabase.restore(from:)`, `SQLiteDatabase.integrityCheck()`, and schema-version inspection.
@@ -62,11 +62,11 @@ Open the validated source read-only and use it as the backup source while the ac
 ### Task 2: Define Backup Models, Preferences, And Sanitized Settings
 
 **Files:**
-- Create: `MateDroidIOS/Core/Backup/CloudBackupModels.swift`
-- Create: `MateDroidIOS/Core/Backup/CloudBackupPreferencesStore.swift`
-- Create: `MateDroidIOS/Core/Backup/DatabaseBackupProvider.swift`
-- Create: `MateDroidIOSTests/Backup/CloudBackupModelsTests.swift`
-- Create: `MateDroidIOSTests/Backup/DatabaseBackupProviderTests.swift`
+- Create: `MateDriveApp/Core/Backup/CloudBackupModels.swift`
+- Create: `MateDriveApp/Core/Backup/CloudBackupPreferencesStore.swift`
+- Create: `MateDriveApp/Core/Backup/DatabaseBackupProvider.swift`
+- Create: `MateDriveTests/Backup/CloudBackupModelsTests.swift`
+- Create: `MateDriveTests/Backup/DatabaseBackupProviderTests.swift`
 
 **Interfaces:**
 - Produces: `CloudBackupKind`, `CloudBackupDescriptor`, `CloudBackupPreferences`, `DatabaseBackupArtifact`, and `DatabaseBackupProviding`.
@@ -107,10 +107,10 @@ Create snapshots through Task 1 only. Encode `AppSettings` directly because auth
 ### Task 3: Implement A Testable CloudKit Private-Database Service
 
 **Files:**
-- Create: `MateDroidIOS/Core/Backup/CloudBackupService.swift`
-- Create: `MateDroidIOS/Core/Backup/CloudKitBackupService.swift`
-- Create: `MateDroidIOSTests/Backup/InMemoryCloudBackupService.swift`
-- Create: `MateDroidIOSTests/Backup/CloudKitBackupServiceMappingTests.swift`
+- Create: `MateDriveApp/Core/Backup/CloudBackupService.swift`
+- Create: `MateDriveApp/Core/Backup/CloudKitBackupService.swift`
+- Create: `MateDriveTests/Backup/InMemoryCloudBackupService.swift`
+- Create: `MateDriveTests/Backup/CloudKitBackupServiceMappingTests.swift`
 
 **Interfaces:**
 - Produces: account-status, list, upload, download, delete-one, and delete-all operations behind `CloudBackupServicing`.
@@ -145,8 +145,8 @@ Create the custom zone idempotently. Store the snapshot as `CKAsset`, write `set
 ### Task 4: Build Backup Scheduling, Retention, And Cancellation
 
 **Files:**
-- Create: `MateDroidIOS/Core/Backup/CloudBackupCoordinator.swift`
-- Create: `MateDroidIOSTests/Backup/CloudBackupCoordinatorTests.swift`
+- Create: `MateDriveApp/Core/Backup/CloudBackupCoordinator.swift`
+- Create: `MateDriveTests/Backup/CloudBackupCoordinatorTests.swift`
 
 **Interfaces:**
 - Produces: serialized manual/automatic backup operations, eligibility, retention, and operation state.
@@ -181,12 +181,12 @@ Persist a successful timestamp only after CloudKit confirms the saved record. Th
 ### Task 5: Implement Verified Restore With Automatic Rollback
 
 **Files:**
-- Modify: `MateDroidIOS/Core/Backup/CloudBackupCoordinator.swift`
-- Create: `MateDroidIOS/Core/Backup/BackupCacheInvalidator.swift`
-- Modify: `MateDroidIOS/App/AppDataSyncLifecycleController.swift`
-- Modify: `MateDroidIOS/App/RootView.swift`
-- Modify: `MateDroidIOSTests/Backup/CloudBackupCoordinatorTests.swift`
-- Create: `MateDroidIOSTests/Backup/CloudBackupRestoreTests.swift`
+- Modify: `MateDriveApp/Core/Backup/CloudBackupCoordinator.swift`
+- Create: `MateDriveApp/Core/Backup/BackupCacheInvalidator.swift`
+- Modify: `MateDriveApp/App/AppDataSyncLifecycleController.swift`
+- Modify: `MateDriveApp/App/RootView.swift`
+- Modify: `MateDriveTests/Backup/CloudBackupCoordinatorTests.swift`
+- Create: `MateDriveTests/Backup/CloudBackupRestoreTests.swift`
 
 **Interfaces:**
 - Produces: `restore(_:)`, rollback, restore-completed notification, and one root cache reload.
@@ -216,13 +216,13 @@ Clear stale view-model snapshots, reload shared dashboard state from the restore
 ### Task 6: Add The Cached-First Cloud Backup Settings UI
 
 **Files:**
-- Create: `MateDroidIOS/Features/Settings/CloudBackupViewModel.swift`
-- Create: `MateDroidIOS/Features/Settings/CloudBackupView.swift`
-- Modify: `MateDroidIOS/Features/Settings/SettingsView.swift`
-- Modify: `MateDroidIOS/Features/Settings/PrivacyDataView.swift`
-- Modify: `MateDroidIOS/Resources/Localizable.xcstrings`
-- Create: `MateDroidIOSTests/Features/CloudBackupViewModelTests.swift`
-- Modify: `MateDroidIOSTests/Localization/LocalizationCoverageTests.swift`
+- Create: `MateDriveApp/Features/Settings/CloudBackupViewModel.swift`
+- Create: `MateDriveApp/Features/Settings/CloudBackupView.swift`
+- Modify: `MateDriveApp/Features/Settings/SettingsView.swift`
+- Modify: `MateDriveApp/Features/Settings/PrivacyDataView.swift`
+- Modify: `MateDriveApp/Resources/Localizable.xcstrings`
+- Create: `MateDriveTests/Features/CloudBackupViewModelTests.swift`
+- Modify: `MateDriveTests/Localization/LocalizationCoverageTests.swift`
 
 **Interfaces:**
 - Produces: cloud-account status, opt-in control, last success, three cached rows, manual backup, restore, delete, and delete-all UI.
@@ -249,18 +249,18 @@ Use a standard `List`/`Form`, native toggles, progress labels, menus, and destru
 ### Task 7: Wire Automatic Backup And App Store Capabilities
 
 **Files:**
-- Modify: `MateDroidIOS/App/MateDroidApp.swift`
-- Modify: `MateDroidIOS/Core/Sync/AppDataSyncCoordinator.swift`
-- Modify: `MateDroidIOS/MateDroidIOS.entitlements`
+- Modify: `MateDriveApp/App/MateDriveApp.swift`
+- Modify: `MateDriveApp/Core/Sync/AppDataSyncCoordinator.swift`
+- Modify: `MateDriveApp/MateDriveApp.entitlements`
 - Modify: `project.yml`
-- Regenerate: `MateDroidIOS.xcodeproj/project.pbxproj`
-- Modify: `MateDroidIOS/PrivacyInfo.xcprivacy`
+- Regenerate: `MateDrive.xcodeproj/project.pbxproj`
+- Modify: `MateDriveApp/PrivacyInfo.xcprivacy`
 - Modify: `docs/support/privacy.html`
 - Modify: `docs/support/index.html`
 - Modify: `docs/release/app-store-submission.md`
 - Modify: `scripts/audit_release_archive.py`
 - Modify: `scripts/test_audit_release_archive.py`
-- Modify: `MateDroidIOSTests/Smoke/AppStoreReadinessTests.swift`
+- Modify: `MateDriveTests/Smoke/AppStoreReadinessTests.swift`
 
 **Interfaces:**
 - Produces: one post-success auto-backup hook and releasable CloudKit entitlements/documentation.

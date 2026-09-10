@@ -24,8 +24,8 @@
 ### Task 1: Add Pure Root Tab Routing
 
 **Files:**
-- Create: `MateDroidIOS/App/RootTabNavigation.swift`
-- Create: `MateDroidIOSTests/App/RootTabNavigationTests.swift`
+- Create: `MateDriveApp/App/RootTabNavigation.swift`
+- Create: `MateDriveTests/App/RootTabNavigationTests.swift`
 
 **Interfaces:**
 - Produces: `RootTab`, `RootNavigationState.open(_:source:)`, `RootNavigationState.openShortcut(_:)`.
@@ -35,7 +35,7 @@
 
 ```swift
 import XCTest
-@testable import MateDroidIOS
+@testable import MateDriveApp
 
 final class RootTabNavigationTests: XCTestCase {
     func testDashboardAndSettingsSelectTheirRootTabs() {
@@ -66,7 +66,7 @@ final class RootTabNavigationTests: XCTestCase {
 Run:
 
 ```bash
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/RootTabNavigationTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/RootTabNavigationTests test
 ```
 
 Expected: compile failure because `RootNavigationState` does not exist.
@@ -124,9 +124,9 @@ public struct RootNavigationState: Equatable, Sendable {
 ### Task 2: Define The Static Feature Catalog
 
 **Files:**
-- Create: `MateDroidIOS/Features/FeatureHub/FeatureHubCatalog.swift`
-- Create: `MateDroidIOSTests/Features/FeatureHubCatalogTests.swift`
-- Modify: `MateDroidIOSTests/Smoke/AppRouteTests.swift`
+- Create: `MateDriveApp/Features/FeatureHub/FeatureHubCatalog.swift`
+- Create: `MateDriveTests/Features/FeatureHubCatalogTests.swift`
+- Modify: `MateDriveTests/Smoke/AppRouteTests.swift`
 
 **Interfaces:**
 - Produces: `FeatureHubSection`, `FeatureHubItem`, `FeatureHubCatalog.sections(carId:exteriorColor:)`.
@@ -176,10 +176,10 @@ Populate the exact spec order. Use unique semantic IDs such as `current-charge`,
 ### Task 3: Build The Features Tab UI
 
 **Files:**
-- Create: `MateDroidIOS/Features/FeatureHub/FeatureHubView.swift`
-- Create: `MateDroidIOS/Features/FeatureHub/FeatureHubPresentation.swift`
-- Create: `MateDroidIOSTests/Features/FeatureHubPresentationTests.swift`
-- Modify: `MateDroidIOS/Resources/Localizable.xcstrings`
+- Create: `MateDriveApp/Features/FeatureHub/FeatureHubView.swift`
+- Create: `MateDriveApp/Features/FeatureHub/FeatureHubPresentation.swift`
+- Create: `MateDriveTests/Features/FeatureHubPresentationTests.swift`
+- Modify: `MateDriveApp/Resources/Localizable.xcstrings`
 
 **Interfaces:**
 - Consumes: shared `DashboardViewModel`, `FeatureHubCatalog`, `(AppRoute) -> Void`.
@@ -223,10 +223,10 @@ When multiple cars exist, use the same segmented selection binding as Home and c
 ### Task 4: Reduce Home To High-Frequency Data
 
 **Files:**
-- Modify: `MateDroidIOS/Features/Dashboard/DashboardView.swift`
-- Create: `MateDroidIOS/Features/Dashboard/DashboardOverviewPresentation.swift`
-- Create: `MateDroidIOSTests/Features/DashboardOverviewPresentationTests.swift`
-- Modify: `MateDroidIOSTests/Features/DashboardViewModelTests.swift`
+- Modify: `MateDriveApp/Features/Dashboard/DashboardView.swift`
+- Create: `MateDriveApp/Features/Dashboard/DashboardOverviewPresentation.swift`
+- Create: `MateDriveTests/Features/DashboardOverviewPresentationTests.swift`
+- Modify: `MateDriveTests/Features/DashboardViewModelTests.swift`
 
 **Interfaces:**
 - Produces: `DashboardOverviewPresentation` with Odometer, Drives, and Charges values/routes.
@@ -264,11 +264,11 @@ The strip is one three-column surface with internal dividers. Each column is a f
 ### Task 5: Install Three Independent Navigation Stacks
 
 **Files:**
-- Modify: `MateDroidIOS/App/RootView.swift`
-- Modify: `MateDroidIOS/App/AppDataSyncLifecycleController.swift`
-- Modify: `MateDroidIOSTests/App/RootTabNavigationTests.swift`
-- Modify: `MateDroidIOSTests/App/AppShortcutTests.swift`
-- Modify: `MateDroidIOSTests/Smoke/AppStoreReadinessTests.swift`
+- Modify: `MateDriveApp/App/RootView.swift`
+- Modify: `MateDriveApp/App/AppDataSyncLifecycleController.swift`
+- Modify: `MateDriveTests/App/RootTabNavigationTests.swift`
+- Modify: `MateDriveTests/App/AppShortcutTests.swift`
+- Modify: `MateDriveTests/Smoke/AppStoreReadinessTests.swift`
 
 **Interfaces:**
 - Consumes: `RootNavigationState`, `FeatureHubView`, one shared `DashboardViewModel`.
@@ -323,7 +323,7 @@ Add a single `onChange(of: syncLifecycleController.cacheRevision)` that calls `a
 ### Task 6: Verify Tab Performance And Accessibility
 
 **Files:**
-- Modify: `MateDroidIOSTests/Localization/LocalizationCoverageTests.swift`
+- Modify: `MateDriveTests/Localization/LocalizationCoverageTests.swift`
 - Create: `docs/qa/bottom-tabs-2026-07.md`
 
 **Interfaces:**

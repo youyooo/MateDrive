@@ -1,0 +1,29 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "NSLocalNetworkUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MateDrive connects to your self-hosted TeslaMate server on the local network."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MateDrive 需要访问本地网络，以连接您自行部署的 TeslaMate 服务器。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MateDrive 需要存取區域網路，以連接您自行部署的 TeslaMate 伺服器。"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

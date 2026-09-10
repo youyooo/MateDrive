@@ -1,0 +1,68 @@
+#!/bin/sh
+set -eu
+
+TESLAMATE_PORT="${TESLAMATE_PORT:-14000}"
+GRAFANA_PORT="${GRAFANA_PORT:-14001}"
+TESLAMATEAPI_PORT="${TESLAMATEAPI_PORT:-3030}"
+DATABASE_CONTAINER="teslamate-fnos-database-1"
+
+is_http_available() {
+  command -v curl >/dev/null 2>&1 || return 1
+  curl --fail --silent --show-error --max-time 3 "http://127.0.0.1:$1/" >/dev/null 2>&1
+}
+
+is_valid_database_password() {
+  password="${DATABASE_PASS:-}"
+  length="${#password}"
+  [ "$length" -ge 24 ] && [ "$length" -le 128 ] || return 1
+  case "$password" in
+    *[!A-Za-z0-9]*) return 1 ;;
+  esac
+}
+
+sync_database_password() {
+  if ! is_valid_database_password; then
+    echo "invalid database password configuration" >&2
+    return 1
+  fi
+  command -v docker >/dev/null 2>&1 || return 1
+
+  attempt=0
+  while [ "$attempt" -lt 30 ]; do
+    if docker exec -u postgres "$DATABASE_CONTAINER" \
+      pg_isready -q -U teslamate -d teslamate >/dev/null 2>&1; then
+      {
+        printf "\\set new_password '%s'\n" "$DATABASE_PASS"
+        printf "ALTER ROLE teslamate WITH PASSWORD :'new_password';\n"
+      } | docker exec -i -u postgres "$DATABASE_CONTAINER" \
+        psql -v ON_ERROR_STOP=1 -U teslamate -d teslamate >/dev/null
+      return $?
+    fi
+    attempt=$((attempt + 1))
+    sleep 2
+  done
+
+  echo "database did not become ready" >&2
+  return 1
+}
+
+case "${1:-status}" in
+  start)
+    # fnOS owns Compose; this only keeps a preserved database volume usable
+    # when a user intentionally enters a new password during reinstall.
+    sync_database_password
+    exit $?
+    ;;
+  stop)
+    exit 0
+    ;;
+  status)
+    is_http_available "$TESLAMATE_PORT" || exit 3
+    is_http_available "$GRAFANA_PORT" || exit 3
+    is_http_available "$TESLAMATEAPI_PORT" || exit 3
+    exit 0
+    ;;
+  *)
+    exit 1
+    ;;
+esac

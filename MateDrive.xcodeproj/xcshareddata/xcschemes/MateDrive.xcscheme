@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme
+   LastUpgradeVersion = "1430"
+   version = "1.7">
+   <BuildAction
+      parallelizeBuildables = "YES"
+      buildImplicitDependencies = "YES"
+      runPostActionsOnFailure = "NO">
+      <BuildActionEntries>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C20EE800D6415C2A6659C413"
+               BuildableName = "MateDrive.app"
+               BlueprintName = "MateDriveApp"
+               ReferencedContainer = "container:MateDrive.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "488E8C023F6D6DCDFD54246D"
+               BuildableName = "MateDriveWidget.appex"
+               BlueprintName = "MateDriveWidget"
+               ReferencedContainer = "container:MateDrive.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+      </BuildActionEntries>
+   </BuildAction>
+   <TestAction
+      buildConfiguration = "Debug"
+      selectedDebuggerIdentifier = ""
+      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
+      shouldUseLaunchSchemeArgsEnv = "NO"
+      onlyGenerateCoverageForSpecifiedTargets = "NO">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C20EE800D6415C2A6659C413"
+            BuildableName = "MateDrive.app"
+            BlueprintName = "MateDriveApp"
+            ReferencedContainer = "container:MateDrive.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
+      <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F913ED841FCE807130689844"
+               BuildableName = "MateDriveTests.xctest"
+               BlueprintName = "MateDriveTests"
+               ReferencedContainer = "container:MateDrive.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "4A31494D8AF118D9D14649BF"
+               BuildableName = "MateDriveUITests.xctest"
+               BlueprintName = "MateDriveUITests"
+               ReferencedContainer = "container:MateDrive.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+      </Testables>
+      <CommandLineArguments>
+      </CommandLineArguments>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "MATEDRIVE_AUTOMATED_TEST_MODE"
+            value = "1"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "MATEDRIVE_INTEGRATION_ACCESS_KEY"
+            value = "$(MATEDRIVE_INTEGRATION_ACCESS_KEY)"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "MATEDRIVE_INTEGRATION_AKSK_BASE_URL"
+            value = "$(MATEDRIVE_INTEGRATION_AKSK_BASE_URL)"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "MATEDRIVE_INTEGRATION_API_TOKEN"
+            value = "$(MATEDRIVE_INTEGRATION_API_TOKEN)"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "MATEDRIVE_INTEGRATION_BASE_URL"
+            value = "$(MATEDRIVE_INTEGRATION_BASE_URL)"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "MATEDRIVE_INTEGRATION_BASIC_PASSWORD"
+            value = "$(MATEDRIVE_INTEGRATION_BASIC_PASSWORD)"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "MATEDRIVE_INTEGRATION_BASIC_USERNAME"
+            value = "$(MATEDRIVE_INTEGRATION_BASIC_USERNAME)"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "MATEDRIVE_INTEGRATION_SECRET_KEY"
+            value = "$(MATEDRIVE_INTEGRATION_SECRET_KEY)"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "MATEDRIVE_RUN_CLOUDKIT_PRODUCTION_TESTS"
+            value = "$(MATEDRIVE_RUN_CLOUDKIT_PRODUCTION_TESTS)"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
+   </TestAction>
+   <LaunchAction
+      buildConfiguration = "Debug"
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      launchStyle = "0"
+      useCustomWorkingDirectory = "NO"
+      ignoresPersistentStateOnLaunch = "NO"
+      debugDocumentVersioning = "YES"
+      debugServiceExtension = "internal"
+      allowLocationSimulation = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C20EE800D6415C2A6659C413"
+            BuildableName = "MateDrive.app"
+            BlueprintName = "MateDriveApp"
+            ReferencedContainer = "container:MateDrive.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+   </LaunchAction>
+   <ProfileAction
+      buildConfiguration = "Release"
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      savedToolIdentifier = ""
+      useCustomWorkingDirectory = "NO"
+      debugDocumentVersioning = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C20EE800D6415C2A6659C413"
+            BuildableName = "MateDrive.app"
+            BlueprintName = "MateDriveApp"
+            ReferencedContainer = "container:MateDrive.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+   </ProfileAction>
+   <AnalyzeAction
+      buildConfiguration = "Debug">
+   </AnalyzeAction>
+   <ArchiveAction
+      buildConfiguration = "Release"
+      revealArchiveInOrganizer = "YES">
+   </ArchiveAction>
+</Scheme>

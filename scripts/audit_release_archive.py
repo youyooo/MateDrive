@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import fnmatch
 import plistlib
 import sys
 from pathlib import Path
@@ -7,6 +8,18 @@ from pathlib import Path
 
 APP_BUNDLE_ID = "com.matedrive.ios"
 WIDGET_BUNDLE_ID = "com.matedrive.ios.widget"
+FORBIDDEN_VEHICLE_IMAGE_PATTERNS = (
+    "m3_*.png",
+    "m3h_*.png",
+    "m3hp_*.png",
+    "ms_*.png",
+    "mx_*.png",
+    "my_*.png",
+    "myj_*.png",
+    "myjp_*.png",
+    "myjs_*.png",
+    "vehicle_*.png",
+)
 
 
 def load_plist(path: Path, blockers: list[str]) -> dict:
@@ -15,6 +28,20 @@ def load_plist(path: Path, blockers: list[str]) -> dict:
     except (OSError, plistlib.InvalidFileException) as error:
         blockers.append(f"cannot read plist {path}: {error}")
         return {}
+
+
+def audit_vehicle_image_resources(bundle: Path, archive: Path, blockers: list[str]) -> None:
+    if not bundle.is_dir():
+        return
+
+    for path in bundle.rglob("*"):
+        if not path.is_file():
+            continue
+        catalog_name = "Vehicle" + "Image" + "Catalog.json"
+        is_catalog = path.name == catalog_name
+        is_vehicle_image = any(fnmatch.fnmatchcase(path.name, pattern) for pattern in FORBIDDEN_VEHICLE_IMAGE_PATTERNS)
+        if is_catalog or is_vehicle_image:
+            blockers.append(f"forbidden vehicle image resource: {path.relative_to(archive)}")
 
 
 def audit_archive(archive: Path) -> list[str]:
@@ -64,6 +91,11 @@ def audit_archive(archive: Path) -> list[str]:
     for path in required_files:
         if not path.is_file():
             blockers.append(f"missing archive resource: {path.relative_to(archive)}")
+
+    if any(widget.rglob("AppShortcuts.strings")):
+        blockers.append("widget must not contain the app-only AppShortcuts.strings resource")
+
+    audit_vehicle_image_resources(app, archive, blockers)
 
     return blockers
 

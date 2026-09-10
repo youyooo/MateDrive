@@ -32,57 +32,57 @@
 
 ### Domain And Reconstruction
 
-- Create `MateDroidIOS/Features/Activities/SmartActivityModels.swift`: shared immutable types, quality states, session payloads, purpose results, and stable IDs.
-- Create `MateDroidIOS/Features/Activities/ParkingIntervalAnalyzer.swift`: pure parking, charge-gain, standby-change, and sleep calculations.
-- Create `MateDroidIOS/Features/Activities/ActivitySessionReconstructor.swift`: event ordering, place matching, open-session updates, and replenishment grouping.
-- Create `MateDroidIOS/Features/Activities/ActivityPurposeClassifier.swift`: evidence precedence and confidence calculation.
+- Create `MateDriveApp/Features/Activities/SmartActivityModels.swift`: shared immutable types, quality states, session payloads, purpose results, and stable IDs.
+- Create `MateDriveApp/Features/Activities/ParkingIntervalAnalyzer.swift`: pure parking, charge-gain, standby-change, and sleep calculations.
+- Create `MateDriveApp/Features/Activities/ActivitySessionReconstructor.swift`: event ordering, place matching, open-session updates, and replenishment grouping.
+- Create `MateDriveApp/Features/Activities/ActivityPurposeClassifier.swift`: evidence precedence and confidence calculation.
 
 ### Persistence And Background Indexing
 
-- Modify `MateDroidIOS/Core/Persistence/Migrations.swift`: migration 23 for derived sessions, label overrides, and pricing observations.
-- Modify `MateDroidIOS/Core/Persistence/Migration.swift`: set `DatabaseSchemaVersion.current` to 23.
-- Create `MateDroidIOS/Core/Persistence/Records/SmartActivityRecords.swift`: database row models.
-- Create `MateDroidIOS/Core/Persistence/Stores/SmartActivityStore.swift`: session and label storage protocols and SQLite implementation.
-- Create `MateDroidIOS/Core/Persistence/Stores/ChargePricingObservationStore.swift`: confirmed pricing observation storage.
-- Create `MateDroidIOS/Core/Sync/SmartActivityIndexer.swift`: cached source loading and incremental rebuild service.
-- Modify `MateDroidIOS/Core/Sync/BackgroundRefreshWorkRunner.swift`: run indexing after source synchronization.
-- Modify `MateDroidIOS/App/MateDroidApp.swift`: construct and inject the live indexer.
+- Modify `MateDriveApp/Core/Persistence/Migrations.swift`: migration 23 for derived sessions, label overrides, and pricing observations.
+- Modify `MateDriveApp/Core/Persistence/Migration.swift`: set `DatabaseSchemaVersion.current` to 23.
+- Create `MateDriveApp/Core/Persistence/Records/SmartActivityRecords.swift`: database row models.
+- Create `MateDriveApp/Core/Persistence/Stores/SmartActivityStore.swift`: session and label storage protocols and SQLite implementation.
+- Create `MateDriveApp/Core/Persistence/Stores/ChargePricingObservationStore.swift`: confirmed pricing observation storage.
+- Create `MateDriveApp/Core/Sync/SmartActivityIndexer.swift`: cached source loading and incremental rebuild service.
+- Modify `MateDriveApp/Core/Sync/BackgroundRefreshWorkRunner.swift`: run indexing after source synchronization.
+- Modify `MateDriveApp/App/MateDriveApp.swift`: construct and inject the live indexer.
 
 ### Tariffs And Cost Resolution
 
-- Create `MateDroidIOS/Features/Charges/RegionalChargingTariff.swift`: catalog types and active-entry lookup.
-- Create `MateDroidIOS/Resources/RegionalChargingTariffs.json`: reviewed records for all 31 mainland provincial-level region codes.
-- Modify `MateDroidIOS/Features/Charges/ChargePricingRule.swift`: rule provenance and extended fee constraints.
-- Create `MateDroidIOS/Features/Charges/ChargeCostResolver.swift`: explicit source precedence and regional Home fallback.
-- Create `MateDroidIOS/Features/Charges/ChargePricingObservationService.swift`: convert confirmed observations into future station rules.
+- Create `MateDriveApp/Features/Charges/RegionalChargingTariff.swift`: catalog types and active-entry lookup.
+- Create `MateDriveApp/Resources/RegionalChargingTariffs.json`: reviewed records for all 31 mainland provincial-level region codes.
+- Modify `MateDriveApp/Features/Charges/ChargePricingRule.swift`: rule provenance and extended fee constraints.
+- Create `MateDriveApp/Features/Charges/ChargeCostResolver.swift`: explicit source precedence and regional Home fallback.
+- Create `MateDriveApp/Features/Charges/ChargePricingObservationService.swift`: convert confirmed observations into future station rules.
 - Create `scripts/audit_regional_tariffs.py`: catalog integrity and source audit.
 - Create `scripts/test_audit_regional_tariffs.py`: deterministic audit tests.
 - Modify `Makefile` and `project.yml`: include the catalog and audit in generation and preflight.
 
 ### Activity And Settings UI
 
-- Create `MateDroidIOS/Features/Activities/ActivityTimelineViewModel.swift`: store-only timeline state and filters.
-- Create `MateDroidIOS/Features/Activities/ActivityTimelineView.swift`: fourth-tab list and cached states.
-- Create `MateDroidIOS/Features/Activities/ActivitySessionCard.swift`: stable session summary presentation.
-- Create `MateDroidIOS/Features/Activities/ActivitySessionDetailView.swift`: event timeline, map, parking breakdown, source links, and edits.
-- Create `MateDroidIOS/Features/Activities/ParkingActivityDetailView.swift`: extracted reusable cached parking detail.
-- Create `MateDroidIOS/Features/Activities/ActivityLabelEditorView.swift`: session/place confirmation editor.
-- Create `MateDroidIOS/Features/Charges/ChargePriceConfirmationView.swift`: final amount and future station-rule editor.
-- Create `MateDroidIOS/Features/Settings/SmartActivitySettingsView.swift`: labels, tariff region, catalog status, and rebuild controls.
-- Modify `MateDroidIOS/App/RootTabNavigation.swift`, `MateDroidIOS/App/RootView.swift`, and `MateDroidIOS/App/AppRoute.swift`: four-tab paths and activity detail routing.
-- Modify `MateDroidIOS/Features/Settings/AppSettings.swift`, `SettingsViewModel.swift`, and `SettingsView.swift`: geofence kinds, home tariff region, and smart-activity settings.
-- Modify `MateDroidIOS/Features/Charges/ChargeDetailViewModel.swift` and `ChargeDetailView.swift`: shared cost resolution and confirmation entry point.
-- Modify `MateDroidIOS/Features/Settings/PrivacyDataView.swift`: derived-data and learned-suggestion clearing.
-- Modify `MateDroidIOS/Resources/Localizable.xcstrings`: all new English and Simplified Chinese copy.
+- Create `MateDriveApp/Features/Activities/ActivityTimelineViewModel.swift`: store-only timeline state and filters.
+- Create `MateDriveApp/Features/Activities/ActivityTimelineView.swift`: fourth-tab list and cached states.
+- Create `MateDriveApp/Features/Activities/ActivitySessionCard.swift`: stable session summary presentation.
+- Create `MateDriveApp/Features/Activities/ActivitySessionDetailView.swift`: event timeline, map, parking breakdown, source links, and edits.
+- Create `MateDriveApp/Features/Activities/ParkingActivityDetailView.swift`: extracted reusable cached parking detail.
+- Create `MateDriveApp/Features/Activities/ActivityLabelEditorView.swift`: session/place confirmation editor.
+- Create `MateDriveApp/Features/Charges/ChargePriceConfirmationView.swift`: final amount and future station-rule editor.
+- Create `MateDriveApp/Features/Settings/SmartActivitySettingsView.swift`: labels, tariff region, catalog status, and rebuild controls.
+- Modify `MateDriveApp/App/RootTabNavigation.swift`, `MateDriveApp/App/RootView.swift`, and `MateDriveApp/App/AppRoute.swift`: four-tab paths and activity detail routing.
+- Modify `MateDriveApp/Features/Settings/AppSettings.swift`, `SettingsViewModel.swift`, and `SettingsView.swift`: geofence kinds, home tariff region, and smart-activity settings.
+- Modify `MateDriveApp/Features/Charges/ChargeDetailViewModel.swift` and `ChargeDetailView.swift`: shared cost resolution and confirmation entry point.
+- Modify `MateDriveApp/Features/Settings/PrivacyDataView.swift`: derived-data and learned-suggestion clearing.
+- Modify `MateDriveApp/Resources/Localizable.xcstrings`: all new English and Simplified Chinese copy.
 
 ---
 
 ### Task 1: Parking Interval Domain And Analyzer
 
 **Files:**
-- Create: `MateDroidIOS/Features/Activities/SmartActivityModels.swift`
-- Create: `MateDroidIOS/Features/Activities/ParkingIntervalAnalyzer.swift`
-- Test: `MateDroidIOSTests/Features/ParkingIntervalAnalyzerTests.swift`
+- Create: `MateDriveApp/Features/Activities/SmartActivityModels.swift`
+- Create: `MateDriveApp/Features/Activities/ParkingIntervalAnalyzer.swift`
+- Test: `MateDriveTests/Features/ParkingIntervalAnalyzerTests.swift`
 
 **Interfaces:**
 - Consumes: `TeslaMateActivity`, `SleepInterval`, and `DomainDateParser.date(from:)`.
@@ -92,7 +92,7 @@
 
 ```swift
 import XCTest
-@testable import MateDroidIOS
+@testable import MateDriveApp
 
 final class ParkingIntervalAnalyzerTests: XCTestCase {
     func testSeparatesChargeGainFromStandbyLoss() throws {
@@ -155,7 +155,7 @@ Run:
 
 ```bash
 make generate
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/ParkingIntervalAnalyzerTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/ParkingIntervalAnalyzerTests test
 ```
 
 Expected: FAIL because `ParkingIntervalAnalyzer` and its input/result types do not exist.
@@ -289,16 +289,16 @@ Run the command from Step 2. Expected: all `ParkingIntervalAnalyzerTests` PASS.
 - [ ] **Step 6: Commit the isolated domain change**
 
 ```bash
-git add MateDroidIOS/Features/Activities/SmartActivityModels.swift MateDroidIOS/Features/Activities/ParkingIntervalAnalyzer.swift MateDroidIOSTests/Features/ParkingIntervalAnalyzerTests.swift MateDroidIOS.xcodeproj/project.pbxproj
+git add MateDriveApp/Features/Activities/SmartActivityModels.swift MateDriveApp/Features/Activities/ParkingIntervalAnalyzer.swift MateDriveTests/Features/ParkingIntervalAnalyzerTests.swift MateDrive.xcodeproj/project.pbxproj
 git commit -m "feat: calculate parking energy changes"
 ```
 
 ### Task 2: Activity Session Reconstruction
 
 **Files:**
-- Modify: `MateDroidIOS/Features/Activities/SmartActivityModels.swift`
-- Create: `MateDroidIOS/Features/Activities/ActivitySessionReconstructor.swift`
-- Test: `MateDroidIOSTests/Features/ActivitySessionReconstructorTests.swift`
+- Modify: `MateDriveApp/Features/Activities/SmartActivityModels.swift`
+- Create: `MateDriveApp/Features/Activities/ActivitySessionReconstructor.swift`
+- Test: `MateDriveTests/Features/ActivitySessionReconstructorTests.swift`
 
 **Interfaces:**
 - Consumes: `ParkingIntervalAnalyzer.analyze(_:)`, `GeofenceRuleEngine.matchingRule`, sorted `TeslaMateActivity` values, and sleep intervals.
@@ -338,7 +338,7 @@ func testHomeStayAllowsScheduledChargeAfterShortStopWindow() throws {
 
 ```bash
 make generate
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/ActivitySessionReconstructorTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/ActivitySessionReconstructorTests test
 ```
 
 Expected: FAIL because reconstruction types do not exist.
@@ -477,20 +477,20 @@ Assert an unfinished parking record remains one `isOpen` session, a later depart
 Run the Step 2 command. Expected: PASS.
 
 ```bash
-git add MateDroidIOS/Features/Activities/SmartActivityModels.swift MateDroidIOS/Features/Activities/ActivitySessionReconstructor.swift MateDroidIOSTests/Features/ActivitySessionReconstructorTests.swift MateDroidIOS.xcodeproj/project.pbxproj
+git add MateDriveApp/Features/Activities/SmartActivityModels.swift MateDriveApp/Features/Activities/ActivitySessionReconstructor.swift MateDriveTests/Features/ActivitySessionReconstructorTests.swift MateDrive.xcodeproj/project.pbxproj
 git commit -m "feat: reconstruct smart activity sessions"
 ```
 
 ### Task 3: Derived Session And Override Persistence
 
 **Files:**
-- Modify: `MateDroidIOS/Core/Persistence/Migrations.swift`
-- Modify: `MateDroidIOS/Core/Persistence/Migration.swift`
-- Create: `MateDroidIOS/Core/Persistence/Records/SmartActivityRecords.swift`
-- Create: `MateDroidIOS/Core/Persistence/Stores/SmartActivityStore.swift`
-- Create: `MateDroidIOS/Core/Persistence/Stores/ChargePricingObservationStore.swift`
-- Test: `MateDroidIOSTests/Persistence/SmartActivityStoreTests.swift`
-- Modify test: `MateDroidIOSTests/Persistence/PersistenceMigrationTests.swift`
+- Modify: `MateDriveApp/Core/Persistence/Migrations.swift`
+- Modify: `MateDriveApp/Core/Persistence/Migration.swift`
+- Create: `MateDriveApp/Core/Persistence/Records/SmartActivityRecords.swift`
+- Create: `MateDriveApp/Core/Persistence/Stores/SmartActivityStore.swift`
+- Create: `MateDriveApp/Core/Persistence/Stores/ChargePricingObservationStore.swift`
+- Test: `MateDriveTests/Persistence/SmartActivityStoreTests.swift`
+- Modify test: `MateDriveTests/Persistence/PersistenceMigrationTests.swift`
 
 **Interfaces:**
 - Consumes: Codable `SmartActivitySession` values.
@@ -526,7 +526,7 @@ func testReplacingDerivedSessionsDoesNotDeleteUserOverrides() async throws {
 
 ```bash
 make generate
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/SmartActivityStoreTests -only-testing:MateDroidIOSTests/PersistenceMigrationTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/SmartActivityStoreTests -only-testing:MateDriveTests/PersistenceMigrationTests test
 ```
 
 Expected: FAIL at schema version 22 and missing store types.
@@ -665,19 +665,19 @@ Malformed rows are skipped instead of crashing the timeline. Sessions return new
 Run Step 2. Expected: PASS.
 
 ```bash
-git add MateDroidIOS/Core/Persistence/Migrations.swift MateDroidIOS/Core/Persistence/Migration.swift MateDroidIOS/Core/Persistence/Records/SmartActivityRecords.swift MateDroidIOS/Core/Persistence/Stores/SmartActivityStore.swift MateDroidIOS/Core/Persistence/Stores/ChargePricingObservationStore.swift MateDroidIOSTests/Persistence/SmartActivityStoreTests.swift MateDroidIOSTests/Persistence/PersistenceMigrationTests.swift MateDroidIOS.xcodeproj/project.pbxproj
+git add MateDriveApp/Core/Persistence/Migrations.swift MateDriveApp/Core/Persistence/Migration.swift MateDriveApp/Core/Persistence/Records/SmartActivityRecords.swift MateDriveApp/Core/Persistence/Stores/SmartActivityStore.swift MateDriveApp/Core/Persistence/Stores/ChargePricingObservationStore.swift MateDriveTests/Persistence/SmartActivityStoreTests.swift MateDriveTests/Persistence/PersistenceMigrationTests.swift MateDrive.xcodeproj/project.pbxproj
 git commit -m "feat: persist smart activity sessions"
 ```
 
 ### Task 4: Purpose Classification And Geofence Expansion
 
 **Files:**
-- Modify: `MateDroidIOS/Features/Settings/AppSettings.swift`
-- Modify: `MateDroidIOS/Features/Activities/SmartActivityModels.swift`
-- Create: `MateDroidIOS/Features/Activities/ActivityPurposeClassifier.swift`
-- Modify: `MateDroidIOS/Features/Activities/ActivitySessionReconstructor.swift`
-- Test: `MateDroidIOSTests/Features/ActivityPurposeClassifierTests.swift`
-- Modify test: `MateDroidIOSTests/Features/SettingsViewModelTests.swift`
+- Modify: `MateDriveApp/Features/Settings/AppSettings.swift`
+- Modify: `MateDriveApp/Features/Activities/SmartActivityModels.swift`
+- Create: `MateDriveApp/Features/Activities/ActivityPurposeClassifier.swift`
+- Modify: `MateDriveApp/Features/Activities/ActivitySessionReconstructor.swift`
+- Test: `MateDriveTests/Features/ActivityPurposeClassifierTests.swift`
+- Modify test: `MateDriveTests/Features/SettingsViewModelTests.swift`
 
 **Interfaces:**
 - Consumes: a reconstructed session, matching `GeofenceRule`, stored label overrides, recurrence count, charging identity, and commute evidence.
@@ -719,7 +719,7 @@ func testLowEvidenceRemainsUnclassified() {
 
 ```bash
 make generate
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/ActivityPurposeClassifierTests -only-testing:MateDroidIOSTests/SettingsViewModelTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/ActivityPurposeClassifierTests -only-testing:MateDriveTests/SettingsViewModelTests test
 ```
 
 Expected: FAIL because new geofence kinds and classifier types are missing.
@@ -773,20 +773,20 @@ Cover replenishment, Home charging, Work charging, commute, shopping, pickup/dro
 Run Step 2. Expected: PASS.
 
 ```bash
-git add MateDroidIOS/Features/Settings/AppSettings.swift MateDroidIOS/Features/Activities/SmartActivityModels.swift MateDroidIOS/Features/Activities/ActivityPurposeClassifier.swift MateDroidIOS/Features/Activities/ActivitySessionReconstructor.swift MateDroidIOSTests/Features/ActivityPurposeClassifierTests.swift MateDroidIOSTests/Features/SettingsViewModelTests.swift MateDroidIOS.xcodeproj/project.pbxproj
+git add MateDriveApp/Features/Settings/AppSettings.swift MateDriveApp/Features/Activities/SmartActivityModels.swift MateDriveApp/Features/Activities/ActivityPurposeClassifier.swift MateDriveApp/Features/Activities/ActivitySessionReconstructor.swift MateDriveTests/Features/ActivityPurposeClassifierTests.swift MateDriveTests/Features/SettingsViewModelTests.swift MateDrive.xcodeproj/project.pbxproj
 git commit -m "feat: classify smart activity purposes"
 ```
 
 ### Task 5: Versioned Regional Residential Tariff Catalog
 
 **Files:**
-- Create: `MateDroidIOS/Features/Charges/RegionalChargingTariff.swift`
-- Create: `MateDroidIOS/Resources/RegionalChargingTariffs.json`
+- Create: `MateDriveApp/Features/Charges/RegionalChargingTariff.swift`
+- Create: `MateDriveApp/Resources/RegionalChargingTariffs.json`
 - Create: `scripts/audit_regional_tariffs.py`
 - Create: `scripts/test_audit_regional_tariffs.py`
 - Modify: `project.yml`
 - Modify: `Makefile`
-- Test: `MateDroidIOSTests/Features/RegionalChargingTariffTests.swift`
+- Test: `MateDriveTests/Features/RegionalChargingTariffTests.swift`
 
 **Interfaces:**
 - Consumes: a bundled JSON resource and a requested ISO 3166-2 region code/date.
@@ -819,7 +819,7 @@ func testExpiredHunanPilotIsHistoricalForNewCharges() throws {
 
 ```bash
 make generate
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/RegionalChargingTariffTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/RegionalChargingTariffTests test
 ```
 
 Expected: FAIL because the catalog types and resource do not exist.
@@ -935,26 +935,26 @@ Add `RegionalChargingTariffs.json` as an application resource in `project.yml`.
 ```bash
 python3 scripts/test_audit_regional_tariffs.py
 python3 scripts/audit_regional_tariffs.py
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/RegionalChargingTariffTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/RegionalChargingTariffTests test
 ```
 
 Expected: all commands PASS and the audit reports 31 region records.
 
 ```bash
-git add MateDroidIOS/Features/Charges/RegionalChargingTariff.swift MateDroidIOS/Resources/RegionalChargingTariffs.json scripts/audit_regional_tariffs.py scripts/test_audit_regional_tariffs.py MateDroidIOSTests/Features/RegionalChargingTariffTests.swift Makefile project.yml MateDroidIOS.xcodeproj/project.pbxproj
+git add MateDriveApp/Features/Charges/RegionalChargingTariff.swift MateDriveApp/Resources/RegionalChargingTariffs.json scripts/audit_regional_tariffs.py scripts/test_audit_regional_tariffs.py MateDriveTests/Features/RegionalChargingTariffTests.swift Makefile project.yml MateDrive.xcodeproj/project.pbxproj
 git commit -m "feat: add verified regional tariff catalog"
 ```
 
 ### Task 6: Cost Source Resolution And Station Learning
 
 **Files:**
-- Modify: `MateDroidIOS/Features/Charges/ChargePricingRule.swift`
-- Create: `MateDroidIOS/Features/Charges/ChargeCostResolver.swift`
-- Create: `MateDroidIOS/Features/Charges/ChargePricingObservationService.swift`
-- Modify: `MateDroidIOS/Features/Charges/ChargeDetailViewModel.swift`
-- Test: `MateDroidIOSTests/Features/ChargeCostResolverTests.swift`
-- Modify test: `MateDroidIOSTests/Features/ChargeDetailViewModelTests.swift`
-- Modify test: `MateDroidIOSTests/Features/ChargePricingRuleTests.swift`
+- Modify: `MateDriveApp/Features/Charges/ChargePricingRule.swift`
+- Create: `MateDriveApp/Features/Charges/ChargeCostResolver.swift`
+- Create: `MateDriveApp/Features/Charges/ChargePricingObservationService.swift`
+- Modify: `MateDriveApp/Features/Charges/ChargeDetailViewModel.swift`
+- Test: `MateDriveTests/Features/ChargeCostResolverTests.swift`
+- Modify test: `MateDriveTests/Features/ChargeDetailViewModelTests.swift`
+- Modify test: `MateDriveTests/Features/ChargePricingRuleTests.swift`
 
 **Interfaces:**
 - Consumes: manual override presence, API cost, charge input, rule provenance, Home geofence match, regional catalog, and persisted observations.
@@ -1000,7 +1000,7 @@ func testConfirmedStationRuleWinsRegionalHomeFallback() {
 
 ```bash
 make generate
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/ChargeCostResolverTests -only-testing:MateDroidIOSTests/ChargeDetailViewModelTests -only-testing:MateDroidIOSTests/ChargePricingRuleTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/ChargeCostResolverTests -only-testing:MateDriveTests/ChargeDetailViewModelTests -only-testing:MateDriveTests/ChargePricingRuleTests test
 ```
 
 Expected: FAIL because provenance and resolver types do not exist.
@@ -1104,18 +1104,18 @@ Replace ad hoc `manual -> API -> rule` selection inside `ChargeDetailViewModel.a
 Run Step 2. Expected: PASS.
 
 ```bash
-git add MateDroidIOS/Features/Charges/ChargePricingRule.swift MateDroidIOS/Features/Charges/ChargeCostResolver.swift MateDroidIOS/Features/Charges/ChargePricingObservationService.swift MateDroidIOS/Features/Charges/ChargeDetailViewModel.swift MateDroidIOSTests/Features/ChargeCostResolverTests.swift MateDroidIOSTests/Features/ChargeDetailViewModelTests.swift MateDroidIOSTests/Features/ChargePricingRuleTests.swift MateDroidIOS.xcodeproj/project.pbxproj
+git add MateDriveApp/Features/Charges/ChargePricingRule.swift MateDriveApp/Features/Charges/ChargeCostResolver.swift MateDriveApp/Features/Charges/ChargePricingObservationService.swift MateDriveApp/Features/Charges/ChargeDetailViewModel.swift MateDriveTests/Features/ChargeCostResolverTests.swift MateDriveTests/Features/ChargeDetailViewModelTests.swift MateDriveTests/Features/ChargePricingRuleTests.swift MateDrive.xcodeproj/project.pbxproj
 git commit -m "feat: resolve and learn charging prices"
 ```
 
 ### Task 7: Cached Source Repository And Background Indexer
 
 **Files:**
-- Create: `MateDroidIOS/Core/Sync/SmartActivityIndexer.swift`
-- Modify: `MateDroidIOS/Core/Sync/BackgroundRefreshWorkRunner.swift`
-- Modify: `MateDroidIOS/App/MateDroidApp.swift`
-- Test: `MateDroidIOSTests/Sync/SmartActivityIndexerTests.swift`
-- Modify test: `MateDroidIOSTests/Sync/BackgroundRefreshWorkRunnerTests.swift`
+- Create: `MateDriveApp/Core/Sync/SmartActivityIndexer.swift`
+- Modify: `MateDriveApp/Core/Sync/BackgroundRefreshWorkRunner.swift`
+- Modify: `MateDriveApp/App/MateDriveApp.swift`
+- Test: `MateDriveTests/Sync/SmartActivityIndexerTests.swift`
+- Modify test: `MateDriveTests/Sync/BackgroundRefreshWorkRunnerTests.swift`
 
 **Interfaces:**
 - Consumes: `ActivitiesStateCache`, `SleepIntervalStoring`, `SettingsStoring`, session/label stores, classifier, resolver, and car IDs from `HistorySyncReport`.
@@ -1156,7 +1156,7 @@ func testBackgroundRunnerIndexesOnlyAfterHistoryAndStatusFinish() async {
 
 ```bash
 make generate
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/SmartActivityIndexerTests -only-testing:MateDroidIOSTests/BackgroundRefreshWorkRunnerTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/SmartActivityIndexerTests -only-testing:MateDriveTests/BackgroundRefreshWorkRunnerTests test
 ```
 
 Expected: FAIL because the indexer and runner closure do not exist.
@@ -1209,7 +1209,7 @@ public struct BackgroundRefreshReport: Equatable, Sendable {
 }
 ```
 
-Give `BackgroundRefreshReport.init` a `smartActivitiesIndexed: Bool = true` default for existing callers and require it in `isSuccessful`. Extend `BackgroundRefreshWorkRunner.init` with `rebuildSmartActivities: @escaping @Sendable ([Int]) async -> Bool = { _ in true }` so existing focused callers remain source-compatible. Run the index closure after awaiting both existing tasks. Construct the live indexer in `MateDroidApp.init` from `environment.databaseProvider`, `environment.settingsStore`, `ActivitiesStateCache.shared`, `DatabaseBackedChargeCostOverrideStore`, and `DatabaseBackedSleepIntervalStore`.
+Give `BackgroundRefreshReport.init` a `smartActivitiesIndexed: Bool = true` default for existing callers and require it in `isSuccessful`. Extend `BackgroundRefreshWorkRunner.init` with `rebuildSmartActivities: @escaping @Sendable ([Int]) async -> Bool = { _ in true }` so existing focused callers remain source-compatible. Run the index closure after awaiting both existing tasks. Construct the live indexer in `MateDriveApp.init` from `environment.databaseProvider`, `environment.settingsStore`, `ActivitiesStateCache.shared`, `DatabaseBackedChargeCostOverrideStore`, and `DatabaseBackedSleepIntervalStore`.
 
 - [ ] **Step 6: Add cancellation, missing-cache, partial-car-failure, and unchanged-fingerprint tests**
 
@@ -1220,15 +1220,15 @@ Cancellation must not replace the prior snapshot. One failed car must not remove
 Run Step 2. Expected: PASS.
 
 ```bash
-git add MateDroidIOS/Core/Sync/SmartActivityIndexer.swift MateDroidIOS/Core/Sync/BackgroundRefreshWorkRunner.swift MateDroidIOS/App/MateDroidApp.swift MateDroidIOSTests/Sync/SmartActivityIndexerTests.swift MateDroidIOSTests/Sync/BackgroundRefreshWorkRunnerTests.swift MateDroidIOS.xcodeproj/project.pbxproj
+git add MateDriveApp/Core/Sync/SmartActivityIndexer.swift MateDriveApp/Core/Sync/BackgroundRefreshWorkRunner.swift MateDriveApp/App/MateDriveApp.swift MateDriveTests/Sync/SmartActivityIndexerTests.swift MateDriveTests/Sync/BackgroundRefreshWorkRunnerTests.swift MateDrive.xcodeproj/project.pbxproj
 git commit -m "feat: index activities after background sync"
 ```
 
 ### Task 8: Store-Only Timeline And Detail View Models
 
 **Files:**
-- Create: `MateDroidIOS/Features/Activities/ActivityTimelineViewModel.swift`
-- Test: `MateDroidIOSTests/Features/ActivityTimelineViewModelTests.swift`
+- Create: `MateDriveApp/Features/Activities/ActivityTimelineViewModel.swift`
+- Test: `MateDriveTests/Features/ActivityTimelineViewModelTests.swift`
 
 **Interfaces:**
 - Consumes: `SmartActivitySessionStoring`, `ActivityLabelOverrideStoring`, and `.smartActivityIndexDidChange`.
@@ -1264,7 +1264,7 @@ func testFiltersDoNotReadStoreAgain() async {
 
 ```bash
 make generate
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/ActivityTimelineViewModelTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/ActivityTimelineViewModelTests test
 ```
 
 Expected: FAIL because timeline view-model types do not exist.
@@ -1335,26 +1335,26 @@ Do not inject `TeslamateAPI`, `HTTPClient`, an API factory, or a foreground refr
 Run Step 2. Expected: PASS.
 
 ```bash
-git add MateDroidIOS/Features/Activities/ActivityTimelineViewModel.swift MateDroidIOSTests/Features/ActivityTimelineViewModelTests.swift MateDroidIOS.xcodeproj/project.pbxproj
+git add MateDriveApp/Features/Activities/ActivityTimelineViewModel.swift MateDriveTests/Features/ActivityTimelineViewModelTests.swift MateDrive.xcodeproj/project.pbxproj
 git commit -m "feat: expose cached activity timeline state"
 ```
 
 ### Task 9: Fourth Tab, Timeline Cards, And Session Detail
 
 **Files:**
-- Modify: `MateDroidIOS/App/RootTabNavigation.swift`
-- Modify: `MateDroidIOS/App/RootView.swift`
-- Modify: `MateDroidIOS/App/AppRoute.swift`
-- Modify: `MateDroidIOS/App/RouteCoverage.swift`
-- Create: `MateDroidIOS/Features/Activities/ActivityTimelineView.swift`
-- Create: `MateDroidIOS/Features/Activities/ActivitySessionCard.swift`
-- Create: `MateDroidIOS/Features/Activities/ActivitySessionDetailView.swift`
-- Create: `MateDroidIOS/Features/Activities/ParkingActivityDetailView.swift`
-- Modify: `MateDroidIOS/Features/Activities/ActivitiesView.swift`
-- Modify: `MateDroidIOS/Features/FeatureHub/FeatureHubPresentation.swift`
-- Modify test: `MateDroidIOSTests/App/RootTabNavigationTests.swift`
-- Modify test: `MateDroidIOSTests/App/AppShortcutTests.swift`
-- Create test: `MateDroidIOSTests/Features/ActivitySessionCardTests.swift`
+- Modify: `MateDriveApp/App/RootTabNavigation.swift`
+- Modify: `MateDriveApp/App/RootView.swift`
+- Modify: `MateDriveApp/App/AppRoute.swift`
+- Modify: `MateDriveApp/App/RouteCoverage.swift`
+- Create: `MateDriveApp/Features/Activities/ActivityTimelineView.swift`
+- Create: `MateDriveApp/Features/Activities/ActivitySessionCard.swift`
+- Create: `MateDriveApp/Features/Activities/ActivitySessionDetailView.swift`
+- Create: `MateDriveApp/Features/Activities/ParkingActivityDetailView.swift`
+- Modify: `MateDriveApp/Features/Activities/ActivitiesView.swift`
+- Modify: `MateDriveApp/Features/FeatureHub/FeatureHubPresentation.swift`
+- Modify test: `MateDriveTests/App/RootTabNavigationTests.swift`
+- Modify test: `MateDriveTests/App/AppShortcutTests.swift`
+- Create test: `MateDriveTests/Features/ActivitySessionCardTests.swift`
 
 **Interfaces:**
 - Consumes: `ActivityTimelineViewModel`, selected car ID from the shared dashboard view model, and store-only session detail view models.
@@ -1385,7 +1385,7 @@ func testSelectingActivityPreservesItsDetailPath() {
 
 ```bash
 make generate
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/RootTabNavigationTests -only-testing:MateDroidIOSTests/AppShortcutTests -only-testing:MateDroidIOSTests/ActivitySessionCardTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/RootTabNavigationTests -only-testing:MateDriveTests/AppShortcutTests -only-testing:MateDriveTests/ActivitySessionCardTests test
 ```
 
 Expected: FAIL because the Activity tab, path, route, and presentation are missing.
@@ -1442,23 +1442,23 @@ Test that unavailable cost and range rows are absent, `-2%` standby and `+30%` c
 Run Step 2. Expected: PASS.
 
 ```bash
-git add MateDroidIOS/App/RootTabNavigation.swift MateDroidIOS/App/RootView.swift MateDroidIOS/App/AppRoute.swift MateDroidIOS/App/RouteCoverage.swift MateDroidIOS/Features/Activities/ActivityTimelineView.swift MateDroidIOS/Features/Activities/ActivitySessionCard.swift MateDroidIOS/Features/Activities/ActivitySessionDetailView.swift MateDroidIOS/Features/Activities/ParkingActivityDetailView.swift MateDroidIOS/Features/Activities/ActivitiesView.swift MateDroidIOS/Features/FeatureHub/FeatureHubPresentation.swift MateDroidIOSTests/App/RootTabNavigationTests.swift MateDroidIOSTests/App/AppShortcutTests.swift MateDroidIOSTests/Features/ActivitySessionCardTests.swift MateDroidIOS.xcodeproj/project.pbxproj
+git add MateDriveApp/App/RootTabNavigation.swift MateDriveApp/App/RootView.swift MateDriveApp/App/AppRoute.swift MateDriveApp/App/RouteCoverage.swift MateDriveApp/Features/Activities/ActivityTimelineView.swift MateDriveApp/Features/Activities/ActivitySessionCard.swift MateDriveApp/Features/Activities/ActivitySessionDetailView.swift MateDriveApp/Features/Activities/ParkingActivityDetailView.swift MateDriveApp/Features/Activities/ActivitiesView.swift MateDriveApp/Features/FeatureHub/FeatureHubPresentation.swift MateDriveTests/App/RootTabNavigationTests.swift MateDriveTests/App/AppShortcutTests.swift MateDriveTests/Features/ActivitySessionCardTests.swift MateDrive.xcodeproj/project.pbxproj
 git commit -m "feat: add smart activity tab"
 ```
 
 ### Task 10: User Label, Price Confirmation, And Smart Activity Settings
 
 **Files:**
-- Create: `MateDroidIOS/Features/Activities/ActivityLabelEditorView.swift`
-- Create: `MateDroidIOS/Features/Charges/ChargePriceConfirmationView.swift`
-- Create: `MateDroidIOS/Features/Settings/SmartActivitySettingsView.swift`
-- Modify: `MateDroidIOS/Features/Activities/ActivitySessionDetailView.swift`
-- Modify: `MateDroidIOS/Features/Charges/ChargeDetailView.swift`
-- Modify: `MateDroidIOS/Features/Settings/AppSettings.swift`
-- Modify: `MateDroidIOS/Features/Settings/SettingsViewModel.swift`
-- Modify: `MateDroidIOS/Features/Settings/SettingsView.swift`
-- Test: `MateDroidIOSTests/Features/SmartActivitySettingsTests.swift`
-- Test: `MateDroidIOSTests/Features/ChargePriceConfirmationTests.swift`
+- Create: `MateDriveApp/Features/Activities/ActivityLabelEditorView.swift`
+- Create: `MateDriveApp/Features/Charges/ChargePriceConfirmationView.swift`
+- Create: `MateDriveApp/Features/Settings/SmartActivitySettingsView.swift`
+- Modify: `MateDriveApp/Features/Activities/ActivitySessionDetailView.swift`
+- Modify: `MateDriveApp/Features/Charges/ChargeDetailView.swift`
+- Modify: `MateDriveApp/Features/Settings/AppSettings.swift`
+- Modify: `MateDriveApp/Features/Settings/SettingsViewModel.swift`
+- Modify: `MateDriveApp/Features/Settings/SettingsView.swift`
+- Test: `MateDriveTests/Features/SmartActivitySettingsTests.swift`
+- Test: `MateDriveTests/Features/ChargePriceConfirmationTests.swift`
 
 **Interfaces:**
 - Consumes: label and observation stores, pricing observation service, tariff catalog, settings store, and indexer maintenance interface.
@@ -1490,7 +1490,7 @@ func testFutureStationRuleRequiresPositiveEnergyOrExplicitUnitPrice() {
 
 ```bash
 make generate
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/SmartActivitySettingsTests -only-testing:MateDroidIOSTests/ChargePriceConfirmationTests -only-testing:MateDroidIOSTests/SettingsViewModelTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/SmartActivitySettingsTests -only-testing:MateDriveTests/ChargePriceConfirmationTests -only-testing:MateDriveTests/SettingsViewModelTests test
 ```
 
 Expected: FAIL because settings and editor validation types are missing.
@@ -1556,19 +1556,19 @@ Add one Settings group containing links to existing Geofences and Charge Pricing
 Run Step 2. Expected: PASS.
 
 ```bash
-git add MateDroidIOS/Features/Activities/ActivityLabelEditorView.swift MateDroidIOS/Features/Charges/ChargePriceConfirmationView.swift MateDroidIOS/Features/Settings/SmartActivitySettingsView.swift MateDroidIOS/Features/Activities/ActivitySessionDetailView.swift MateDroidIOS/Features/Charges/ChargeDetailView.swift MateDroidIOS/Features/Settings/AppSettings.swift MateDroidIOS/Features/Settings/SettingsViewModel.swift MateDroidIOS/Features/Settings/SettingsView.swift MateDroidIOSTests/Features/SmartActivitySettingsTests.swift MateDroidIOSTests/Features/ChargePriceConfirmationTests.swift MateDroidIOSTests/Features/SettingsViewModelTests.swift MateDroidIOS.xcodeproj/project.pbxproj
+git add MateDriveApp/Features/Activities/ActivityLabelEditorView.swift MateDriveApp/Features/Charges/ChargePriceConfirmationView.swift MateDriveApp/Features/Settings/SmartActivitySettingsView.swift MateDriveApp/Features/Activities/ActivitySessionDetailView.swift MateDriveApp/Features/Charges/ChargeDetailView.swift MateDriveApp/Features/Settings/AppSettings.swift MateDriveApp/Features/Settings/SettingsViewModel.swift MateDriveApp/Features/Settings/SettingsView.swift MateDriveTests/Features/SmartActivitySettingsTests.swift MateDriveTests/Features/ChargePriceConfirmationTests.swift MateDriveTests/Features/SettingsViewModelTests.swift MateDrive.xcodeproj/project.pbxproj
 git commit -m "feat: confirm activity labels and charging prices"
 ```
 
 ### Task 11: Backup, Privacy, Localization, And Cache Clearing
 
 **Files:**
-- Modify: `MateDroidIOS/Features/Settings/PrivacyDataView.swift`
-- Modify: `MateDroidIOS/Resources/Localizable.xcstrings`
-- Modify test: `MateDroidIOSTests/Backup/DatabaseBackupProviderTests.swift`
-- Modify test: `MateDroidIOSTests/Backup/CloudBackupRestoreTests.swift`
-- Modify test: `MateDroidIOSTests/Localization/LocalizationCoverageTests.swift`
-- Test: `MateDroidIOSTests/Features/SmartActivityPrivacyTests.swift`
+- Modify: `MateDriveApp/Features/Settings/PrivacyDataView.swift`
+- Modify: `MateDriveApp/Resources/Localizable.xcstrings`
+- Modify test: `MateDriveTests/Backup/DatabaseBackupProviderTests.swift`
+- Modify test: `MateDriveTests/Backup/CloudBackupRestoreTests.swift`
+- Modify test: `MateDriveTests/Localization/LocalizationCoverageTests.swift`
+- Test: `MateDriveTests/Features/SmartActivityPrivacyTests.swift`
 
 **Interfaces:**
 - Consumes: existing whole-database backup artifacts, AppSettings backup, smart-activity stores, and Privacy data actions.
@@ -1601,7 +1601,7 @@ func testClearDerivedDataPreservesLearnedAndManualValues() async throws {
 
 ```bash
 make generate
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/DatabaseBackupProviderTests -only-testing:MateDroidIOSTests/CloudBackupRestoreTests -only-testing:MateDroidIOSTests/SmartActivityPrivacyTests -only-testing:MateDroidIOSTests/LocalizationCoverageTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/DatabaseBackupProviderTests -only-testing:MateDriveTests/CloudBackupRestoreTests -only-testing:MateDriveTests/SmartActivityPrivacyTests -only-testing:MateDriveTests/LocalizationCoverageTests test
 ```
 
 Expected: new smart-activity assertions FAIL until stores and copy are integrated.
@@ -1621,24 +1621,24 @@ State that classification runs on device from TeslaMate vehicle coordinates, no 
 - [ ] **Step 6: Run focused tests and audits, then commit**
 
 ```bash
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/DatabaseBackupProviderTests -only-testing:MateDroidIOSTests/CloudBackupRestoreTests -only-testing:MateDroidIOSTests/SmartActivityPrivacyTests -only-testing:MateDroidIOSTests/LocalizationCoverageTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/DatabaseBackupProviderTests -only-testing:MateDriveTests/CloudBackupRestoreTests -only-testing:MateDriveTests/SmartActivityPrivacyTests -only-testing:MateDriveTests/LocalizationCoverageTests test
 python3 scripts/audit_localization.py
 ```
 
 Expected: tests PASS and localization audit exits 0.
 
 ```bash
-git add MateDroidIOS/Features/Settings/PrivacyDataView.swift MateDroidIOS/Resources/Localizable.xcstrings MateDroidIOSTests/Backup/DatabaseBackupProviderTests.swift MateDroidIOSTests/Backup/CloudBackupRestoreTests.swift MateDroidIOSTests/Localization/LocalizationCoverageTests.swift MateDroidIOSTests/Features/SmartActivityPrivacyTests.swift
+git add MateDriveApp/Features/Settings/PrivacyDataView.swift MateDriveApp/Resources/Localizable.xcstrings MateDriveTests/Backup/DatabaseBackupProviderTests.swift MateDriveTests/Backup/CloudBackupRestoreTests.swift MateDriveTests/Localization/LocalizationCoverageTests.swift MateDriveTests/Features/SmartActivityPrivacyTests.swift
 git commit -m "feat: back up smart activity decisions"
 ```
 
 ### Task 12: Performance Gate, Physical Device, And TestFlight Build
 
 **Files:**
-- Create: `MateDroidIOSTests/Performance/ActivityTimelinePerformanceTests.swift`
+- Create: `MateDriveTests/Performance/ActivityTimelinePerformanceTests.swift`
 - Modify: `project.yml`
-- Modify: `MateDroidIOS/Info.plist`
-- Modify: `MateDroidWidget/Info.plist`
+- Modify: `MateDriveApp/Info.plist`
+- Modify: `MateDriveWidget/Info.plist`
 - Create: `build/ExportOptions-TestFlight.plist` during release execution; do not commit generated build artifacts.
 
 **Interfaces:**
@@ -1663,7 +1663,7 @@ func testLoadingFiveHundredCachedSessionsStaysWithinBudget() async throws {
 
 ```bash
 make generate
-xcodebuild -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDroidIOSTests/ActivityTimelinePerformanceTests -only-testing:MateDroidIOSTests/ActivityTimelineViewModelTests test
+xcodebuild -project MateDrive.xcodeproj -scheme MateDrive -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:MateDriveTests/ActivityTimelinePerformanceTests -only-testing:MateDriveTests/ActivityTimelineViewModelTests test
 ```
 
 Expected: PASS, cached load under 100 ms in the test fixture, and zero network requests.
@@ -1716,7 +1716,7 @@ Then run:
 
 ```bash
 rm -rf build/MateDrive-1.0-4.xcarchive
-xcodebuild archive -project MateDroidIOS.xcodeproj -scheme MateDrive -destination 'generic/platform=iOS' -archivePath build/MateDrive-1.0-4.xcarchive -allowProvisioningUpdates
+xcodebuild archive -project MateDrive.xcodeproj -scheme MateDrive -destination 'generic/platform=iOS' -archivePath build/MateDrive-1.0-4.xcarchive -allowProvisioningUpdates
 xcodebuild -exportArchive -archivePath build/MateDrive-1.0-4.xcarchive -exportOptionsPlist build/ExportOptions-TestFlight.plist -allowProvisioningUpdates
 ```
 
@@ -1725,7 +1725,7 @@ Expected: `ARCHIVE SUCCEEDED`, `EXPORT SUCCEEDED`, and App Store Connect reports
 - [ ] **Step 8: Commit release metadata after successful upload**
 
 ```bash
-git add project.yml MateDroidIOS.xcodeproj/project.pbxproj MateDroidIOS/Info.plist MateDroidWidget/Info.plist MateDroidIOSTests/Performance/ActivityTimelinePerformanceTests.swift
+git add project.yml MateDrive.xcodeproj/project.pbxproj MateDriveApp/Info.plist MateDriveWidget/Info.plist MateDriveTests/Performance/ActivityTimelinePerformanceTests.swift
 git commit -m "release: prepare MateDrive build 4"
 ```
 

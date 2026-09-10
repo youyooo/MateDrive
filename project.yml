@@ -1,4 +1,4 @@
-name: MateDroidIOS
+name: MateDrive
 options:
   bundleIdPrefix: com.matedrive
   deploymentTarget:
@@ -7,102 +7,154 @@ settings:
   base:
     SWIFT_VERSION: "6.3"
     IPHONEOS_DEPLOYMENT_TARGET: "18.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "19"
+    DEVELOPMENT_TEAM: JYN528573D
+    CODE_SIGN_STYLE: Automatic
 packages: {}
 targets:
-  MateDroidIOS:
+  MateDriveApp:
     type: application
     productName: MateDrive
     platform: iOS
     deploymentTarget: "18.0"
     sources:
-      - MateDroidIOS
-      - path: MateDroidWidget/WidgetDisplayData.swift
-      - path: MateDroidIOS/Resources/VehicleImageCatalog.json
-        buildPhase: resources
-      - path: MateDroidIOS/Resources/RegionalChargingTariffs.json
+      - path: MateDriveApp
+        excludes:
+          - Resources/AppShortcuts.xcstrings
+          - Resources/InfoPlist.xcstrings
+          - Resources/Localizable.xcstrings
+          - PrivacyInfo.xcprivacy
+      - path: MateDriveApp/PrivacyInfo.xcprivacy
+      - path: MateDriveWidget/WidgetDisplayData.swift
+      - path: MateDriveWidget/WidgetCurrentChargePresentation.swift
+      - path: MateDriveWidget/ChargeLiveActivityAttributes.swift
+      - path: MateDriveWidget/ChargeLiveActivityPresentation.swift
+      - path: MateDriveWidget/WidgetNavigation.swift
+      - path: MateDriveApp/Resources/RegionalChargingTariffs.json
         buildPhase: resources
     settings:
       base:
         PRODUCT_NAME: MateDrive
-        PRODUCT_MODULE_NAME: MateDroidIOS
+        PRODUCT_MODULE_NAME: MateDriveApp
         PRODUCT_BUNDLE_IDENTIFIER: com.matedrive.ios
         INFOPLIST_KEY_CFBundleDisplayName: MateDrive
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         COMPRESS_PNG_FILES: NO
         ENABLE_ON_DEMAND_RESOURCES: NO
-        CODE_SIGN_ENTITLEMENTS: MateDroidIOS/MateDroidIOS.entitlements
+        CODE_SIGN_ENTITLEMENTS: MateDriveApp/MateDriveApp.entitlements
         TARGETED_DEVICE_FAMILY: "1"
     info:
-      path: MateDroidIOS/Info.plist
+      path: MateDriveApp/Info.plist
       properties:
         CFBundleDisplayName: MateDrive
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        CFBundleURLTypes:
+          - CFBundleURLName: com.matedrive.ios
+            CFBundleURLSchemes:
+              - matedrive
         ITSAppUsesNonExemptEncryption: false
+        NSSupportsLiveActivities: true
+        NSLocalNetworkUsageDescription: MateDrive connects to your self-hosted TeslaMate server on the local network.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
         UILaunchScreen:
           UIColorName: LaunchBackground
           UIImageName: LaunchWordmark
           UIImageRespectsSafeAreaInsets: true
         UIBackgroundModes:
           - fetch
+          - processing
         BGTaskSchedulerPermittedIdentifiers:
           - com.matedrive.ios.sync
+          - com.matedrive.ios.full-sync
     dependencies:
-      - target: MateDroidWidget
+      - target: MateDriveWidget
       - sdk: libsqlite3.tbd
-  MateDroidWidget:
+    attributes:
+      SystemCapabilities:
+        com.apple.iCloud:
+          enabled: 1
+  MateDriveWidget:
     type: app-extension
     productName: MateDriveWidget
     platform: iOS
     deploymentTarget: "18.0"
     sources:
-      - MateDroidWidget
-      - path: MateDroidIOS/Resources/Localizable.xcstrings
-      - path: MateDroidIOS/PrivacyInfo.xcprivacy
-      - path: MateDroidIOS/Resources/CarImages
+      - path: MateDriveWidget
+        excludes:
+          - PrivacyInfo.xcprivacy
+      - path: MateDriveWidget/PrivacyInfo.xcprivacy
+      - path: MateDriveApp/Resources/CompiledLocalizations
+        excludes:
+          - "**/AppShortcuts.strings"
         buildPhase: resources
     settings:
       base:
         PRODUCT_NAME: MateDriveWidget
-        PRODUCT_MODULE_NAME: MateDroidWidget
+        PRODUCT_MODULE_NAME: MateDriveWidget
         PRODUCT_BUNDLE_IDENTIFIER: com.matedrive.ios.widget
         INFOPLIST_KEY_CFBundleDisplayName: MateDrive Widget
-        CODE_SIGN_ENTITLEMENTS: MateDroidWidget/MateDroidWidget.entitlements
+        CODE_SIGN_ENTITLEMENTS: MateDriveWidget/MateDriveWidget.entitlements
         TARGETED_DEVICE_FAMILY: "1"
     info:
-      path: MateDroidWidget/Info.plist
+      path: MateDriveWidget/Info.plist
       properties:
         CFBundleDisplayName: MateDrive Widget
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
-  MateDroidIOSTests:
+  MateDriveTests:
     type: bundle.unit-test
     platform: iOS
     deploymentTarget: "18.0"
     sources:
-      - MateDroidIOSTests
+      - MateDriveTests
     info:
-      path: MateDroidIOSTests/Info.plist
+      path: MateDriveTests/Info.plist
       properties: {}
     settings:
       base:
         BUNDLE_LOADER: "$(TEST_HOST)"
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MateDrive.app/MateDrive"
     dependencies:
-      - target: MateDroidIOS
+      - target: MateDriveApp
+  MateDriveUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - MateDriveUITests
+    info:
+      path: MateDriveUITests/Info.plist
+      properties: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.matedrive.ios.uitests
+        TEST_TARGET_NAME: MateDriveApp
+    dependencies:
+      - target: MateDriveApp
 schemes:
   MateDrive:
     build:
       targets:
-        MateDroidIOS: all
-        MateDroidWidget: all
+        MateDriveApp: all
+        MateDriveWidget: all
     test:
+      debugEnabled: false
       targets:
-        - MateDroidIOSTests
+        - MateDriveTests
+        - MateDriveUITests
       environmentVariables:
+        MATEDRIVE_AUTOMATED_TEST_MODE: "1"
         MATEDRIVE_INTEGRATION_BASE_URL: "$(MATEDRIVE_INTEGRATION_BASE_URL)"
         MATEDRIVE_INTEGRATION_API_TOKEN: "$(MATEDRIVE_INTEGRATION_API_TOKEN)"
         MATEDRIVE_INTEGRATION_BASIC_USERNAME: "$(MATEDRIVE_INTEGRATION_BASIC_USERNAME)"
         MATEDRIVE_INTEGRATION_BASIC_PASSWORD: "$(MATEDRIVE_INTEGRATION_BASIC_PASSWORD)"
+        MATEDRIVE_RUN_CLOUDKIT_PRODUCTION_TESTS: "$(MATEDRIVE_RUN_CLOUDKIT_PRODUCTION_TESTS)"
         MATEDRIVE_INTEGRATION_AKSK_BASE_URL: "$(MATEDRIVE_INTEGRATION_AKSK_BASE_URL)"
         MATEDRIVE_INTEGRATION_ACCESS_KEY: "$(MATEDRIVE_INTEGRATION_ACCESS_KEY)"
         MATEDRIVE_INTEGRATION_SECRET_KEY: "$(MATEDRIVE_INTEGRATION_SECRET_KEY)"

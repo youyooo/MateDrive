@@ -24,9 +24,14 @@
     <ul><li>确认 iPhone 能直接访问 API 地址。</li><li>在诊断报告中确认 API 版本和认证方式。</li><li>互联网服务应使用可信 HTTPS 证书。</li><li>确认 API 能读取车辆、状态、行程、充电和全局设置。</li></ul>
   </section>
   <section><h2>数据准确性</h2>
-    <p>MateDrive 展示 TeslaMate 已记录的数据，并明确标记缺失样本，不用零值代替缺失值。电池健康估算取决于历史数据质量和车辆容量校准。</p>
+    <p>MateDrive 展示 TeslaMate 已记录的数据，并明确标记缺失样本，不用零值代替缺失值。电池健康估算取决于历史数据质量和车辆容量校准；本地电池报告会明确区分记录期保持率与整车寿命健康度。活动周期回顾会保留数据覆盖状态，历史不完整时不会把部分汇总伪装成完整结果。</p>
+  </section>
+  <section><h2>iCloud 备份</h2>
+    <p>在“设置 → iCloud 备份”中可选择开启私人云备份、立即备份、恢复或删除备份。服务器密码、令牌和 API 密钥不会进入备份；恢复后请检查服务器认证信息。</p>
   </section>
   <section><h2>隐私</h2><p>请阅读 <a href="privacy.html">MateDrive 隐私政策</a>。</p></section>
   <section lang="en"><h2>Read-only operation</h2><p>MateDrive reads data from the TeslaMate API you configure and does not send commands to your vehicle.</p></section>
-  <section><h2>联系与反馈</h2><p>普通问题请提交到 <a href="https://github.com/youyooo/MateDrive/issues">GitHub Issues</a>。安全漏洞请通过 <a href="https://github.com/youyooo/MateDrive/security/advisories/new">私密安全报告</a>提交，不要公开凭据、VIN、地址或轨迹。</p></section>
+  <section><h2>独立应用声明</h2><p>MateDrive 是独立开发的非官方 iOS 应用，与 Tesla, Inc.、TeslaMate 或其他服务提供方不存在隶属、赞助或官方认可关系。产品与服务名称仅用于说明兼容性，相关商标归各自权利人所有。</p></section>
+  <section lang="en"><h2>Independent app notice</h2><p>MateDrive is an independently developed, unofficial iOS app. It is not affiliated with, sponsored by, or endorsed by Tesla, Inc., TeslaMate, or any other service provider. Product and service names are used only to describe compatibility.</p></section>
+  <section><h2>联系与反馈</h2><p>直接支持：<a href="mailto:997388225@qq.com">997388225@qq.com</a>，<a href="tel:+8618664147417">18664147417</a>。普通问题也可以提交到 <a href="https://github.com/youyooo/MateDrive/issues">GitHub Issues</a>。安全漏洞请通过 <a href="https://github.com/youyooo/MateDrive/security/advisories/new">私密安全报告</a>提交，不要公开凭据、VIN、地址或轨迹。</p></section>
 </main></body></html>
